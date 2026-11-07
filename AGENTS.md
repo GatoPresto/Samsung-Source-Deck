@@ -40,17 +40,14 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 
 ## Quick commands
 
-See `.agents/build-and-deploy.md` for the full flow. Short version (profile `GatoPresto`, TV `QE77S95CAUXUA` at `192.168.50.204`):
+See `.agents/build-and-deploy.md` for the full flow. One script does everything (profile `GatoPresto`, TV `QE77S95CAUXUA` at `192.168.50.204`):
 
 ```sh
-tizen=~/tizen-studio/tools/ide/bin/tizen
-$tizen package -t wgt -s GatoPresto -o "$PWD/build" -- app
-cp "build/Source Deck.wgt" build/SourceDeck.wgt   # the space in the name breaks install
-~/tizen-studio/tools/sdb connect 192.168.50.204
-$tizen install -n SourceDeck.wgt -t QE77S95CAUXUA -- "$PWD/build"
-$tizen run -p SrcDeck001.SourceDeck -t QE77S95CAUXUA
-rm -f app/*signature*.xml                          # packaging leaves these in app/
+scripts/deploy.sh              # package, sign, install, launch. Leaves exactly one file: build/SourceDeck.wgt
+scripts/deploy.sh --no-run     # package + install      scripts/deploy.sh --build    # package only
 ```
+
+If `sdb connect` fails (TV asleep/restarted): `~/tizen-studio/tools/sdb kill-server; ~/tizen-studio/tools/sdb start-server; ~/tizen-studio/tools/sdb connect 192.168.50.204`, then rerun.
 
 ## Known gaps
 

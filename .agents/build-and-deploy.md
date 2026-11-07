@@ -8,16 +8,10 @@
 
 ## Build and install
 ```sh
-cd "<project root>"
-T=~/tizen-studio/tools/ide/bin/tizen
-~/tizen-studio/tools/sdb connect 192.168.50.204          # TV IP may change, check router
-rm -rf build
-$T package -t wgt -s GatoPresto -o "$PWD/build" -- app
-rm -f app/*signature*.xml                                 # packaging writes these into app/
-cp "build/Source Deck.wgt" build/SourceDeck.wgt           # names with spaces fail to install
-$T install -n SourceDeck.wgt -t QE77S95CAUXUA -- "$PWD/build"
-$T run -p SrcDeck001.SourceDeck -t QE77S95CAUXUA
+scripts/deploy.sh            # package + install + run (use --no-run or --build for less)
 ```
+The script: removes `build/` and stray signature files, runs `tizen package -t wgt -s GatoPresto -o build -- app`, **renames** `build/Source Deck.wgt` to `build/SourceDeck.wgt` (a space in the name makes `tizen install` fail, and `tizen package` has no output-name option, so it is moved, not copied: only one package remains),
+deletes the signature XML files `tizen package` leaves in `app/`, then `sdb connect`, `tizen install -n SourceDeck.wgt` and `tizen run -p SrcDeck001.SourceDeck`. Defaults can be overridden with the env vars `PROFILE`, `TV_IP`, `TV_NAME`.
 - Target name `QE77S95CAUXUA` is from `sdb devices`.
 - If `sdb connect` fails: confirm the TV is on, `nc -zv 192.168.50.204 26101`, Developer Mode still On with the right Host PC IP, then `sdb kill-server && sdb start-server`.
 - Install failing with no message: check for a space in the package name, a stale `.wgt` inside `app/`, or certificate/DUID mismatch.

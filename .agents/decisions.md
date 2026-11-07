@@ -193,3 +193,6 @@ Google requires a privacy policy URL to publish the OAuth consent screen, so `PR
 
 ## D47. Up from the footer goes straight to the tiles
 The footer buttons used to be stepped through with Up/Down like a column, so Up from "Refresh" moved to "Arrange" first. They are a horizontal row: Up from any button now returns to the thumbnails at once, Down from the thumbnails lands on the first usable button.
+
+## D48. One deploy script, one package
+Builds produced two files (`Source Deck.wgt` and a copy `SourceDeck.wgt`) because the installer cannot take a name with a space and `tizen package` cannot rename its output. `scripts/deploy.sh` packages, moves the file to `SourceDeck.wgt` and installs/launches it, so `build/` holds a single package and the long command sequences are no longer repeated by hand.
