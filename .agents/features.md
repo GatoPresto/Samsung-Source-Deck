@@ -41,6 +41,21 @@
   (`launchAppControl` operation `default`, no uri, extra data `PAYLOAD` = `#watch?v=ID&launch=launcher`, tried on `com.samsung.tv.cobalt-yt` then `9Ur5IzDKqV.TizenYouTube`;
   format from flutter-tizen's example, success callback does not prove the video started). Up again from the videos reaches the channel row ("All" + avatars): OK on a channel (the cursor stays on the channel row) loads
   its latest 24 uploads into the video row ("All" restores the mixed feed). Down or Back steps back out to the tiles.
+- **Apple Music panel** (only on the Apple Music tile, `js/music.js`): built from Apple's free public feeds, no developer account or login. Up from the tiles enters the panel:
+  top row = tab chips (For you, Top songs, Top albums, Search, then genre charts Pop...Classical), below = square-artwork cards.
+  Songs: OK plays a 30-second preview (HTML5 `Audio`), OK again pauses, it auto-advances through the list; the status line shows what is playing. Albums: OK lists the album's tracks
+  (choose any tab to go back). Search: the chip opens an overlay with a text input (TV on-screen keyboard), Enter searches, Back cancels. Charts use `itunes.apple.com/<cc>/rss/topsongs|topalbums[/genre=N]`
+  (country from `sources.js` `musicCountry`, else the TV locale, else US), song details/previews come from `itunes.apple.com/lookup`. "For you" = more top songs by the artists played most recently in this app
+  (history kept in `localStorage["music-history"]`, 60 items), so it is not Apple's personal recommendations (those need the paid developer account + user login). Full songs cannot be played (DRM).
+  OK on the tile itself still launches the real Apple Music app.
+  **Open full song:** Down from the card row reaches an "Open “<title>” in Apple Music" button (always reserved under the cards; its label follows the card under the cursor, and the cursor follows
+  the song when a preview auto-advances to the next track). OK launches the TV's Apple Music app with `launchAppControl`: operation `default`, no uri, data `PAYLOAD` = `{"values":"https://music.apple.com/<cc>/album/<albumId>?i=<trackId>"}`.
+  Found by trial on the TV: this opens the song's **album** in the app, not the individual song (Samsung's app has no documented deep link and ignores the `?i=` part). Albums open their own page.
+  **Colours:** the playing card has a pink-red (`#ff375f`) border and tint; the card under the cursor is white (white wins when both). Cursor rows: tabs -> cards -> open button.
+  **Search overlay:** the box, a Search button and a Cancel button, drawn with the virtual cursor. OK on the box opens the TV keyboard; Done (keyCode 65376) searches immediately; Cancel (65385), Up/Down or a blur
+  close the keyboard and move the cursor to Search, where OK runs the search. (The keyboard may hide without blurring the box, hence the key handlers.)
+  Loading shows nine pulsing skeleton cards (no "Loading…" text). The card row keeps one card's height (`main.feedmusic #vids{min-height}`) and the empty-state text is a CSS `::before` of the empty row
+  (`data-empty`), so the tab row never moves between loading, empty and loaded. Up from the tiles enters the feed even when there are no cards (cursor lands on the tab row).
 - Add another app: append `{key, name, theme, ids}` to `APPS` (find ids by logging `getAppsInfo`, see `tv-platform-notes.md`) and optionally a theme.
 
 ## Change theme

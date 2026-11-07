@@ -33,6 +33,29 @@ export function makeChannel(channel) {
 
 export const makeAllChip = () => noFocus(clone("tpl-channel-all"));
 
+/** A text chip in the channel/tab row (Apple Music tabs). */
+export function makeChip(label, on) {
+  const el = makeAllChip();
+  el.textContent = label;
+  el.classList.toggle("on", !!on);
+  return el;
+}
+
+/** Placeholder card shown while a list loads (same size as a real card, so rows do not jump). */
+export function makeSkeleton() {
+  return clone("tpl-skeleton");
+}
+
+/** A square-artwork card (Apple Music songs and albums). */
+export function makeTrack(item, playing) {
+  const el = noFocus(clone("tpl-track"));
+  el.querySelector("img").src = item.art || "";
+  el.querySelector("span").textContent = (playing ? "▶ " : "") + item.name;
+  el.querySelector("small").textContent = item.sub || item.artist || "";
+  el.classList.toggle("playing", !!playing);
+  return el;
+}
+
 /** A plain list row (theme picker, Arrange, media browser). */
 export function makeRow(text, className = "") {
   const row = noFocus(clone("tpl-row"));

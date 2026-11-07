@@ -5,6 +5,7 @@ import { state, tv, demo, yt, saveJson } from "./state.js";
 import { makeVideo, makeChannel, makeAllChip } from "./templates.js";
 import { drawCursor, fadeEdges, focusSel } from "./cursor.js";
 import { render } from "./render.js";
+import { httpJson } from "./http.js";
 
 const YT_SCOPE = "https://www.googleapis.com/auth/youtube.readonly";
 const FEED_TTL = 10 * 60000;
@@ -12,25 +13,7 @@ export const loginUi = {open: false, run: 0};
 const isYoutube = card => card?.id === "app:youtube";
 const ytConfigured = () => !!(window.youtubeAuth && window.youtubeAuth.clientId && window.youtubeAuth.clientSecret);
 
-// ---- HTTP + tokens ----
-function httpJson(method, url, {body, token} = {}) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open(method, url);
-    xhr.timeout = 15000;
-    if (body) xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    if (token) xhr.setRequestHeader("Authorization", "Bearer " + token);
-    xhr.onload = () => {
-      let json = null;
-      try { json = JSON.parse(xhr.responseText); } catch {}
-      resolve({status: xhr.status, json});
-    };
-    xhr.onerror = () => reject(new Error("network error"));
-    xhr.ontimeout = () => reject(new Error("timeout"));
-    xhr.send(body ? Object.entries(body).map(([k, v]) => encodeURIComponent(k) + "=" + encodeURIComponent(v)).join("&") : null);
-  });
-}
-
+// ---- Tokens ----
 async function ytAccessToken() {
   if (!yt.tokens) throw new Error("not logged in");
   if (Date.now() < yt.tokens.expires - 60000) return yt.tokens.access;

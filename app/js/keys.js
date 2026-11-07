@@ -8,9 +8,11 @@ import { browser, browserKey } from "./dlna.js";
 import { picker, pickerKey } from "./picker.js";
 import { arr, arrangeKey } from "./arrange.js";
 import { loginUi, loginKey, currentVideos, selectChannel, playYoutube } from "./youtube.js";
+import { searchUi, searchKey, musicShown, musicEnter, musicOpenFull } from "./music.js";
 
 export function initKeys() {
   document.addEventListener("keydown", event => {
+    if (searchUi.open) { searchKey(event); return; }
     if (loginUi.open) { loginKey(event); return; }
     if (picker.open) { pickerKey(event); return; }
     if (arr.open) { arrangeKey(event); return; }
@@ -38,8 +40,10 @@ export function initKeys() {
       }
     } else if (key === "ArrowUp" || key === "ArrowDown") {
       event.preventDefault();
-      if (key === "ArrowUp" && state.zone === 0 && yt.shown && byId("vids").children.length) {
-        yt.inFeed = true; yt.row = "vids"; yt.idx = Math.min(yt.idx, byId("vids").children.length - 1);
+      const cards = byId("vids").children.length, chips = byId("subs").children.length;
+      if (key === "ArrowUp" && state.zone === 0 && yt.shown && (cards || chips)) {
+        // Enter the feed on the video row, or on the top row when there are no cards (e.g. an empty "For you" tab).
+        yt.inFeed = true; yt.row = cards ? "vids" : "subs"; yt.idx = Math.min(yt.idx, Math.max(0, cards - 1));
         drawCursor();
         return;
       }
@@ -52,26 +56,35 @@ export function initKeys() {
   });
 }
 
-/** Keys while the cursor is inside the YouTube feed (channel row above, video row below). */
+/** Keys while the cursor is inside a feed (YouTube or Apple Music): tab/channel row, card row and, for music, an "open in app" action row. */
 function feedKey(event, key) {
-  const subsRow = yt.row === "subs";
-  const n = byId(subsRow ? "subs" : "vids").children.length;
-  const pos = subsRow ? yt.sidx : yt.idx;
+  const row = yt.row;
+  const hasCards = byId("vids").children.length > 0;
+  const hasAction = musicShown() && hasCards;
+  const n = byId(row === "subs" ? "subs" : "vids").children.length;
+  const pos = row === "subs" ? yt.sidx : yt.idx;
   if (key === "ArrowLeft" || key === "ArrowRight") {
     event.preventDefault();
+    if (row === "open") return;
     const next = Math.max(0, Math.min(n - 1, pos + (key === "ArrowLeft" ? -1 : 1)));
-    if (subsRow) yt.sidx = next; else yt.idx = next;
+    if (row === "subs") yt.sidx = next; else yt.idx = next;
     drawCursor();
   } else if (key === "ArrowUp") {
     event.preventDefault();
-    if (!subsRow && byId("subs").children.length) { yt.row = "subs"; drawCursor(); }
+    if (row === "open") yt.row = "vids";
+    else if (row === "vids" && byId("subs").children.length) yt.row = "subs";
+    drawCursor();
   } else if (key === "ArrowDown") {
     event.preventDefault();
-    if (subsRow && byId("vids").children.length) yt.row = "vids"; else yt.inFeed = false;
+    if (row === "subs" && hasCards) yt.row = "vids";
+    else if (row === "vids" && hasAction) yt.row = "open";
+    else yt.inFeed = false;
     drawCursor();
   } else if (key === "Enter") {
     event.preventDefault();
-    if (subsRow) selectChannel(yt.sidx === 0 ? null : yt.feed?.channels?.[yt.sidx - 1]);
+    if (row === "open") musicOpenFull();
+    else if (musicShown()) musicEnter(row === "subs");
+    else if (row === "subs") selectChannel(yt.sidx === 0 ? null : yt.feed?.channels?.[yt.sidx - 1]);
     else playYoutube(currentVideos()[yt.idx]);
   }
 }

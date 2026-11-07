@@ -3,6 +3,9 @@
 import { byId } from "./dom.js";
 import { state, yt } from "./state.js";
 
+/** Modules that draw extra cursor state register a function here (called at the end of drawCursor). */
+export const cursorHooks = [];
+
 export const ZONES = [null, "ytlogin", "theme", "arrange", "refresh"];
 export const LAST_ZONE = ZONES.length - 1;
 
@@ -20,6 +23,8 @@ export function drawCursor() {
   const cur = yt.row === "subs" ? byId("subs").children[yt.sidx] : byId("vids").children[yt.idx];
   const rowEl = yt.row === "subs" ? byId("subs") : byId("vids");
   if (yt.inFeed && cur) rowEl.scrollLeft = Math.max(0, cur.offsetLeft - 40);
+  byId("musicOpen").classList.toggle("cur", yt.inFeed && yt.row === "open");
+  cursorHooks.forEach(fn => fn());
   fadeEdges();
 }
 

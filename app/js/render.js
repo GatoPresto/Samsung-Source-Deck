@@ -6,6 +6,7 @@ import { themeOf } from "./themes.js";
 import { makeTile } from "./templates.js";
 import { drawCursor } from "./cursor.js";
 import { updateYoutubeUi } from "./youtube.js";
+import { updateMusicUi } from "./music.js";
 import { open } from "./playback.js";
 
 /** Rebuild state.allCards / state.cards from state.natural using the saved order and hidden sources. */
@@ -62,7 +63,7 @@ export function render() {
   deck.dataset.card = card?.id;
   byId("title").textContent = name;
   byId("meta").textContent = demo ? "Browser demo" : card?.app ? "Apps" : card?.url || card?.dlna ? "Network media" : "TV inputs";
-  byId("detail").textContent = card?.app ? "Opens the app with your own recommendations" : card?.dlna ? "UPnP / DLNA media server" :
+  byId("detail").textContent = card?.id === "app:applemusic" ? "OK opens Apple Music · Up for charts, search and previews" : card?.app ? "Opens the app with your own recommendations" : card?.dlna ? "UPnP / DLNA media server" :
     card?.url ? "HTTP media stream" : card?.source ?
       (card.source.type === "TV" ? "Antenna / apps" : "HDMI " + card.source.number) :
       allCards.length ? "Open Arrange to show sources again" : "Refresh or add a network stream";
@@ -75,5 +76,6 @@ export function render() {
   if (sel) byId("strip").scrollLeft = Math.max(0, sel.offsetLeft - 60);
   byId("theme").hidden = !card;
   updateYoutubeUi(card);
+  updateMusicUi(card);
   drawCursor();
 }

@@ -32,5 +32,10 @@ YouTube `9Ur5IzDKqV.TizenYouTube` (also `com.samsung.tv.cobalt-yt`, kids `com.sa
 Prime Video `org.tizen.primevideo` (+ `-dummy`), Apple TV `com.samsung.tv.aria-video` (+ `com.samsung.tv.aria-dummy`), Apple Music `org.tizen.apple.apple-music` (+ `-dummy`), HBO Max `5b8c3eb16b.BeamCTVDev` (the other `5b8c3eb16b.*` ids are background workers).
 The `-dummy` ids are placeholders the home screen uses; `APPS` lists the real id first and uses the first one present.
 
+## TV remote-control WebSocket (tried, removed)
+Phone remotes control Samsung TVs over `wss://<tv-ip>:8002/api/v2/channels/samsung.remote.control` / `ws://<tv-ip>:8001/...` and can launch deep links with `ms.channel.emit` `ed.apps.launch` (`action_type:"DEEP_LINK"`, numeric `appId`
+such as Apple Music `3201908019041`, `metaTag`). It was implemented in the app (formats 1-3 of the Apple Music cycle) and removed once `launchAppControl` format 12 gave the accepted result; whether the TV accepts it from an app on the TV itself was never
+established. Numeric ids: Apple Music `3201908019041`, Apple TV `3201807016597`, Netflix `3201907018807`.
+
 ## ES modules work
 `<script type="module" src="js/main.js">` with static `import`s (including import cycles) and `import.meta` load fine from the installed widget on this TV (Tizen 9 / Chromium 120). Verified on the TV, not just assumed.

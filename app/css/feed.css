@@ -14,5 +14,25 @@
 .vid span{display:block;padding:6px 8px 0;font-size:.85rem;font-weight:700;line-height:1.25;height:2.6em;overflow:hidden}
 .vid small{display:block;padding:0 8px 6px;font-size:.72rem;opacity:.8}
 .vid.cur{border-color:#fff;outline:none}
+/* Apple Music cards: square artwork */
+.vid.sq{flex:0 0 150px;height:220px}
+/* The music card row always keeps one card's height, so loading and empty states do not make the tab row jump. */
+main.feedmusic #vids{min-height:220px}
+/* The music panel must fit in 1080 px together with the title, tiles and buttons, or the page grows and everything below sits lower than in other themes. */
+main.feedmusic #feed{gap:10px;margin-bottom:36px}
+.skel{pointer-events:none;animation:skel 1.3s ease-in-out infinite}
+.skel i{display:block;height:150px;background:#ffffff1f}
+.skel b{display:block;height:12px;margin:12px 10px 0;border-radius:6px;background:#ffffff1f}
+.skel b+b{width:55%;margin-top:8px}
+@keyframes skel{50%{opacity:.45}}
+main.feedmusic #vids:empty::before{content:attr(data-empty);display:flex;align-items:center;width:100%;min-height:220px;padding:0 12px;font-size:1.2rem;opacity:.85}
+.vid.sq img{height:150px}
+.vid.playing{border-color:#ff375f;background:#fa233b66}
+.vid.playing.cur{border-color:#fff}
+#feedActions{display:none}
+main.feedmusic #feedActions{display:block;min-height:44px}
+#musicOpen{height:40px;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#musicOpen.hidden{visibility:hidden}
+.chan.all.on{background:var(--accent);color:var(--ink)}
 /* On the TV (1080p) the YouTube slide keeps the normal padding and title size. Only short windows get a compact layout. */
 @media (max-height:800px){main.feedon{padding-top:3vh;padding-bottom:3vh}main.feedon h1{font-size:clamp(2rem,4vw,3.4rem);margin:4px 0}main.feedon section{overflow:hidden}}

@@ -52,6 +52,8 @@ build/                    generated .wgt packages (git-ignored)
 | `dlna.js` | subnet scan, `scanStatus`, media browser (SOAP), `playNative` |
 | `picker.js` | theme picker overlay |
 | `arrange.js` | Arrange overlay (hide/show, reorder) |
+| `music.js` | Apple Music panel: tabs, charts, search, album view, 30 s previews, play history. Reuses the feed DOM and the `yt.inFeed/row/idx/sidx` cursor state |
+| `http.js` | `httpJson` XHR wrapper (used by youtube.js and music.js) |
 | `youtube.js` | login (device flow), token refresh, feed, channel filter, `playYoutube` |
 | `keys.js` | the single keydown router (+ YouTube feed keys) |
 

@@ -32,7 +32,8 @@
 <div id="arrangeView" hidden><h2>Arrange sources</h2><div id="alist" role="list"></div><p id="ahint">↑↓ choose · OK show / hide · ← → move up / down · Back done</p></div>
 <div id="themeView" hidden><h2 id="themeFor">Theme</h2><div id="tlist" role="list"></div><p id="thint">↑↓ choose · OK select · Back cancel</p></div>
 <div id="loginView" hidden><h2 id="loginTitle"></h2><p id="loginText"></p><p id="loginCode"></p></div>
-<div id="feed" hidden><div id="subs"></div><div id="feedStatus"></div><div id="vids"></div></div>
+<div id="searchView" hidden><h2>Search Apple Music</h2><input id="searchInput" type="text" placeholder="Artist, song or album" autocomplete="off"><div id="searchBtns"><button id="searchGo">Search</button><button id="searchCancel">Cancel</button></div><p id="shint">OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels</p></div>
+<div id="feed" hidden><div id="subs"></div><div id="feedStatus"></div><div id="vids"></div><div id="feedActions"><button id="musicOpen" class="chan all">Open in Apple Music</button></div></div>
 <div id="strip" role="listbox" aria-label="Sources"></div>
 <footer class="nav"><button id="ytlogin" hidden>Log in</button><button id="theme">Change theme</button><button id="arrange">Arrange</button><button id="refresh">Refresh</button></footer>
 </main>
@@ -44,6 +45,8 @@
 <template id="tpl-video"><button class="vid"><img alt=""><span></span><small></small></button></template>
 <template id="tpl-channel"><button class="chan"><img alt=""></button></template>
 <template id="tpl-channel-all"><button class="chan all">All</button></template>
+<template id="tpl-track"><button class="vid sq"><img alt=""><span></span><small></small></button></template>
+<template id="tpl-skeleton"><div class="vid sq skel"><i></i><b></b><b></b></div></template>
 <template id="tpl-row"><button></button></template>
 
 <script src="$WEBAPIS/webapis/webapis.js"></script>
