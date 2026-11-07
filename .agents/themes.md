@@ -10,6 +10,8 @@ A theme is a key in `THEMES` (`app/app.js`) plus CSS in `app/index.html`.
 | `xbox` | Xbox | black/green, glowing sphere, diagonal lines, sharp uppercase buttons |
 | `stream` | Network media | teal, static wave pattern |
 | `tv` | Live TV | purple with broadcast colour bars |
+| `youtube` | YouTube | dark mode, red accent, faint grid of video-card outlines, pill buttons, white selection |
+| `netflix` | Netflix | black, red cinematic light streaks with vignette, uppercase heavy title, red selection |
 | `gta6` | GTA 6 | pastel Vice City sunset modelled on the game's menu UI: orange-pink-lavender gradient, muted palm silhouettes and birds, black letterbox bars top and bottom with pink/orange neon lines (header and footer sit inside the bars), translucent purple square buttons, orange selection highlight, script italic title |
 | `gta6classic` | GTA 6 Retro | (the first GTA 6 look) Vice City neon sunset: purple-to-orange sky, striped sun, skyline with lit windows, palms, pink retro grid floor, cyan frame, italic pink-gradient uppercase title, neon-bordered buttons |
 

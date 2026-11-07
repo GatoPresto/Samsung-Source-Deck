@@ -64,3 +64,7 @@ Added `gta6` to `THEMES` (glyph "VI") with hand-drawn SVG (sun, skyline, palms, 
 ## D14. Two GTA 6 themes; key rename with migration
 The first look became `gta6classic` (label "GTA 6 Retro"), and `gta6` now means the new screenshot-based look. `prefs.v` (set to 1) triggers a one-time
 migration in `app.js` that turns saved `gta6` choices into `gta6classic`, so users keep the look they picked. Bump `prefs.v` for future key renames.
+
+## D15. App tiles launch YouTube/Netflix; no in-deck recommendations
+The user wanted personal recommendations from both apps. Neither exposes them to third-party apps (see features.md), so the deck only detects installed apps and
+launches them; the apps' own home screens show the recommendations. Detection uses the app list rather than hardcoding tiles, so tiles appear only when installed.

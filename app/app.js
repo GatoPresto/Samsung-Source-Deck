@@ -43,12 +43,15 @@ const THEMES = [
   {key: "xbox", label: "Xbox", glyph: "Ⓧ"},
   {key: "stream", label: "Network media", glyph: "≈≈≈"},
   {key: "tv", label: "Live TV", glyph: "▦"},
+  {key: "youtube", label: "YouTube", glyph: "▶"},
+  {key: "netflix", label: "Netflix", glyph: "N"},
   {key: "gta6", label: "GTA 6", glyph: "VI"},
   {key: "gta6classic", label: "GTA 6 Retro", glyph: "VI"},
 ];
 const GLYPH = Object.fromEntries(THEMES.map(t => [t.key, t.glyph]));
 
 function detectTheme(card) {
+  if (card.app) return card.appTheme;
   const name = card.name;
   return card.url || card.dlna ? "stream" : card.source?.type === "TV" ? "tv" :
     /playstation|\bps\s?\d/i.test(name) ? "ps" : /switch|nintendo/i.test(name) ? "switch" :
@@ -62,7 +65,7 @@ function themeOf(card) {
 }
 
 function kindOf(card) {
-  return card.dlna ? "Media server" : card.url ? "Stream" : card.source?.type === "TV" ? "Live TV" : "HDMI " + card.source.number;
+  return card.app ? "App" : card.dlna ? "Media server" : card.url ? "Stream" : card.source?.type === "TV" ? "Live TV" : "HDMI " + card.source.number;
 }
 
 function buildStrip() {
@@ -114,8 +117,8 @@ function render() {
   deck.dataset.theme = theme;
   deck.dataset.card = card?.id;
   byId("title").textContent = name;
-  byId("meta").textContent = demo ? "Browser demo" : card?.url || card?.dlna ? "Network media" : "TV inputs";
-  byId("detail").textContent = card?.dlna ? "UPnP / DLNA media server" : card?.url ? "HTTP media stream" : card?.source ?
+  byId("meta").textContent = demo ? "Browser demo" : card?.app ? "Apps" : card?.url || card?.dlna ? "Network media" : "TV inputs";
+  byId("detail").textContent = card?.app ? "Opens the app with your own recommendations" : card?.dlna ? "UPnP / DLNA media server" : card?.url ? "HTTP media stream" : card?.source ?
     (card.source.type === "TV" ? "Antenna / apps" : "HDMI " + card.source.number) :
     allCards.length ? "Open Arrange to show sources again" : "Refresh or add a network stream";
   byId("count").textContent = cards.length ? (index + 1) + " / " + cards.length : "0 sources";
@@ -127,6 +130,28 @@ function render() {
   if (sel) byId("strip").scrollLeft = Math.max(0, sel.offsetLeft - 60);
   drawCursor();
   byId("theme").hidden = !card;
+}
+
+// Streaming apps. If installed, they get a tile that launches them. Their own screens show the user's personal recommendations.
+// (Neither app offers its recommendations to other apps, so the deck cannot show them itself.)
+const APPS = [
+  {key: "youtube", name: "YouTube", theme: "youtube", ids: ["9Ur5IzDKqV.TizenYouTube", "com.samsung.tv.cobalt-yt"]},
+  {key: "netflix", name: "Netflix", theme: "netflix", ids: ["org.tizen.netflix-app", "3201907018807"]},
+];
+let installedApps = [];
+function detectApps() {
+  if (demo) {
+    installedApps = APPS.map(a => ({id: "app:" + a.key, name: a.name, app: a.ids[0], appTheme: a.theme}));
+    return;
+  }
+  try {
+    tv.application.getAppsInfo(list => {
+      const present = new Set(list.map(a => a.id));
+      installedApps = APPS.filter(a => a.ids.some(id => present.has(id)))
+        .map(a => ({id: "app:" + a.key, name: a.name, app: a.ids.find(id => present.has(id)), appTheme: a.theme}));
+      populate(lastSources);
+    }, () => {});
+  } catch (error) {}
 }
 
 let natural = [];
@@ -145,7 +170,7 @@ function populate(sources) {
     .map(({source, connected}) => ({
       id: source.type + "-" + source.number, source, connected,
       name: source.type === "TV" ? "Live TV" : source.editName || "HDMI " + source.number
-    })).concat(streams, dlnaFound);
+    })).concat(streams, installedApps, dlnaFound);
   applyPrefs();
   buildStrip();
   render();
@@ -160,6 +185,7 @@ function setBusy(on) {
 
 function refresh() {
   const request = ++refreshGeneration;
+  if (lastSources.length) detectApps();
   const started = Date.now();
   setBusy(true);
   const settle = work => setTimeout(() => {
@@ -245,6 +271,13 @@ function open(target) {
   const card = target || cards[index];
   if (!card || active) return;
   if (card.dlna) { openBrowser(card); return; }
+  if (card.app) {
+    if (demo) { message("Would launch " + card.name + " on the TV."); return; }
+    try {
+      tv.application.launch(card.app, () => {}, error => message("Could not open " + card.name + ": " + (error?.message || error)));
+    } catch (error) { message("Could not open " + card.name + ": " + error.message); }
+    return;
+  }
   if (demo) {
     message("Selected " + card.name + ". Install on the TV to open the source.");
     return;
@@ -623,4 +656,5 @@ document.addEventListener("keydown", event => {
 });
 for (const id of ["theme", "arrange", "refresh"]) byId(id).onfocus = () => byId(id).blur();
 window.addEventListener("error", e => message("Error: " + e.message));
+detectApps();
 refresh();

@@ -26,3 +26,7 @@ computer's LAN IP (otherwise `sdb connect` is refused although port 26101 is ope
   Public privilege, valid until Nov 2027). Reinstall after expiry. DUID is read with `sdb -s <ip>:26101 shell "0 getduid"`.
 - A browser pane/desktop browser can preview logic only (`tizen` is undefined -> demo mode with fake PS5/Switch/Xbox cards).
   Serve `app/` with `python3 -m http.server`, because `file://` previews do not run the scripts.
+
+## App ids seen on this TV
+YouTube `9Ur5IzDKqV.TizenYouTube` (also `com.samsung.tv.cobalt-yt`, kids `com.samsung.tv.cobalt-ytkids`, TV `com.samsung.tv.cobalt-yttv`), Netflix `org.tizen.netflix-app`,
+Prime Video `org.tizen.primevideo`, Apple TV `com.samsung.tv.aria-video`, Apple Music `org.tizen.apple.apple-music`.

@@ -29,6 +29,14 @@
   protocolInfo) to the TV's native player `org.tizen.video-player-tv`, then `org.tizen.mycontent-video-player-tv`. If both
   fail, falls back to AVPlay inside the app.
 
+## Streaming apps (YouTube, Netflix)
+- `APPS` in `app.js` lists known apps with candidate package ids (YouTube `9Ur5IzDKqV.TizenYouTube` / `com.samsung.tv.cobalt-yt`, Netflix `org.tizen.netflix-app`).
+  `detectApps()` calls `tizen.application.getAppsInfo` (privilege `application.info`) and adds a tile only for apps installed on the TV
+  (`id = "app:<key>"`, themes `youtube` / `netflix`). OK launches the app with `tizen.application.launch`.
+- **Recommendations are not shown by the deck.** YouTube and Netflix expose no API for personal home-feed recommendations (Netflix has no public API,
+  YouTube's Data API dropped the recommendations feed and needs OAuth). The app's own screen, which opens on OK, shows them.
+- Add another app: append `{key, name, theme, ids}` to `APPS` (find ids by logging `getAppsInfo`, see `tv-platform-notes.md`) and optionally a theme.
+
 ## Change theme
 - Footer button "Change theme" opens a full-screen list (`#themeView`) for the selected source: "Auto (<detected>)" plus
   every theme in `THEMES`. A filled dot marks the current choice. Up/Down move, OK applies and closes, Back/Left cancel.

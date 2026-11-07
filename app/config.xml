@@ -7,6 +7,7 @@
   <tizen:privilege name="http://tizen.org/privilege/systeminfo"/>
   <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
   <tizen:privilege name="http://developer.samsung.com/privilege/network.public"/>
+  <tizen:privilege name="http://tizen.org/privilege/application.info"/>
   <access origin="*" subdomains="true"/>
   <content src="index.html"/>
   <name>Source Deck</name>
