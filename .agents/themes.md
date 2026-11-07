@@ -48,7 +48,7 @@ Palette: hot pink `#ff3d9a`, cyan `#38e8ff`, deep purple `#2b0b5a`, sun yellow-t
 
 ## GTA 6 theme details
 Based on a user-supplied screenshot of the in-game settings menu (palette and layout only; the palms/birds are original SVG, no game assets).
-Letterbox bars are `::after` gradient layers (top 11vh, bottom 15.5vh), so the theme adds top padding to `section` to keep the title below the top bar.
+Letterbox bars are `::after` gradient layers (top 8vh, bottom 15.5vh). The theme sets `main` padding-top to 3vh (header sits inside the bar) and `section` padding-top to 3vh, so the meta/title/detail text lands at the same y as in every other theme (verified: 107/141/300 px tops at 1080p). Keep that equality if you change the bars.
 Selection: `button.cur` gets solid orange `#e08a3c` (like the game's highlighted row); tiles keep an orange outline. Title font falls back through
 Snell Roundhand/Brush Script/Segoe Script/Apple Chancery/cursive, so on the TV it may render as the system cursive or plain italic (check on TV).
 Auto-detected for source names matching `gta|grand theft`.
