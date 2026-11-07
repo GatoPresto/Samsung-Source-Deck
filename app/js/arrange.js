@@ -9,6 +9,7 @@ import { kindOf } from "./themes.js";
 import { makeRow } from "./templates.js";
 import { focusSel } from "./cursor.js";
 import { applyPrefs, buildStrip, render, populate, migrateToArrangeList } from "./render.js";
+import { syncRing } from "./glass.js";
 
 export const arr = {open: false, col: "A", curA: 0, curS: 0, edit: false};
 
@@ -55,6 +56,7 @@ function drawArrange() {
   if (!sourceRows().length) listS.textContent = "Nothing else found. New apps and servers show up here.";
   byId("ahint").textContent = HINTS[arr.col === "A" && arr.edit ? "edit" : arr.col];
   (arr.col === "A" ? listA : listS).querySelector(".cur")?.scrollIntoView({block: "nearest"});
+  syncRing();
 }
 
 export function openArrange() {

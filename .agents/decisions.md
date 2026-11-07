@@ -154,3 +154,30 @@ The TV only delivers the remote's media keys to an app that registered them, so 
 The Arrange screen had grown too long (every app, server and port in one list). It is now two lists: the Arrange list (`prefs.added`, ordered, with hide/show kept) and the Source list (`state.pool`, everything else including all TV apps).
 Rules from the user: new discoveries never enter the deck by themselves; every installed app is available; generic theme for apps without a curated look. Replaced `prefs.order` (a full ordering of everything) with `prefs.added` (membership + order); migrated once so the existing deck does not change.
 `getAppsInfo` reports 243 launchable (`show:true`) apps on this TV, most of them Samsung internals, so apps are split into store/useful apps (default) and `system` apps (behind a toggle). Edit mode (OK on a row) is used because the remote has no spare key for move/hide/remove.
+
+## D35. Apple Music Liquid Glass theme (light, static refraction art)
+The user wanted an iOS-style Liquid Glass look from reference images (pearl white, glass vinyl, glass app icon with iridescent edges). Real refraction (`backdrop-filter: url(#displacement)`) is Chrome-only and expensive, so the glass objects are drawn once in an SVG (blurred coloured edge lobes, specular strokes, groove rings) and only a few small controls use live blur. Original artwork, not Apple's logo. The theme is selectable only (no auto-detection) so the existing red Apple Music theme stays the default.
+
+## D36. Liquid Glass lens is live, not baked
+Following the user's pointer to liquidglass.dev, the glass app icon became a live element (`#glassLens`) that refracts the vinyl behind it with a generated displacement map (see themes.md). It uses `backdrop-filter: url(#...)` because the TV's browser is Chromium; the library's own default (`filter:` on a copy of the element) was not needed. The code was re-implemented (MIT library read for the optics), not copied.
+
+## D37. Glass on everything, tiered for the TV
+The user wanted liquid glass on buttons, music cards and everything, with a background that shows the refraction. Backdrop refraction is used for translucent controls, own-pixel refraction (`filter:`) for opaque cards/tiles, both from the same generated map. To limit cost: on-screen elements only, one filter per size, chroma only on the cursor/playing element, and a `glass` setting (`all`/`controls`/`lens`) in sources.js. Whether the S95C stays smooth with ~35 filtered elements is unverified: check on the TV and drop to `controls` or `lens` if it lags.
+
+## D38. Glass default lowered to "focus"
+The user reported heavy lag with the `all` level (D37). Default became `focus` (cursor item + playing card + lens live, the rest CSS-only). Rule of thumb for this TV: keep live SVG/backdrop filters to a handful; never apply them to whole lists.
+
+## D39. Full-quality glass with a floating focus ring
+The user proposed: keep high-quality reflections but redraw only on scroll/content change, not on focus. Cause of the redraws: the cursor changed each element's outline/border/opacity, which repainted it and re-ran its SVG filter. Fix: in the glass theme the cursor never styles elements; a single `#focusRing` div follows it. Default `glass` is back to `"quality"` (all visible elements, 3-pass). If the TV still lags on scroll jumps, set `glass: "focus"` or `"lens"`. Also removed the fade mask from `#subs` (backdrop root).
+
+## D40. Remaining focus lag: unconditional DOM writes; liquid focus bubble; shadows
+After D39 the TV still lagged on plain focus moves. Cause found by logging DOM mutations: every cursor move rewrote the "Open in Apple Music" text, the `data-lg` attribute of ~35 glass elements and the fade CSS variables of three rows, each of which repaints and re-runs SVG filters. All writes are now conditional. The blue/white outline ring was replaced by a glass bubble that glides and refracts. Clipped shadows fixed with padded rows (negative margins keep the layout).
+
+## D41. No glass on music cards and thumbnails
+On request the own-pixel refraction was removed from `.vid` cards and `.tile` thumbnails (they stay plain with their CSS tint/shadow); glass remains on buttons, chips, the focus bubble and the big lens. The extra text padding added for the bent rim was reverted. This also removes about 15 live filters.
+
+## D42. Liquid look for the overlay screens
+Change theme and the media-server browser (and Arrange, search, login for consistency) get the glass background, rows and focus bubble in the glass theme. Only the single bubble is a live filter; rows are CSS-only so a 300-item folder stays cheap.
+
+## D43. Overlay lag: bubble area
+The overlay lists were full-width, so the focus bubble was ~1700x67 px and its live displacement filter (re-run every frame while it glides) cost about 8x more than on the main screen. Glass-theme lists are now max 760 px wide (Arrange columns 1300 px max) and bubbles over 40,000 px² use the single-pass filter (no colour fringe). Rule: a live filter's cost scales with its area, keep bubbles small.

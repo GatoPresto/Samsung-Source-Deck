@@ -32,8 +32,10 @@ export function drawCursor() {
 export function fadeEdges() {
   for (const id of ["strip", "subs", "vids"]) {
     const el = byId(id);
-    el.style.setProperty("--fl", el.scrollLeft > 2 ? "80px" : "0px");
-    el.style.setProperty("--fr", el.scrollLeft + el.clientWidth < el.scrollWidth - 2 ? "80px" : "0px");
+    // write only when the value changes: a style write repaints the whole row (and re-runs every glass filter inside it)
+    const set = (name, value) => { if (el.style.getPropertyValue(name) !== value) el.style.setProperty(name, value); };
+    set("--fl", el.scrollLeft > 2 ? "80px" : "0px");
+    set("--fr", el.scrollLeft + el.clientWidth < el.scrollWidth - 2 ? "80px" : "0px");
   }
 }
 window.addEventListener("resize", () => fadeEdges());

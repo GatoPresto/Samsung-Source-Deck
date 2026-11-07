@@ -8,6 +8,7 @@ import { state, tv, demo, yt, loadJson, saveJson } from "./state.js";
 import { makeChip, makeTrack, makeSkeleton } from "./templates.js";
 import { drawCursor, focusSel, cursorHooks } from "./cursor.js";
 import { httpJson } from "./http.js";
+import { syncRing } from "./glass.js";
 
 const isMusic = card => card?.id === "app:applemusic";
 const country = () => ((window.sourceDeck && window.sourceDeck.musicCountry) || (navigator.language || "en-US").split("-")[1] || "us").toLowerCase();
@@ -162,7 +163,7 @@ export function stopMusic() {
 // When the keyboard closes (Done/Back) the cursor jumps to Search, so OK then runs the search.
 export const searchUi = {open: false, cur: 0};
 const searchEls = () => [byId("searchInput"), byId("searchGo"), byId("searchCancel")];
-function drawSearchCursor() { searchEls().forEach((el, i) => el.classList.toggle("cur", searchUi.open && i === searchUi.cur)); }
+function drawSearchCursor() { searchEls().forEach((el, i) => el.classList.toggle("cur", searchUi.open && i === searchUi.cur)); syncRing(); }
 
 function openSearch() {
   searchUi.open = true; searchUi.cur = 0;
@@ -258,7 +259,8 @@ function refreshOpenButton() {
   const btn = byId("musicOpen");
   const item = currentItems()[yt.idx];
   const name = item ? (item.name.length > 38 ? item.name.slice(0, 37) + "…" : item.name) : "";
-  btn.textContent = item ? "Open “" + name + "” in Apple Music" : "Open in Apple Music";
+  const label = item ? "Open “" + name + "” in Apple Music" : "Open in Apple Music";
+  if (btn.textContent !== label) btn.textContent = label;   // writing identical text still replaces the text node and repaints the button
   btn.classList.toggle("hidden", !item);
 }
 cursorHooks.push(refreshOpenButton);

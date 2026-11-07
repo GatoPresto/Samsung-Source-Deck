@@ -5,6 +5,7 @@ import { makeRow } from "./templates.js";
 import { focusSel } from "./cursor.js";
 import { populate } from "./render.js";
 import { open } from "./playback.js";
+import { syncRing } from "./glass.js";
 
 const text = (node, tag) => node.getElementsByTagName(tag)[0]?.textContent || "";
 
@@ -107,6 +108,7 @@ function drawBrowserCursor() {
   browser.cursor = Math.max(0, Math.min(browser.cursor || 0, buttons.length - 1));
   buttons.forEach((b, i) => b.classList.toggle("cur", i === browser.cursor));
   buttons[browser.cursor]?.scrollIntoView({block: "nearest"});
+  syncRing();
 }
 
 export function showBrowser() {

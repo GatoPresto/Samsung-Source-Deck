@@ -7,6 +7,7 @@ import { makeTile } from "./templates.js";
 import { drawCursor } from "./cursor.js";
 import { updateYoutubeUi } from "./youtube.js";
 import { updateMusicUi } from "./music.js";
+import { updateGlass } from "./glass.js";
 import { open } from "./playback.js";
 
 const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
@@ -87,6 +88,7 @@ export function render() {
     section.style.animation = "none"; void section.offsetWidth; section.style.animation = "";
   }
   deck.dataset.theme = theme;
+  updateGlass(theme);
   deck.dataset.card = card?.id;
   byId("title").textContent = name;
   byId("meta").textContent = demo ? "Browser demo" : card?.app ? "Apps" : card?.url || card?.dlna ? "Network media" : "TV inputs";

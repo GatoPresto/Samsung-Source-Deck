@@ -6,6 +6,7 @@ import { THEMES, detectTheme } from "./themes.js";
 import { makeRow } from "./templates.js";
 import { focusSel } from "./cursor.js";
 import { buildStrip, render } from "./render.js";
+import { syncRing } from "./glass.js";
 
 export const picker = {open: false, cursor: 0, options: []};
 
@@ -18,6 +19,7 @@ function drawPicker() {
     list.appendChild(row);
   });
   list.children[picker.cursor]?.scrollIntoView({block: "nearest"});
+  syncRing();
 }
 
 export function openPicker() {

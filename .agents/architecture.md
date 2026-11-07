@@ -53,6 +53,7 @@ build/                    generated .wgt packages (git-ignored)
 | `picker.js` | theme picker overlay |
 | `arrange.js` | Arrange screen: Arrange list (reorder, hide/show, remove) and Source list (add; all TV apps) |
 | `music.js` | Apple Music panel: tabs, charts, search, album view, 30 s previews, play history. Reuses the feed DOM and the `yt.inFeed/row/idx/sidx` cursor state |
+| `glass.js` | Liquid Glass lens: paints a displacement map from the lens shape and installs an SVG filter (3 channel-shifted `feDisplacementMap`s + specular rim) used as `backdrop-filter: url(#lg-lens)` on `#glassLens` |
 | `http.js` | `httpJson` XHR wrapper (used by youtube.js and music.js) |
 | `youtube.js` | login (device flow), token refresh, feed, channel filter, `playYoutube` |
 | `keys.js` | the single keydown router (+ YouTube feed keys) |
