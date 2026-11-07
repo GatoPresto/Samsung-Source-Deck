@@ -53,3 +53,7 @@ height and the title section flexes, so tile position is theme-independent.
 ## D11. Install workflow quirks
 `.wgt` names with spaces fail to install silently. Copy to `SourceDeck.wgt`. Package outside `app/` (`-o build`) so old
 packages are not bundled; packaging writes signature XML into `app/`, delete it after each build. `build/` is git-ignored.
+
+## D12. Switch theme redone as Zelda-inspired Hyrule dusk
+The user wanted a richer Switch look. Original SVG artwork was drawn in code (Triforce, mountains, pines, sword in pedestal, stars) instead of
+sourcing images from the internet, to avoid copyright issues and keep it a small static layer (performance rule D8). Joy-Con red/blue survives only as thin edge lines.
