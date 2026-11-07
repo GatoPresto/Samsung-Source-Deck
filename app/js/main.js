@@ -7,7 +7,7 @@ import { openPicker } from "./picker.js";
 import { openArrange } from "./arrange.js";
 import { ytLogin } from "./youtube.js";
 import { initKeys } from "./keys.js";
-import { initSearch } from "./music.js";
+import { initSearch, registerMediaKeys } from "./music.js";
 
 byId("refresh").onclick = refresh;
 byId("back").onclick = () => stop();
@@ -19,6 +19,7 @@ for (const id of ["ytlogin", "theme", "arrange", "refresh"]) byId(id).onfocus = 
 
 initKeys();
 initSearch();
+registerMediaKeys();
 window.addEventListener("error", e => message("Error: " + e.message));
 detectApps();
 refresh();

@@ -315,4 +315,33 @@ export function musicEnter(subsRow) {
   if (item.kind === "album") openAlbum(item); else play(item, currentItems());
 }
 
+// ---- remote control media keys (work wherever the cursor is while the Apple Music slide is shown) ----
+export const MEDIA_KEYS = {PLAY_PAUSE: 10252, PLAY: 415, PAUSE: 19, STOP: 413};
+
+/** Ask the TV to deliver the remote's media keys to this app (they are not sent otherwise). */
+export function registerMediaKeys() {
+  try {
+    if (!tv?.tvinputdevice) return;
+    for (const name of ["MediaPlayPause", "MediaPlay", "MediaPause", "MediaStop"]) {
+      try { tv.tvinputdevice.registerKey(name); } catch {}
+    }
+  } catch {}
+}
+
+function startFromCursor() {
+  const item = currentItems()[yt.idx];
+  if (item && item.kind === "song") play(item, currentItems());
+  else { mu.error = ""; byId("feedStatus").textContent = "Open an album or pick a song first, then press Play"; }
+}
+
+/** Play/Pause key: toggle the current preview, or start the song under the cursor. Returns true if handled. */
+export function musicMediaKey(code) {
+  const a = mu.audio;
+  if (code === MEDIA_KEYS.STOP) { stopMusic(); renderMusic(); return true; }
+  if (code === MEDIA_KEYS.PAUSE) { if (mu.playing && a && !a.paused) play(mu.playing, mu.queue); return true; }
+  if (code === MEDIA_KEYS.PLAY) { if (mu.playing) { if (a && a.paused) play(mu.playing, mu.queue); } else startFromCursor(); return true; }
+  if (code === MEDIA_KEYS.PLAY_PAUSE) { if (mu.playing) play(mu.playing, mu.queue); else startFromCursor(); return true; }
+  return false;
+}
+
 export const musicShown = () => isMusic(state.cards[state.index]);

@@ -8,7 +8,7 @@ import { browser, browserKey } from "./dlna.js";
 import { picker, pickerKey } from "./picker.js";
 import { arr, arrangeKey } from "./arrange.js";
 import { loginUi, loginKey, currentVideos, selectChannel, playYoutube } from "./youtube.js";
-import { searchUi, searchKey, musicShown, musicEnter, musicOpenFull } from "./music.js";
+import { searchUi, searchKey, musicShown, musicEnter, musicOpenFull, musicMediaKey } from "./music.js";
 
 export function initKeys() {
   document.addEventListener("keydown", event => {
@@ -17,6 +17,7 @@ export function initKeys() {
     if (picker.open) { pickerKey(event); return; }
     if (arr.open) { arrangeKey(event); return; }
     if (browser.server && !state.active && !byId("browser").hidden) { browserKey(event); return; }
+    if (musicShown() && !state.active && musicMediaKey(event.keyCode)) { event.preventDefault(); return; }
     if (state.active && event.keyCode !== 10009 && event.key !== "Escape") peekBack();
     const isBack = event.key === "Escape" || event.keyCode === 10009;
     if (isBack && yt.inFeed) { event.preventDefault(); yt.inFeed = false; yt.row = "vids"; drawCursor(); return; }

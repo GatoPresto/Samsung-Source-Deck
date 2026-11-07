@@ -146,3 +146,6 @@ The remote-service formats (1-3) and the rest are unproven; once the user confir
 ## D32. Apple Music launch simplified to the one working format
 After trial (D25-D31) only the `default` + `PAYLOAD` link formats (11, 12) opened anything useful (the album). Format 12 (`PAYLOAD` = `{"values": link}`) was kept; `FORMATS`, the cycling (`am-format*`), the `appleMusicFormat` pin, the `-dummy` ids and `js/tvremote.js` were deleted.
 Also: when a preview ends and playback moves to the next track, `mu.audio.onended` moves `yt.idx` (the cursor) to it when the shown list is the queue (and scrolls it into view), so the open button's label and target stay current.
+
+## D33. Media keys for Apple Music previews
+The TV only delivers the remote's media keys to an app that registered them, so `registerMediaKeys()` registers MediaPlayPause/Play/Pause/Stop at start-up and `keys.js` routes them to `musicMediaKey` only when the Apple Music slide is shown (before the other handlers, so the cursor position does not matter).

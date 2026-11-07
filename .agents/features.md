@@ -51,6 +51,8 @@
   **Open full song:** Down from the card row reaches an "Open “<title>” in Apple Music" button (always reserved under the cards; its label follows the card under the cursor, and the cursor follows
   the song when a preview auto-advances to the next track). OK launches the TV's Apple Music app with `launchAppControl`: operation `default`, no uri, data `PAYLOAD` = `{"values":"https://music.apple.com/<cc>/album/<albumId>?i=<trackId>"}`.
   Found by trial on the TV: this opens the song's **album** in the app, not the individual song (Samsung's app has no documented deep link and ignores the `?i=` part). Albums open their own page.
+  **Remote media keys:** while the Apple Music slide is shown (cursor anywhere: tiles, feed or buttons), the remote's Play/Pause (10252) toggles the current preview, or starts the song under the card cursor if nothing plays;
+  Play (415) resumes/starts, Pause (19) pauses, Stop (413) stops. They are registered with `tizen.tvinputdevice.registerKey` (privilege `tv.inputdevice`) in `main.js`; handled in `keys.js` via `musicMediaKey`. Ignored on other slides.
   **Colours:** the playing card has a pink-red (`#ff375f`) border and tint; the card under the cursor is white (white wins when both). Cursor rows: tabs -> cards -> open button.
   **Search overlay:** the box, a Search button and a Cancel button, drawn with the virtual cursor. OK on the box opens the TV keyboard; Done (keyCode 65376) searches immediately; Cancel (65385), Up/Down or a blur
   close the keyboard and move the cursor to Search, where OK runs the search. (The keyboard may hide without blurring the box, hence the key handlers.)
