@@ -181,3 +181,6 @@ Change theme and the media-server browser (and Arrange, search, login for consis
 
 ## D43. Overlay lag: bubble area
 The overlay lists were full-width, so the focus bubble was ~1700x67 px and its live displacement filter (re-run every frame while it glides) cost about 8x more than on the main screen. Glass-theme lists are now max 760 px wide (Arrange columns 1300 px max) and bubbles over 40,000 px² use the single-pass filter (no colour fringe). Rule: a live filter's cost scales with its area, keep bubbles small.
+
+## D44. Page is exactly one screen tall
+On the TV the Apple Music slides' tiles and buttons sat a few pixels lower than on other slides. The music panel left only ~17 px of slack, and the TV's fonts are slightly taller than the desktop preview's, so `main` (which had `min-height:100vh`) grew past the screen and pushed everything down (reproduced with `line-height:1.45`: +8 px). `main` is now `height:100vh` and header/feed/strip/footer are `flex-shrink:0`, so only the title area absorbs extra height. Measured tile/footer tops stay 807/947 on all slides for line-heights up to 1.7.

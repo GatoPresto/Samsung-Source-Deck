@@ -29,7 +29,7 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 5. **Port names come from the TV** (`editName` from `VIDEOSOURCE`). The app does not rename ports.
 6. **Tiles are visually uniform.** Only background image, icon and outline colour vary per theme. Shape, font and
    text colour must not change between tiles. Theme styles must never leak into `.tile` text.
-7. **Layout must not jump.** Tiles and footer are bottom-anchored with a fixed footer height. Do not make their position depend on theme.
+7. **Layout must not jump.** `main` is exactly `100vh` tall; header, feed, strip and footer have `flex-shrink:0` and only the title `section` can give way, so tiles (top 807) and footer (top 947) sit at the same height on every slide whatever the TV's font metrics are. Do not make their position depend on theme or content. Verify by measuring `#strip .tile` and `footer` tops on several slides, also with `#deck{line-height:1.7}` (emulates a taller TV font).
 8. **Test on the TV.** Browser demo mode (open `app/index.html` over a local HTTP server) covers logic and layout only.
    Remote keys, focus, HDMI and playback only behave correctly on the real TV.
 9. Do not commit `build/`, signing files, certificates, `app/youtube-config.js` (OAuth secret) or `.DS_Store`. The Samsung certificate lives in
