@@ -1,0 +1,30 @@
+/* Base layout, typography, buttons, cursor, header, status, spinners. Per-theme overrides live in css/themes/. */
+*{box-sizing:border-box}
+body{margin:0;color:white;font:18px system-ui,sans-serif;background:#080d17}
+main{--glow:#20466c;--base:#101a2a;--accent:#9cd5ff;--ink:#081020;--radius:12px;--btn-bg:#ffffff12;--btn-border:1px solid #ffffff60;--btn-font:inherit;--btn-case:none;--btn-track:0;--btn-shadow:none;--title-font:system-ui,sans-serif;--title-weight:700;--title-case:none;--title-track:0;
+position:relative;overflow:hidden;min-height:100vh;padding:6vh 7vw;display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(ellipse at 80% 40%,var(--glow) 0%,transparent 62%),linear-gradient(120deg,#080d17,var(--base))}
+main>*{position:relative;z-index:1}
+main::before,main::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none}
+header,.nav,footer{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+header{align-items:flex-start;justify-content:space-between;letter-spacing:.16em;text-transform:uppercase;font-size:.8rem}
+small,#meta{color:var(--accent);letter-spacing:.13em;text-transform:uppercase}
+h1{font:var(--title-weight) clamp(2.8rem,9vw,9rem)/1 var(--title-font);text-transform:var(--title-case);letter-spacing:var(--title-track);margin:12px 0;overflow-wrap:anywhere}
+button{background:var(--btn-bg);color:white;border:var(--btn-border);border-radius:var(--radius);padding:12px 18px;font:inherit;font-family:var(--btn-font);text-transform:var(--btn-case);letter-spacing:var(--btn-track);box-shadow:var(--btn-shadow);}
+button:focus-visible{outline:none}
+.cur{outline:4px solid white;outline-offset:4px}
+#status{min-height:1.5em;max-width:60ch}
+#surface{position:fixed;inset:0;pointer-events:none}
+#back{position:fixed;z-index:2;top:18px;left:18px;background:#080d17}
+body.playing{background:transparent} [hidden]{display:none!important}
+/* Anchor the tiles and buttons to the bottom so no theme (title wrap, button border width) can shift them. */
+main>section{flex:1 1 auto;min-height:0}
+footer.nav{flex:0 0 68px;height:68px;flex-wrap:nowrap}
+footer.nav button{height:100%;padding-top:0;padding-bottom:0}
+section{animation:in .25s ease-out both}
+@keyframes in{from{opacity:0}to{opacity:1;transform:none}}
+#headRight{text-align:right}
+#scan{min-height:1.5em;margin:6px 0 0;color:var(--accent);font-size:.9rem;letter-spacing:.06em;text-transform:none}
+#scan.busy::before{content:"";display:inline-block;width:.8em;height:.8em;margin-right:.6em;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#refresh.busy::before{content:"";display:inline-block;width:.9em;height:.9em;margin-right:.6em;vertical-align:-.1em;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+main.busy #count,main.busy #detail{opacity:.4}

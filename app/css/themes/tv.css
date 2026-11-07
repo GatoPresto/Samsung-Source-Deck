@@ -1,0 +1,4 @@
+/* Live TV: broadcast bars */
+main[data-theme=tv]{--glow:#6b4bd6;--base:#16112e;--accent:#d9ccff;--radius:6px}
+main[data-theme=tv]::before{background:linear-gradient(90deg,#ffffff14 0 14%,#ffe60014 14% 28%,#00e5ff14 28% 42%,#00ff6a14 42% 57%,#ff00c814 57% 71%,#ff2a2a14 71% 85%,#2a4bff14 85%);opacity:.7}
+.tile[data-theme=tv]{background:linear-gradient(90deg,#6b4bd6,#16112e)}

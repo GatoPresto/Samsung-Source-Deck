@@ -63,7 +63,7 @@ Added `gta6` to `THEMES` (glyph "VI") with hand-drawn SVG (sun, skyline, palms, 
 
 ## D14. Two GTA 6 themes; key rename with migration
 The first look became `gta6classic` (label "GTA 6 Retro"), and `gta6` now means the new screenshot-based look. `prefs.v` (set to 1) triggers a one-time
-migration in `app.js` that turns saved `gta6` choices into `gta6classic`, so users keep the look they picked. Bump `prefs.v` for future key renames.
+migration in `js/prefs.js` that turns saved `gta6` choices into `gta6classic`, so users keep the look they picked. Bump `prefs.v` for future key renames.
 
 ## D15. App tiles launch YouTube/Netflix; no in-deck recommendations
 The user wanted personal recommendations from both apps. Neither exposes them to third-party apps (see features.md), so the deck only detects installed apps and
@@ -76,3 +76,10 @@ Client id/secret live in a git-ignored `app/youtube-config.js`. Video playback i
 
 ## D17. Channel selection filters in-deck, video deep link uses PAYLOAD
 Opening a channel in the native YouTube app has no known deep link, so choosing a channel shows that channel's uploads in the deck's own video row instead. Videos use the Cobalt `PAYLOAD` format (D16 replaced the earlier guessed `view` + uri attempt, which did not open the video). If the TV changes the YouTube app id, update `YT_APP_IDS`.
+
+## D18. Split into ES modules, CSS files and HTML templates
+`app.js` (about 940 lines) and the inline CSS in `index.html` were split: `js/` ES modules (one concern each, entry `main.js`), `css/` files (base, tiles, overlays, feed, fades, one per theme),
+and `<template>`s for repeated elements. Native ES modules were chosen over concatenation to keep "no build step"; a throwaway test on the TV confirmed `<script type="module">`,
+static `import` and `import.meta` work from the installed widget (`import.meta.url` is `file:///js/...`). Shared mutable state moved to one `state` object because
+exported `let` bindings cannot be reassigned from other modules. The refactor was verified by hashing element geometry, classes and computed styles in 8 states
+before and after (identical). Unused `dialog`/`select` CSS was dropped.

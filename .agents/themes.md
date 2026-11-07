@@ -1,6 +1,6 @@
 # Themes
 
-A theme is a key in `THEMES` (`app/app.js`) plus CSS in `app/index.html`.
+A theme is a key in `THEMES` (`app/js/themes.js`) plus one CSS file `app/css/themes/<name>.css` (linked in `index.html`).
 
 | key | label | look of the whole screen |
 |---|---|---|
@@ -34,7 +34,7 @@ A theme is a key in `THEMES` (`app/app.js`) plus CSS in `app/index.html`.
 
 ## Adding a theme
 1. Add `{key, label, glyph}` to `THEMES` (and extend `detectTheme` if it should auto-apply).
-2. In `index.html` add `main[data-theme=KEY]{...variables...}` with optional `::before/::after`, and
+2. Create `css/themes/<name>.css`, link it in `index.html`, and add `main[data-theme=KEY]{...variables...}` with optional `::before/::after`, and
    `.tile[data-theme=KEY]{background:...}`.
 3. It shows up in "Change theme" automatically. Test on the TV for lag.
 

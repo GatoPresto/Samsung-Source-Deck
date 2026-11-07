@@ -1,0 +1,6 @@
+/* PlayStation: deep blue, floating face-button symbols, pill buttons */
+main[data-theme=ps]{--glow:#2358e1;--base:#09143e;--accent:#7fb2ff;--ink:#001040;--radius:999px;--btn-border:1px solid #7fb2ff80;--btn-bg:#0d2a8a55;--title-weight:300;--title-track:.04em;--btn-track:.08em;--btn-case:uppercase}
+main[data-theme=ps]::before{background:
+url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360' fill='none' stroke='%23ffffff' stroke-width='5' opacity='.13'%3E%3Cpath d='M60 100l30-52 30 52z'/%3E%3Ccircle cx='270' cy='80' r='26'/%3E%3Cpath d='M240 260l44 44M284 260l-44 44'/%3E%3Crect x='80' y='250' width='48' height='48'/%3E%3C/svg%3E") 0 0/360px,
+radial-gradient(ellipse at 20% 110%,#0a3ccf80,transparent 60%)}
+.tile[data-theme=ps]{background:linear-gradient(135deg,#2a63ee,#09143e)}

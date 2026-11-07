@@ -30,3 +30,6 @@ computer's LAN IP (otherwise `sdb connect` is refused although port 26101 is ope
 ## App ids seen on this TV
 YouTube `9Ur5IzDKqV.TizenYouTube` (also `com.samsung.tv.cobalt-yt`, kids `com.samsung.tv.cobalt-ytkids`, TV `com.samsung.tv.cobalt-yttv`), Netflix `org.tizen.netflix-app`,
 Prime Video `org.tizen.primevideo`, Apple TV `com.samsung.tv.aria-video`, Apple Music `org.tizen.apple.apple-music`.
+
+## ES modules work
+`<script type="module" src="js/main.js">` with static `import`s (including import cycles) and `import.meta` load fine from the installed widget on this TV (Tizen 9 / Chromium 120). Verified on the TV, not just assumed.

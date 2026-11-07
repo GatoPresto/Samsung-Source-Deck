@@ -1,0 +1,11 @@
+/* Source thumbnails (the strip). Each theme file adds its own .tile[data-theme=KEY] background/outline. */
+#strip{position:relative;display:flex;gap:16px;overflow:hidden;padding:10px 6px 22px;margin:0 -6px}
+.tile{flex:0 0 210px;height:118px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid #ffffff30;color:white;opacity:.72;background:linear-gradient(135deg,#20466c,#101a2a)}
+.tile b{font-size:1.5rem;letter-spacing:.05em;opacity:.9}
+.tile span{font-weight:700;font-size:1.05rem;overflow-wrap:anywhere;line-height:1.15}
+.tile small{display:block;font-weight:400;font-size:.7rem;opacity:.85;color:inherit;letter-spacing:0;text-transform:none}
+/* Tiles must not pick up the per-theme button/heading styling of <main>. */
+.tile,.tile *{font-family:system-ui,sans-serif;text-transform:none;letter-spacing:0;color:#fff;box-shadow:none}
+.tile b{letter-spacing:.05em}
+.tile.sel{opacity:1;border-color:#ffffffa0}
+.tile.cur{border-color:#fff}

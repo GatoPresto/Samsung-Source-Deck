@@ -25,7 +25,7 @@ $T run -p SrcDeck001.SourceDeck -t QE77S95CAUXUA
 
 ## Checking changes without a TV
 ```sh
-node --check app/app.js
+for f in app/js/*.js; do node --input-type=module --check < "$f"; done
 cd app && python3 -m http.server 8123   # open http://localhost:8123/index.html (demo mode)
 ```
 Demo mode simulates keys via `document.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowRight"}))`.

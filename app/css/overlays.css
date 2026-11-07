@@ -1,0 +1,11 @@
+/* Full-screen lists (media browser, Arrange, theme picker) and the YouTube login screen. */
+#browser,#arrangeView,#themeView{position:absolute;inset:0;z-index:5;padding:6vh 7vw;background:linear-gradient(120deg,#080d17,var(--base));overflow:auto}
+#browser h2,#arrangeView h2,#themeView h2{margin:0 0 18px;font-size:2rem;color:var(--accent)}
+#alist .off{opacity:.55}
+#blist .cur,#alist .cur,#tlist .cur{background:var(--accent);color:var(--ink);outline-offset:-4px;font-weight:700}
+#blist button,#alist button,#tlist button{display:block;width:100%;text-align:left;margin:0 0 8px;font-size:1.3rem}
+#bhint,#ahint,#thint{color:var(--accent);letter-spacing:.1em;font-size:.85rem}
+#loginView{position:absolute;inset:0;z-index:6;padding:12vh 8vw;background:linear-gradient(120deg,#080d17,var(--base))}
+#loginView h2{margin:0 0 18px;font-size:2.4rem;color:var(--accent)}
+#loginText{font-size:1.5rem;max-width:34em;line-height:1.4}
+#loginCode{font-size:5rem;font-weight:900;letter-spacing:.12em;margin:.3em 0}

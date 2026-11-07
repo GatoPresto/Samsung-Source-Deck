@@ -1,0 +1,2 @@
+/* Edge fades: rows turn transparent (showing the background) on a side only when more content is scrolled out of view. */
+#strip,#subs,#vids{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%)}

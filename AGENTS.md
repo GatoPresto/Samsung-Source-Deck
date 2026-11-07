@@ -19,7 +19,7 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 
 ## Hard rules
 
-1. **No framework, no build step.** `app/` is plain HTML/CSS/JS shipped as-is (`index.html`, `app.js`, `sources.js`, `config.xml`).
+1. **No framework, no build step.** `app/` is plain HTML/CSS/JS shipped as-is: `index.html` (markup + `<template>`s), `css/` (one file per concern, one per theme), `js/` (native ES modules, entry `js/main.js`), plus `sources.js`, `youtube-config.js`, `config.xml`. ES modules were verified to load on the TV. Do not add a bundler.
 2. **Never use DOM focus for navigation.** The app has its own virtual cursor (`.cur` class). Native focus and
    the TV's spatial navigation caused double selections and lag. Native `<select>`/`<dialog>` controls are also
    unusable with the remote. Use the list overlays instead. See `decisions.md` D3.
