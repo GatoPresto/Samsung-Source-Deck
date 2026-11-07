@@ -4,3 +4,5 @@ main[data-theme=netflix]::before{background:url("data:image/svg+xml,%3Csvg%20xml
 main[data-theme=netflix] button.cur:not(.tile):not(.vid){background:#e50914;color:#fff;outline:none}
 main[data-theme=netflix] .tile.cur{outline-color:#e50914}
 .tile[data-theme=netflix]{background:linear-gradient(160deg,#5a0509,#050505);border-color:#e50914}
+/* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */
+main[data-theme=netflix]{--dr-bg:#000;--dr-ink:#fff;--dr-focus-bg:#e50914;--dr-focus-ink:#fff}

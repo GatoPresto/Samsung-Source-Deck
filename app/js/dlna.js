@@ -72,7 +72,8 @@ export async function scanDlna() {
 // ---- Browsing a server's folders ----
 export const browser = {server: null, stack: [], cursor: 0};
 
-function soap(control, objectId) {
+/** UPnP Browse. mode "av" (default) lists folders + audio/video files; mode "images" lists folders + pictures (full-size url and a small thumbnail). */
+function soap(control, objectId, mode = "av") {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", control);
@@ -88,7 +89,15 @@ function soap(control, objectId) {
         for (const node of didl.documentElement.children) {
           const title = text(node, "dc:title") || node.getElementsByTagName("title")[0]?.textContent || "?";
           if (node.localName === "container") out.push({folder: true, id: node.getAttribute("id"), title});
-          else {
+          else if (mode === "images") {
+            if (!/imageItem/.test(text(node, "upnp:class"))) continue;
+            // every <res> is one size of the picture: biggest = the picture, smallest = the thumbnail
+            const sizes = [...node.getElementsByTagName("res")].map(r => {
+              const m = /(\d+)x(\d+)/.exec(r.getAttribute("resolution") || "");
+              return {url: r.textContent.trim(), px: m ? m[1] * m[2] : 0};
+            }).filter(r => r.url).sort((a, b) => b.px - a.px);
+            if (sizes.length) out.push({title, url: sizes[0].url, thumb: sizes[sizes.length - 1].url});
+          } else {
             const kind = (text(node, "upnp:class") || "").split(".")[1] || "";
             const res = [...node.getElementsByTagName("res")].find(r => /video|audio/.test(r.getAttribute("protocolInfo") || kind));
             if (res && kind !== "imageItem") out.push({title, url: res.textContent.trim(), mime: (res.getAttribute("protocolInfo") || "").split(":")[2] || null});
@@ -115,6 +124,9 @@ export function showBrowser() {
   byId("browser").hidden = false;
   drawBrowserCursor();
 }
+
+/** Pictures mode of the UPnP browse, for the background picker. */
+export const soapBrowse = (control, objectId, mode) => soap(control, objectId, mode);
 
 async function loadFolder(id, title) {
   byId("bpath").textContent = browser.server.name + " › " + title;

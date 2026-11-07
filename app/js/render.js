@@ -8,6 +8,7 @@ import { drawCursor } from "./cursor.js";
 import { updateYoutubeUi } from "./youtube.js";
 import { updateMusicUi } from "./music.js";
 import { updateGlass } from "./glass.js";
+import { applyBackground } from "./background.js";
 import { open } from "./playback.js";
 
 const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
@@ -104,6 +105,8 @@ export function render() {
   const sel = byId("strip").children[index];
   if (sel) byId("strip").scrollLeft = Math.max(0, sel.offsetLeft - 60);
   byId("theme").hidden = !card;
+  byId("bgbtn").hidden = !card;
+  applyBackground(card);
   updateYoutubeUi(card);
   updateMusicUi(card);
   drawCursor();

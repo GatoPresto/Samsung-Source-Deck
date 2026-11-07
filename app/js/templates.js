@@ -63,3 +63,21 @@ export function makeRow(text, className = "") {
   row.textContent = text;
   return row;
 }
+
+/** A tile in the background-picture grid: a picture (thumbnail + credit) or a folder. */
+export function makeBgTile(item) {
+  const el = noFocus(clone("tpl-bgtile"));
+  const label = el.querySelector("span");
+  if (item.kind === "folder") {
+    el.classList.add("folder");
+    el.querySelector("img").remove();
+    label.textContent = "📁  " + item.title;
+  } else {
+    const img = el.querySelector("img");
+    img.loading = "lazy";
+    img.src = item.thumb || "";
+    img.onerror = () => { img.remove(); el.classList.add("nothumb"); };
+    label.textContent = item.credit ? item.credit.replace(/^Photo by /, "") : item.title;
+  }
+  return el;
+}

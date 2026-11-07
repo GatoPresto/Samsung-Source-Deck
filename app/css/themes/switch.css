@@ -6,3 +6,5 @@ main[data-theme=switch] #meta{color:#f6dc8e}
 main[data-theme=switch] .cur{outline-color:#fff3c4}
 main[data-theme=switch] h1{text-shadow:0 2px 0 #00000080,0 0 24px #f6dc8e55}
 .tile[data-theme=switch]{background:linear-gradient(160deg,#1f6f76,#0a2f37 60%,#c58a2e);border-color:#f6dc8e}
+/* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */
+main[data-theme=switch]{--dr-bg:#0b2a33;--dr-ink:#fff;--dr-focus-bg:#f6dc8e;--dr-focus-ink:#1b1405}

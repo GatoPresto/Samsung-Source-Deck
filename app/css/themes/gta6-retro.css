@@ -6,3 +6,5 @@ main[data-theme=gta6classic] h1{font-style:italic;background:linear-gradient(180
 main[data-theme=gta6classic] #meta,main[data-theme=gta6classic] small{color:#38e8ff}
 main[data-theme=gta6classic] .cur{outline-color:#38e8ff}
 .tile[data-theme=gta6classic]{background:linear-gradient(160deg,#ff3d9a,#7a1fa2 55%,#2b0b5a);border-color:#38e8ff}
+/* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */
+main[data-theme=gta6classic]{--dr-bg:#12052e;--dr-ink:#fff;--dr-focus-bg:#ff9ad5;--dr-focus-ink:#2b0b5a}

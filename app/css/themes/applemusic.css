@@ -4,3 +4,5 @@ main[data-theme=applemusic]::before{background:url("data:image/svg+xml,%3Csvg%20
 main[data-theme=applemusic] button.cur:not(.tile):not(.vid){background:#fff;color:#fa233b;outline:none}
 main[data-theme=applemusic] .tile.cur{outline-color:#fff}
 .tile[data-theme=applemusic]{background:linear-gradient(160deg,#fb5c74,#fa233b 55%,#7a0f23);border-color:#ffd1d8}
+/* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */
+main[data-theme=applemusic]{--dr-bg:#2a050c;--dr-ink:#fff;--dr-focus-bg:#ffd1d8;--dr-focus-ink:#2a050c}

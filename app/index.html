@@ -6,6 +6,7 @@
 <title>Source Deck</title>
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/tiles.css">
+<link rel="stylesheet" href="css/background.css">
 <link rel="stylesheet" href="css/overlays.css">
 <link rel="stylesheet" href="css/feed.css">
 <link rel="stylesheet" href="css/fades.css">
@@ -27,18 +28,21 @@
 </head>
 <body>
 <main id="deck">
+<div id="bgImage" hidden><div id="bgScrim"></div></div>
 <header><strong>Source Deck</strong><div id="headRight"><span id="count"></span><p id="scan" role="status"></p></div></header>
 <section aria-live="polite"><div id="meta"></div><h1 id="title"></h1><small id="detail"></small><p id="status" role="status"></p></section>
 <div id="browser" hidden><h2 id="bpath"></h2><div id="blist" role="list"></div><p id="bhint">↑↓ choose · OK open/play · Back up</p></div>
 <div id="arrangeView" hidden><h2>Arrange sources</h2><div id="arrCols"><div id="colA" class="col"><h3 id="hA"></h3><div id="alist" role="list"></div></div><div id="colS" class="col"><h3 id="hS"></h3><div id="slist" role="list"></div></div></div><p id="ahint"></p></div>
+<div id="bgView" hidden><div id="bgPanel"><h2 id="bgTitle">Change background</h2><div id="bgList" role="list"></div><div id="bgGrid" hidden></div><p id="bgStatus"></p><p id="bgHint"></p></div></div>
 <div id="themeView" hidden><h2 id="themeFor">Theme</h2><div id="tlist" role="list"></div><p id="thint">↑↓ choose · OK select · Back cancel</p></div>
 <div id="loginView" hidden><h2 id="loginTitle"></h2><p id="loginText"></p><p id="loginCode"></p><div id="loginQr" hidden></div></div>
-<div id="searchView" hidden><h2>Search Apple Music</h2><input id="searchInput" type="text" placeholder="Artist, song or album" autocomplete="off"><div id="searchBtns"><button id="searchGo">Search</button><button id="searchCancel">Cancel</button></div><p id="shint">OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels</p></div>
+<div id="searchView" hidden><h2 id="searchTitle">Search</h2><input id="searchInput" type="text" placeholder="Artist, song or album" autocomplete="off"><div id="searchBtns"><button id="searchGo">Search</button><button id="searchCancel">Cancel</button></div><p id="shint">OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels</p></div>
 <div id="feed" hidden><div id="subs"></div><div id="feedStatus"></div><div id="vids"></div><div id="feedActions"><button id="musicOpen" class="chan all">Open in Apple Music</button></div></div>
 <div id="focusRing" aria-hidden="true"></div>
 <div id="glassLens" aria-hidden="true"><svg viewBox="0 0 100 100"><g fill="#0a0a0f"><rect x="39" y="35" width="6.4" height="34"/><rect x="66" y="28" width="6.4" height="34"/><path d="M39 35L72.4 26.5V38L39 46.5Z"/><ellipse cx="34.5" cy="72" rx="11.5" ry="8.5" transform="rotate(-18 34.5 72)"/><ellipse cx="61.5" cy="65" rx="11.5" ry="8.5" transform="rotate(-18 61.5 65)"/></g></svg></div>
+<div id="bgCredit" hidden></div>
 <div id="strip" role="listbox" aria-label="Sources"></div>
-<footer class="nav"><button id="ytlogin" hidden>Log in</button><button id="theme">Change theme</button><button id="arrange">Arrange</button><button id="refresh">Refresh</button></footer>
+<footer class="nav"><button id="ytlogin" hidden>Log in</button><button id="theme">Change theme</button><button id="bgbtn">Change background</button><button id="arrange">Arrange</button><button id="refresh">Refresh</button></footer>
 </main>
 <svg id="glassDefs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
 <object id="surface" type="application/avplayer" hidden></object>
@@ -51,12 +55,14 @@
 <template id="tpl-channel-all"><button class="chan all">All</button></template>
 <template id="tpl-track"><button class="vid sq"><img alt=""><span></span><small></small></button></template>
 <template id="tpl-skeleton"><div class="vid sq skel"><i></i><b></b><b></b></div></template>
+<template id="tpl-bgtile"><button class="bgtile"><img alt=""><span></span></button></template>
 <template id="tpl-row"><button></button></template>
 
 <script src="$WEBAPIS/webapis/webapis.js"></script>
 <script src="sources.js"></script>
 <script src="youtube-config.js"></script>
 <script src="vendor/qrcode.js"></script>
+<script src="backgrounds-config.js"></script>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 # Source Deck — Privacy Policy
 
-_Last updated: 8 November 2026 (Apple Music details added)_
+_Last updated: 8 November 2026 (background pictures added)_
 
 Source Deck is a personal, open-source app for Samsung TVs. It shows your TV inputs, apps and media in one place. This page explains what the app does with data.
 
@@ -14,10 +14,11 @@ Source Deck is a personal, open-source app for Samsung TVs. It shows your TV inp
   - your **country** (taken from the TV's language/region setting) to pick the right chart.
 
   Like any web request, these requests also reveal your IP address to Apple. The app does not send Apple your name, account or a list of what you have played; the "For you" suggestions are worked out on the TV from your local play history (see below). Apple's own privacy policy applies to these requests.
+- **Background pictures (only if you use "Change background"):** you can pick a picture from Unsplash or Wallhaven, from a media server on your local network, or from a USB drive. For Unsplash and Wallhaven the app sends the **text you type into the search box** and requests the pictures you choose from `api.unsplash.com`/`images.unsplash.com` and `wallhaven.cc`/`w.wallhaven.cc`/`th.wallhaven.cc`; these requests also reveal your IP address to those services, and their own privacy policies apply. Pictures from your media server or USB drive are only read on your TV or home network and are never uploaded. The app asks the TV for read access to its file system for the USB option.
 
 ## Where data is stored
 
-Everything stays **on your TV**. Login tokens, your settings (themes, order, hidden sources), a **history of the last 60 Apple Music previews you played in this app** (used only for the "For you" suggestions) and a short-lived cache of your YouTube feed are stored in the app's local storage on the TV. The app has **no server of its own**: nothing is sent to the developer or to any third party except the direct requests to Google (YouTube API) and Apple (public feeds) that are needed to show the content.
+Everything stays **on your TV**. Login tokens, your settings (themes, order, hidden sources), a **history of the last 60 Apple Music previews you played in this app** (used only for the "For you" suggestions), a short-lived cache of your YouTube feed and the **background pictures you chose** (kept only while in use; deleted when you replace or remove them) are stored in the app's local storage on the TV. The app has **no server of its own**: nothing is sent to the developer or to any third party except the direct requests to Google (YouTube API), Apple (public feeds) and, if you use background pictures, Unsplash and Wallhaven, that are needed to show the content.
 
 ## What the app does not do
 
@@ -27,7 +28,7 @@ Everything stays **on your TV**. Login tokens, your settings (themes, order, hid
 
 ## Your control
 
-- Choose **Log out** on the YouTube slide to delete the stored login and cached feed from the TV. The Apple Music play history stays until the app is uninstalled or its data is cleared on the TV.
+- Choose **Log out** on the YouTube slide to delete the stored login and cached feed from the TV. Background pictures are deleted when you remove or replace them. The Apple Music play history stays until the app is uninstalled or its data is cleared on the TV.
 - Remove the app's access any time at <https://myaccount.google.com/permissions>.
 - Uninstalling the app from the TV deletes all of its stored data.
 

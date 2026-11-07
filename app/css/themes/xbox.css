@@ -3,3 +3,5 @@ main[data-theme=xbox]{--glow:#107c10;--base:#050805;--accent:#6dd400;--ink:#0310
 main[data-theme=xbox]::before{background:radial-gradient(circle at 78% 45%,#6dd40090 0,#107c1070 18%,transparent 19%),radial-gradient(circle at 78% 45%,transparent 26%,#6dd40030 27%,transparent 28%),radial-gradient(circle at 78% 45%,transparent 38%,#6dd40020 39%,transparent 40%);}
 main[data-theme=xbox]::after{background:repeating-linear-gradient(115deg,transparent 0 40px,#6dd40010 40px 42px)}
 .tile[data-theme=xbox]{background:linear-gradient(135deg,#107c10,#050805);border-color:#6dd400}
+/* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */
+main[data-theme=xbox]{--dr-bg:#050805;--dr-ink:#fff;--dr-focus-bg:#6dd400;--dr-focus-ink:#031000}

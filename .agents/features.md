@@ -69,6 +69,14 @@
   (so PS5 and PS5 Pro are one theme); `switch|nintendo` -> `switch` (Switch and Switch 2 are one theme); `xbox` -> `xbox`;
   else `default`. A saved choice always wins over detection.
 
+## Change background
+- Footer button "Change background" (next to "Change theme"; works on every theme) opens `#bgView`. Rows: Search Unsplash, Search Wallhaven wallpapers (a text prompt, empty = top list; safe-for-work, 16:9, at least 1920x1080, no key), Pictures from the router (browse folders, images only), Pictures from a USB drive, "Apply to: This source only / All sources", "Dimming: None / Light / Medium / Strong", Remove the background.
+- In the menu only a left panel is drawn; the slide stays visible behind it, so "Apply to" and "Dimming" take effect at once and you see the result. "Apply to" moves the picture now in effect (to all sources, or to this source only: the other sources then lose it); with no picture it only sets the target for the next pick. The drawer and the picture grid take the current theme's look (button shape, border, font, case, accent). Readability is guaranteed by four per-theme variables defined in each theme file: `--dr-bg` (drawer), `--dr-ink` (text), `--dr-focus-bg` / `--dr-focus-ink` (focused row or folder; also the focused picture's outline). Liquid Glass keeps its floating bubble on the menu rows, but not on the picture grid (it would blur the picture).
+- Choosing a picture downloads it, shrinks it to <=1920x1080 JPEG and stores it in IndexedDB. A picture is kept only while some source uses it: replacing or removing it deletes the file (`gc()`). "All sources" replaces every per-source picture; a per-source picture wins over the all-sources one.
+- The picture is drawn behind the content with a dark scrim (dimming level); Unsplash shows "Photo by X on Unsplash" and Wallhaven "Wallpaper from Wallhaven" as a small credit above the thumbnails.
+- Unsplash needs a free API key in `app/backgrounds-config.js` (git-ignored; see `backgrounds-setup.md`); without it that row says so. Wallhaven needs none. Router pictures need a media server found by the scan; USB needs a drive plugged in (unverified on the TV).
+- Saved in `prefs.bg = {map: {sourceId: key}, all, dim, scope}`; keys are `unsplash:<id>`, `wallhaven:<id>`, `router:<url>`, `usb:<path>`.
+
 ## Arrange (two lists)
 - Footer "Arrange" opens a screen with two columns:
   - **Arrange list** (left) = the sources shown in the deck, in order (`prefs.added`). Navigation: Up/Down choose, **OK** enters edit mode for the row; in edit mode Up/Down **move** it, OK **hides/shows** it (hidden rows stay in
@@ -86,4 +94,4 @@
 Left/Right: previous/next tile (wraps). The footer buttons are one row: Down from the tiles lands on the first button, Left/Right move (and wrap) between buttons, and Up from any button goes straight back to the tiles. OK activates the cursor. Back exits the app.
 
 ## Persistence
-Only `localStorage["deck-prefs"]` (theme, hidden, order). Discovered servers are not stored and reappear after each scan.
+`localStorage["deck-prefs"]` (theme, hidden, order, background choices) and, for background pictures, IndexedDB `deck-bg`. Discovered servers are not stored and reappear after each scan.

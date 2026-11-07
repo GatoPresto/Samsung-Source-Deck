@@ -37,6 +37,9 @@ A theme is a key in `THEMES` (`app/js/themes.js`) plus one CSS file `app/css/the
   (opacity) on card change.
 - Bottom anchoring: `main>section{flex:1}` and `footer.nav{height:68px}` keep tiles from moving between themes.
 
+## Change background drawer colours
+Each theme file ends with `--dr-bg`, `--dr-ink`, `--dr-focus-bg`, `--dr-focus-ink` for the "Change background" drawer/grid (`css/background.css`). Pick a dark (or, for light themes, light) `--dr-bg`, and a focus colour with strong contrast against both the drawer and its own ink. Without them the screen falls back to a neutral dark palette.
+
 ## Adding a theme
 1. Add `{key, label, glyph}` to `THEMES` (and extend `detectTheme` if it should auto-apply).
 2. Create `css/themes/<name>.css`, link it in `index.html`, and add `main[data-theme=KEY]{...variables...}` with optional `::before/::after`, and

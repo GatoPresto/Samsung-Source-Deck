@@ -16,6 +16,7 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 | `.agents/tv-platform-notes.md` | Tizen/Samsung API behaviour and pitfalls found on the real TV |
 | `.agents/build-and-deploy.md` | Package, sign, install, run, debug |
 | `.agents/youtube-setup.md` | Google Cloud setup for the YouTube login/feed |
+| `.agents/backgrounds-setup.md` | Unsplash key for the Change background feature |
 | `.agents/privacy.md` | What data the app handles, and the checklist for keeping `PRIVACY.md` in sync |
 
 ## Hard rules
@@ -33,7 +34,7 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 7. **Layout must not jump.** `main` is exactly `100vh` tall; header, feed, strip and footer have `flex-shrink:0` and only the title `section` can give way, so tiles (top 807) and footer (top 947) sit at the same height on every slide whatever the TV's font metrics are. Do not make their position depend on theme or content. Verify by measuring `#strip .tile` and `footer` tops on several slides, also with `#deck{line-height:1.7}` (emulates a taller TV font).
 8. **Test on the TV.** Browser demo mode (open `app/index.html` over a local HTTP server) covers logic and layout only.
    Remote keys, focus, HDMI and playback only behave correctly on the real TV.
-9. Do not commit `build/`, signing files, certificates, `app/youtube-config.js` (OAuth secret) or `.DS_Store`. The Samsung certificate lives in
+9. Do not commit `build/`, signing files, certificates, `app/youtube-config.js` (OAuth secret), `app/backgrounds-config.js` (Unsplash key) or `.DS_Store`. The Samsung certificate lives in
    `~/SamsungCertificate/` (outside the repo). Never commit it or its password.
 
 10. **Keep `PRIVACY.md` true.** It is the public privacy policy linked from the Google OAuth consent screen. Whenever a change touches what data the app reads, stores, or sends, update `PRIVACY.md` in the same change and tell the user (a changed policy may also need the Google Cloud consent screen updated). Triggers: a new external service or API (anything beyond Google/YouTube and Apple's public iTunes feeds), a new Google scope (today only `youtube.readonly`), new data kept in `localStorage` (today: theme/hidden/order prefs, YouTube tokens and cached feed, Apple Music play history, the remote-service token if ever re-added), any request that sends user data off the TV, analytics/logging, accounts, or sharing. See `.agents/privacy.md`.

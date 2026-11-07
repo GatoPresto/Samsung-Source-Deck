@@ -54,11 +54,19 @@ build/                    generated .wgt packages (git-ignored)
 | `arrange.js` | Arrange screen: Arrange list (reorder, hide/show, remove) and Source list (add; all TV apps) |
 | `music.js` | Apple Music panel: tabs, charts, search, album view, 30 s previews, play history. Reuses the feed DOM and the `yt.inFeed/row/idx/sidx` cursor state |
 | `glass.js` | Liquid Glass lens: paints a displacement map from the lens shape and installs an SVG filter (3 channel-shifted `feDisplacementMap`s + specular rim) used as `backdrop-filter: url(#lg-lens)` on `#glassLens` |
-| `http.js` | `httpJson` XHR wrapper (used by youtube.js and music.js) |
+| `http.js` | `httpJson` (optional headers) and `httpBlob` XHR wrappers (youtube.js, music.js, bgsources.js) |
+| `textprompt.js` | shared on-screen text entry (`openPrompt({title, placeholder, value, okLabel, allowEmpty, onSubmit, onCancel})`) on the `#searchView` overlay; used by Apple Music search and the background searches |
+| `background.js` | background pictures: `bgPrefs`, `keyFor`, `applyBackground` (called by `render()`), `assignBackground`, `removeBackground`, `gc` (deletes stored pictures nobody uses), `DIM_LEVELS` |
+| `bgpicker.js` | "Change background" overlay (`#bgView`): menu rows, picture grid, folder navigation, `choose()` (download -> `toBackgroundJpeg` -> IndexedDB -> assign) |
+| `bgsources.js` | picture sources: Unsplash (key from `backgrounds-config.js`), Wallhaven (no key), router/DLNA image folders (`soapBrowse(..., "images")`), USB via the Tizen filesystem API |
+| `bgstore.js` | IndexedDB `deck-bg` / `images` (`bgPut/bgGet/bgDelete/bgAll`); recreates the store if an old empty DB exists |
+| `imageutil.js` | `toBackgroundJpeg`: shrink to fit 1920x1080, re-encode as JPEG |
 | `youtube.js` | login (device flow), token refresh, feed, channel filter, `playYoutube` |
 | `keys.js` | the single keydown router (+ YouTube feed keys) |
 
 Shared mutable values live on `state` (never as exported `let`s). To add a source type: extend `populate()` (render.js), `kindOf/detectTheme` (themes.js), `open()` (playback.js).
+
+Cursor zones (`cursor.js` `ZONES`): thumbnails, ytlogin, theme, bgbtn, arrange, refresh. `#bgImage` (picture + `#bgScrim`) sits right after `<main id="deck">`, below the content, above the theme art.
 
 ## Screen structure (`index.html`)
 
@@ -98,7 +106,7 @@ HDMI/TV cards carry the TV's `source` object (needed verbatim by `tvwindow.setSo
 
 ## Input handling
 
-One `document` `keydown` listener routes by mode, in priority order: theme picker -> Arrange -> media browser ->
+One `document` `keydown` listener routes by mode, in priority order: text prompt -> background picker -> login -> theme picker -> Arrange -> media browser ->
 (if playing) show Back button -> Back/Escape (exit app, or `stop()` when playing) -> main screen keys.
 Every overlay and button blurs on focus (`onfocus = blur`) so only the virtual cursor shows selection.
 Key codes: Back = 10009. `Enter` and arrows are handled manually with `preventDefault`.

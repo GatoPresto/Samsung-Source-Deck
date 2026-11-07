@@ -191,14 +191,15 @@ export function refreshGlass() {
   live.forEach(node => { if (!wanted.has(node)) clearGlass(node); });
 }
 
-const OVERLAYS = ["themeView", "browser", "arrangeView", "searchView"];
+const OVERLAYS = ["bgView", "themeView", "browser", "arrangeView", "searchView"];
 const isGlassTheme = () => document.getElementById("deck").dataset.theme === "applemusicglass";
 
 /** Where the highlight is: inside an open overlay list (theme picker, media browser, Arrange, search) or on the main screen. */
 function ringTarget() {
   for (const id of OVERLAYS) {
     const overlay = document.getElementById(id);
-    if (overlay && !overlay.hidden) return {node: overlay.querySelector(".cur"), ctx: "overlay"};
+    // the picture grid of "Change background" gets no bubble (it would blur the picture you are choosing); the tile has its own outline
+    if (overlay && !overlay.hidden) return {node: overlay.dataset.view === "grid" ? null : overlay.querySelector(".cur"), ctx: "overlay"};
   }
   return {node: document.querySelector("#strip .cur, #vids .cur, #subs .cur, footer .cur, #musicOpen.cur"), ctx: "main"};
 }

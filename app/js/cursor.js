@@ -6,11 +6,11 @@ import { state, yt } from "./state.js";
 /** Modules that draw extra cursor state register a function here (called at the end of drawCursor). */
 export const cursorHooks = [];
 
-export const ZONES = [null, "ytlogin", "theme", "arrange", "refresh"];
+export const ZONES = [null, "ytlogin", "theme", "bgbtn", "arrange", "refresh"];
 export const LAST_ZONE = ZONES.length - 1;
 
 export function usable(z) {
-  return z === 0 ? state.cards.length > 0 : z === 1 ? !byId("ytlogin").hidden : z === 2 ? state.cards.length > 0 : true;
+  return z === 1 ? !byId("ytlogin").hidden : z === 2 || z === 3 || z === 0 ? state.cards.length > 0 : true;
 }
 
 export function drawCursor() {

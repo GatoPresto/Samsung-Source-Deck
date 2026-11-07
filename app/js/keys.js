@@ -8,11 +8,14 @@ import { browser, browserKey } from "./dlna.js";
 import { picker, pickerKey } from "./picker.js";
 import { arr, arrangeKey } from "./arrange.js";
 import { loginUi, loginKey, currentVideos, selectChannel, playYoutube } from "./youtube.js";
-import { searchUi, searchKey, musicShown, musicEnter, musicOpenFull, musicMediaKey } from "./music.js";
+import { musicShown, musicEnter, musicOpenFull, musicMediaKey } from "./music.js";
+import { prompt, promptKey } from "./textprompt.js";
+import { bg, bgKey } from "./bgpicker.js";
 
 export function initKeys() {
   document.addEventListener("keydown", event => {
-    if (searchUi.open) { searchKey(event); return; }
+    if (prompt.open) { promptKey(event); return; }
+    if (bg.open) { bgKey(event); return; }
     if (loginUi.open) { loginKey(event); return; }
     if (picker.open) { pickerKey(event); return; }
     if (arr.open) { arrangeKey(event); return; }

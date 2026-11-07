@@ -5,20 +5,23 @@ import { detectApps } from "./apps.js";
 import { stop } from "./playback.js";
 import { openPicker } from "./picker.js";
 import { openArrange } from "./arrange.js";
+import { openBgPicker } from "./bgpicker.js";
 import { ytLogin } from "./youtube.js";
 import { initKeys } from "./keys.js";
-import { initSearch, registerMediaKeys } from "./music.js";
+import { registerMediaKeys } from "./music.js";
+import { initPrompt } from "./textprompt.js";
 
 byId("refresh").onclick = refresh;
 byId("back").onclick = () => stop();
 byId("theme").onclick = openPicker;
 byId("arrange").onclick = openArrange;
+byId("bgbtn").onclick = openBgPicker;
 byId("ytlogin").onclick = ytLogin;
 // Selection is drawn by the virtual cursor, never by DOM focus.
-for (const id of ["ytlogin", "theme", "arrange", "refresh"]) byId(id).onfocus = () => byId(id).blur();
+for (const id of ["ytlogin", "theme", "bgbtn", "arrange", "refresh"]) byId(id).onfocus = () => byId(id).blur();
 
 initKeys();
-initSearch();
+initPrompt();
 registerMediaKeys();
 window.addEventListener("error", e => message("Error: " + e.message));
 detectApps();

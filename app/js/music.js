@@ -8,7 +8,7 @@ import { state, tv, demo, yt, loadJson, saveJson } from "./state.js";
 import { makeChip, makeTrack, makeSkeleton } from "./templates.js";
 import { drawCursor, focusSel, cursorHooks } from "./cursor.js";
 import { httpJson } from "./http.js";
-import { syncRing } from "./glass.js";
+import { openPrompt } from "./textprompt.js";
 
 const isMusic = card => card?.id === "app:applemusic";
 const country = () => ((window.sourceDeck && window.sourceDeck.musicCountry) || (navigator.language || "en-US").split("-")[1] || "us").toLowerCase();
@@ -158,48 +158,9 @@ export function stopMusic() {
   mu.playing = null; mu.paused = false;
 }
 
-// ---- search (uses the TV's on-screen keyboard through a plain text input) ----
-// Three targets, drawn with the virtual cursor: the text box (OK opens the keyboard), Search, Cancel.
-// When the keyboard closes (Done/Back) the cursor jumps to Search, so OK then runs the search.
-export const searchUi = {open: false, cur: 0};
-const searchEls = () => [byId("searchInput"), byId("searchGo"), byId("searchCancel")];
-function drawSearchCursor() { searchEls().forEach((el, i) => el.classList.toggle("cur", searchUi.open && i === searchUi.cur)); syncRing(); }
-
+// ---- search: the TV-keyboard prompt lives in textprompt.js ----
 function openSearch() {
-  searchUi.open = true; searchUi.cur = 0;
-  byId("searchView").hidden = false;
-  const input = byId("searchInput");
-  input.value = mu.searchTerm;
-  drawSearchCursor();
-  input.focus();
-}
-function closeSearch() {
-  searchUi.open = false;
-  byId("searchView").hidden = true;
-  byId("searchInput").blur();
-  drawSearchCursor();
-  focusSel();
-}
-function submitSearch() {
-  if (!searchUi.open) return;
-  const term = byId("searchInput").value.trim();
-  closeSearch();
-  if (term) runSearch(term);
-}
-export function initSearch() {
-  const input = byId("searchInput");
-  input.onfocus = () => { searchUi.cur = 0; drawSearchCursor(); };
-  input.onblur = () => { if (searchUi.open) { searchUi.cur = 1; drawSearchCursor(); } };   // keyboard closed -> Search button
-  // The Samsung keyboard may hide without blurring the box, so also react to its own keys:
-  // Done (65376) = search now, Cancel (65385) = close the keyboard and move to Search. Up/Down only reach the page when the keyboard is hidden.
-  input.onkeydown = event => {
-    if (event.keyCode === 65376 || event.key === "Enter") { event.preventDefault(); event.stopPropagation(); submitSearch(); }
-    else if (event.keyCode === 65385) { event.preventDefault(); event.stopPropagation(); input.blur(); searchUi.cur = 1; drawSearchCursor(); }
-    else if (event.key === "ArrowDown" || event.key === "ArrowUp") { event.preventDefault(); event.stopPropagation(); input.blur(); searchUi.cur = event.key === "ArrowDown" ? 1 : 0; drawSearchCursor(); }
-  };
-  for (const el of [byId("searchGo"), byId("searchCancel")]) el.onfocus = () => el.blur();
-  byId("searchGo").onclick = submitSearch;
-  byId("searchCancel").onclick = closeSearch;
+  openPrompt({title: "Search Apple Music", placeholder: "Artist, song or album", value: mu.searchTerm, onSubmit: term => runSearch(term)});
 }
 
 async function runSearch(term) {
@@ -215,20 +176,6 @@ async function runSearch(term) {
   byId("vids").scrollLeft = 0;
 }
 
-export function searchKey(event) {
-  const input = byId("searchInput");
-  if (document.activeElement === input) return;   // typing: the box's own onkeydown handles Done/Enter/Cancel/Up/Down
-  const key = event.key;
-  if (event.keyCode === 10009 || key === "Escape") { event.preventDefault(); closeSearch(); }
-  else if (key === "ArrowUp" || key === "ArrowLeft") { event.preventDefault(); searchUi.cur = Math.max(0, searchUi.cur - 1); drawSearchCursor(); }
-  else if (key === "ArrowDown" || key === "ArrowRight") { event.preventDefault(); searchUi.cur = Math.min(2, searchUi.cur + 1); drawSearchCursor(); }
-  else if (key === "Enter") {
-    event.preventDefault();
-    if (searchUi.cur === 0) input.focus();
-    else if (searchUi.cur === 1) submitSearch();
-    else closeSearch();
-  }
-}
 
 // ---- open in the real Apple Music app (for the full song) ----
 // Samsung's Apple Music app has no documented deep link. Found by trial on the TV: operation "default" with a PAYLOAD of {"values": "<apple music web link>"}

@@ -1,5 +1,7 @@
 # Source Deck
 
+Source Deck is a personal Samsung TV app that shows every video source as a themed thumbnail, with one slide each for Live TV, HDMI inputs, network streams, media servers and apps. Left/Right picks a source and OK opens it. The whole screen restyles per source (PlayStation, Switch, Xbox and more), and you can pick your own background picture.
+
 A Tizen TV app for the 2023 Samsung S95C. Left and Right cycle through sources. OK opens the selected source. Back returns to the picker. The previews are themed cards.
 
 ## Set up sources
