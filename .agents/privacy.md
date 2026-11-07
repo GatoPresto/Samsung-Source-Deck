@@ -13,7 +13,7 @@
 | YouTube login tokens (access + refresh) | Google OAuth device flow, scope `youtube.readonly` | `localStorage["yt-tokens"]` | only sent back to Google's APIs |
 | YouTube subscriptions + latest uploads (cache, 10 min) | YouTube Data API v3 | `localStorage["yt-feed"]` | no |
 | Apple Music play history (60 songs) | what the user plays | `localStorage["music-history"]` | no; only artist ids go to Apple's public lookup to find more songs |
-| Apple Music charts/search/previews | Apple's public iTunes feeds (no login) | not stored (search text is sent to Apple) | search text and artist/song ids go to Apple |
+| Apple Music charts/search/previews | Apple's public iTunes feeds (no login) | not stored | yes, to `itunes.apple.com`: search text, song/album/artist ids, country from the TV locale, plus the IP address (spelled out in PRIVACY.md) |
 | Google OAuth client id/secret | the developer (`youtube-config.js`, git-ignored) | in the installed app only | sent to Google during login |
 
 External hosts the app talks to: `oauth2.googleapis.com`, `www.googleapis.com` (YouTube Data API), `itunes.apple.com`, song-preview/artwork hosts of Apple and YouTube thumbnails (`i.ytimg.com` etc.), and local-network media servers. Nothing else.
