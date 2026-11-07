@@ -29,7 +29,7 @@
   protocolInfo) to the TV's native player `org.tizen.video-player-tv`, then `org.tizen.mycontent-video-player-tv`. If both
   fail, falls back to AVPlay inside the app.
 
-## Streaming apps (YouTube, Netflix)
+## Streaming apps (YouTube, Netflix, HBO Max, Prime Video, Apple TV, Apple Music)
 - `APPS` in `js/apps.js` lists known apps with candidate package ids (YouTube `9Ur5IzDKqV.TizenYouTube` / `com.samsung.tv.cobalt-yt`, Netflix `org.tizen.netflix-app`).
   `detectApps()` calls `tizen.application.getAppsInfo` (privilege `application.info`) and adds a tile only for apps installed on the TV
   (`id = "app:<key>"`, themes `youtube` / `netflix`). OK launches the app with `tizen.application.launch`.

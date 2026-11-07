@@ -10,6 +10,10 @@ export const THEMES = [
   {key: "tv", label: "Live TV", glyph: "▦"},
   {key: "youtube", label: "YouTube", glyph: "▶"},
   {key: "netflix", label: "Netflix", glyph: "N"},
+  {key: "hbomax", label: "HBO Max", glyph: "max"},
+  {key: "primevideo", label: "Prime Video", glyph: "prime"},
+  {key: "appletv", label: "Apple TV", glyph: "tv"},
+  {key: "applemusic", label: "Apple Music", glyph: "♪"},
   {key: "gta6", label: "GTA 6", glyph: "VI"},
   {key: "gta6classic", label: "GTA 6 Retro", glyph: "VI"}, // key kept from the old name "GTA 6 Classic"
 ];

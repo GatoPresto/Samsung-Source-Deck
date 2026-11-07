@@ -7,6 +7,10 @@ import { populate } from "./render.js";
 export const APPS = [
   {key: "youtube", name: "YouTube", theme: "youtube", ids: ["9Ur5IzDKqV.TizenYouTube", "com.samsung.tv.cobalt-yt"]},
   {key: "netflix", name: "Netflix", theme: "netflix", ids: ["org.tizen.netflix-app", "3201907018807"]},
+  {key: "hbomax", name: "HBO Max", theme: "hbomax", ids: ["5b8c3eb16b.BeamCTVDev"]},
+  {key: "primevideo", name: "Prime Video", theme: "primevideo", ids: ["org.tizen.primevideo", "org.tizen.primevideo-dummy"]},
+  {key: "appletv", name: "Apple TV", theme: "appletv", ids: ["com.samsung.tv.aria-video", "com.samsung.tv.aria-dummy"]},
+  {key: "applemusic", name: "Apple Music", theme: "applemusic", ids: ["org.tizen.apple.apple-music", "org.tizen.apple.apple-music-dummy"]},
 ];
 
 export function detectApps() {

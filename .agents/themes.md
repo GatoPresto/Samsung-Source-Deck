@@ -12,6 +12,10 @@ A theme is a key in `THEMES` (`app/js/themes.js`) plus one CSS file `app/css/the
 | `tv` | Live TV | purple with broadcast colour bars |
 | `youtube` | YouTube | dark mode, red accent, faint grid of video-card outlines, pill buttons, white selection |
 | `netflix` | Netflix | black, red cinematic light streaks with vignette, uppercase heavy title, red selection |
+| `hbomax` | HBO Max | deep indigo gradient, violet glow and flowing ribbon lines, lilac selection |
+| `primevideo` | Prime Video | dark navy, cyan glow and a large swoosh arc, cyan selection |
+| `appletv` | Apple TV | near black, clean semibold white title, soft light and faint poster outlines, white selection |
+| `applemusic` | Apple Music | red-to-pink gradient, faint floating notes and rings, round buttons, white selection |
 | `gta6` | GTA 6 | pastel Vice City sunset modelled on the game's menu UI: orange-pink-lavender gradient, muted palm silhouettes and birds, black letterbox bars top and bottom with pink/orange neon lines (header and footer sit inside the bars), translucent purple square buttons, orange selection highlight, script italic title |
 | `gta6classic` | GTA 6 Retro | (the first GTA 6 look) Vice City neon sunset: purple-to-orange sky, striped sun, skyline with lit windows, palms, pink retro grid floor, cyan frame, italic pink-gradient uppercase title, neon-bordered buttons |
 

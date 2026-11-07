@@ -95,3 +95,7 @@ Samsung's guide (https://developer.samsung.com/smarttv/design/app-icons-and-scre
 a sideloaded app gets the single `config.xml` icon (a second `<icon>` with 1920x1080 was tried and ignored).
 So the artwork in `design/icon.svg` is drawn pre-stretched by 1/0.826 (scale 1.03 x 0.85) so it looks right on the home tile, and slightly wide on the Apps tab. Keep important content away from
 the corners (squircle mask). To re-measure, render `icon-test.svg` into `app/icon.png`, reinstall and photograph the tile.
+
+## D21. More app tiles with the same pattern
+HBO Max, Prime Video, Apple TV and Apple Music were added to `APPS` (js/apps.js) with one theme file each. ids came from logging `getAppsInfo` on the TV (HBO Max is `5b8c3eb16b.BeamCTVDev`).
+They only launch the apps (see D15); real ids are listed before `-dummy` placeholders.
