@@ -187,3 +187,6 @@ On the TV the Apple Music slides' tiles and buttons sat a few pixels lower than 
 
 ## D45. QR code on the YouTube login screen
 The login screen shows the device code and a QR code. The QR encodes Google's device URL plus `?user_code=` (undocumented pre-fill; harmless if ignored). It uses the MIT-licensed single-file `qrcode-generator` (downloaded from the jsDelivr npm mirror, bundled in `app/vendor/`, no network use at runtime) instead of hand-writing a QR encoder. Verified: the generated matrix decodes to the exact URL with Chrome's BarcodeDetector.
+
+## D46. Privacy policy and the rule to keep it in sync
+Google requires a privacy policy URL to publish the OAuth consent screen, so `PRIVACY.md` was added (linked from the Branding page; the logo is left empty to avoid mandatory verification). To stop it going stale, `AGENTS.md` rule 10 and `.agents/privacy.md` list the data inventory, the external hosts and a checklist that must be followed whenever data handling changes.
