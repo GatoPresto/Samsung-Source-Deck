@@ -145,14 +145,29 @@ export function playYoutube(video) {
 }
 
 // ---- Login (OAuth device flow: the user enters a code on their phone) ----
-function showLogin(title, lines, code) {
+/** A QR code (inline SVG, drawn from the module matrix) inside #loginQr. Needs vendor/qrcode.js (qrcode-generator, MIT). */
+function drawQr(text) {
+  const box = byId("loginQr");
+  if (!text || typeof window.qrcode !== "function") { box.hidden = true; box.textContent = ""; return; }
+  const qr = window.qrcode(0, "M");
+  qr.addData(text);
+  qr.make();
+  const n = qr.getModuleCount(), quiet = 2;
+  let path = "";
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) path += "M" + (c + quiet) + " " + (r + quiet) + "h1v1h-1z";
+  const size = n + 2 * quiet;
+  box.innerHTML = '<svg viewBox="0 0 ' + size + " " + size + '" shape-rendering="crispEdges" role="img" aria-label="QR code"><path d="' + path + '" fill="#000"/></svg><p>Scan with your phone</p>';
+  box.hidden = false;
+}
+
+function showLogin(title, lines, code, qrText) {
   byId("loginTitle").textContent = title;
   byId("loginCode").textContent = code || "";
   byId("loginText").textContent = lines;
+  drawQr(qrText);
   byId("loginView").hidden = false;
   loginUi.open = true;
 }
-
 function closeLogin() {
   loginUi.run++;
   loginUi.open = false;
@@ -177,7 +192,9 @@ export async function ytLogin() {
     const {status, json} = await httpJson("POST", "https://oauth2.googleapis.com/device/code", {body: {client_id: window.youtubeAuth.clientId, scope: YT_SCOPE}});
     if (run !== loginUi.run) return;
     if (status !== 200 || !json?.device_code) throw new Error(json?.error_description || json?.error || "HTTP " + status);
-    showLogin("Log in to YouTube", "On your phone or computer open " + json.verification_url + " and enter this code. Waiting for you… (Back cancels)", json.user_code);
+    // The QR opens Google's device page; the code is added as a parameter in case the page pre-fills it (it is shown on screen either way).
+    const qrText = json.verification_url + (json.verification_url.includes("?") ? "&" : "?") + "user_code=" + encodeURIComponent(json.user_code);
+    showLogin("Log in to YouTube", "Scan the QR code, or open " + json.verification_url + " and enter this code. Waiting for you… (Back cancels)", json.user_code, qrText);
     let interval = (json.interval || 5) * 1000;
     const deadline = Date.now() + json.expires_in * 1000;
     while (run === loginUi.run && Date.now() < deadline) {

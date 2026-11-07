@@ -20,5 +20,8 @@
 #shint{color:var(--accent);letter-spacing:.1em;font-size:.9rem;margin-top:18px}
 #loginView{position:absolute;inset:0;z-index:6;padding:12vh 8vw;background:linear-gradient(120deg,#080d17,var(--base))}
 #loginView h2{margin:0 0 18px;font-size:2.4rem;color:var(--accent)}
+#loginQr{position:absolute;right:9vw;top:50%;transform:translateY(-50%);width:340px;padding:20px 20px 14px;background:#fff;border-radius:22px;color:#15161c;text-align:center;box-shadow:0 18px 50px #00000059}
+#loginQr svg{display:block;width:100%;height:auto}
+#loginQr p{margin:10px 0 0;font-size:1rem;letter-spacing:.04em}
 #loginText{font-size:1.5rem;max-width:34em;line-height:1.4}
 #loginCode{font-size:5rem;font-weight:900;letter-spacing:.12em;margin:.3em 0}

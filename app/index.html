@@ -32,7 +32,7 @@
 <div id="browser" hidden><h2 id="bpath"></h2><div id="blist" role="list"></div><p id="bhint">↑↓ choose · OK open/play · Back up</p></div>
 <div id="arrangeView" hidden><h2>Arrange sources</h2><div id="arrCols"><div id="colA" class="col"><h3 id="hA"></h3><div id="alist" role="list"></div></div><div id="colS" class="col"><h3 id="hS"></h3><div id="slist" role="list"></div></div></div><p id="ahint"></p></div>
 <div id="themeView" hidden><h2 id="themeFor">Theme</h2><div id="tlist" role="list"></div><p id="thint">↑↓ choose · OK select · Back cancel</p></div>
-<div id="loginView" hidden><h2 id="loginTitle"></h2><p id="loginText"></p><p id="loginCode"></p></div>
+<div id="loginView" hidden><h2 id="loginTitle"></h2><p id="loginText"></p><p id="loginCode"></p><div id="loginQr" hidden></div></div>
 <div id="searchView" hidden><h2>Search Apple Music</h2><input id="searchInput" type="text" placeholder="Artist, song or album" autocomplete="off"><div id="searchBtns"><button id="searchGo">Search</button><button id="searchCancel">Cancel</button></div><p id="shint">OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels</p></div>
 <div id="feed" hidden><div id="subs"></div><div id="feedStatus"></div><div id="vids"></div><div id="feedActions"><button id="musicOpen" class="chan all">Open in Apple Music</button></div></div>
 <div id="focusRing" aria-hidden="true"></div>
@@ -56,6 +56,7 @@
 <script src="$WEBAPIS/webapis/webapis.js"></script>
 <script src="sources.js"></script>
 <script src="youtube-config.js"></script>
+<script src="vendor/qrcode.js"></script>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

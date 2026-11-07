@@ -35,7 +35,7 @@
   (`id = "app:<key>"`, themes `youtube` / `netflix`). OK launches the app with `tizen.application.launch`.
 - **Recommendations are not shown by the deck.** YouTube and Netflix expose no API for personal home-feed recommendations (Netflix has no public API,
   YouTube's Data API dropped the recommendations feed and needs OAuth). The app's own screen, which opens on OK, shows them.
-- **YouTube login + feed** (only on the YouTube tile): footer gets a first button "Log in" (becomes "Log out"). Log in shows a code and google.com/device (Google OAuth device flow, needs `app/youtube-config.js`, see `youtube-setup.md`).
+- **YouTube login + feed** (only on the YouTube tile): footer gets a first button "Log in" (becomes "Log out"). Log in shows the code AND a QR code on the right (QR = `https://www.google.com/device?user_code=<code>`; the code is also on screen, in case the page does not pre-fill it). Google OAuth device flow, needs `app/youtube-config.js`, see `youtube-setup.md`. The QR is drawn as inline SVG by `drawQr()` in youtube.js using `app/vendor/qrcode.js`.
   After login a panel appears above the tiles: avatars of your subscribed channels (up to 50) and a row of recent videos from up to 15 subscribed channels (newest first, 3 each,
   via each channel's uploads playlist `UU…`). Cached 10 min in `localStorage`. Up from the tiles enters the video row, Left/Right move, OK opens the video in the TV's YouTube app
   (`launchAppControl` operation `default`, no uri, extra data `PAYLOAD` = `#watch?v=ID&launch=launcher`, tried on `com.samsung.tv.cobalt-yt` then `9Ur5IzDKqV.TizenYouTube`;
