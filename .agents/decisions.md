@@ -68,3 +68,11 @@ migration in `app.js` that turns saved `gta6` choices into `gta6classic`, so use
 ## D15. App tiles launch YouTube/Netflix; no in-deck recommendations
 The user wanted personal recommendations from both apps. Neither exposes them to third-party apps (see features.md), so the deck only detects installed apps and
 launches them; the apps' own home screens show the recommendations. Detection uses the app list rather than hardcoding tiles, so tiles appear only when installed.
+
+## D16. YouTube feed via Data API v3 + device-flow login
+The user asked for subscriptions and subscribed-channel videos on the YouTube tile. YouTube has no "subscription feed" endpoint, so the feed is built from `subscriptions.list` +
+`playlistItems.list` on each channel's uploads playlist (`UU` + channel id minus `UC`), merged and sorted by date. Login uses the TV device flow (user enters a code on a phone).
+Client id/secret live in a git-ignored `app/youtube-config.js`. Video playback is delegated to the TV's YouTube app because the YouTube embed does not play in the TV browser; deep-link support is unverified.
+
+## D17. Channel selection filters in-deck, video deep link uses PAYLOAD
+Opening a channel in the native YouTube app has no known deep link, so choosing a channel shows that channel's uploads in the deck's own video row instead. Videos use the Cobalt `PAYLOAD` format (D16 replaced the earlier guessed `view` + uri attempt, which did not open the video). If the TV changes the YouTube app id, update `YT_APP_IDS`.

@@ -2,3 +2,4 @@ build/
 .DS_Store
 app/.manifest.tmp
 app/*signature*.xml
+app/youtube-config.js

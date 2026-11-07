@@ -54,3 +54,8 @@ Snell Roundhand/Brush Script/Segoe Script/Apple Chancery/cursive, so on the TV i
 Auto-detected for source names matching `gta|grand theft`.
 
 Note: the Retro look keeps the internal key `gta6classic` (label "GTA 6 Retro") so saved choices stay valid. GTA 6 theme text (`#meta`, `#detail`, `#scan`, `#status`) is white and bold with a hard 2px dark purple outline (8 offset text-shadows, no blur/glow) over the pastel sky.
+
+## Edge fades and YouTube spacing
+`#strip`, `#subs`, `#vids` use a CSS `mask-image` gradient (transparent at the ends, so the background shows through, no dark overlay). `fadeEdges()` in `app.js` sets `--fl`/`--fr`
+(80px or 0) per row, so a side only fades when items are scrolled out of view there. It runs from `drawCursor()` and on resize. `#feedStatus` keeps a reserved line (`min-height`) so the avatar and video rows do not jump when the status text appears.
+`#feed` has a 44px bottom margin to separate the video row from the source tiles.

@@ -19,7 +19,7 @@
   with HTTP GETs of known description URLs: ports/paths in `PROBES` (8200 `/rootDesc.xml`, 50001
   `/desc/device.xml`, 32469, 49152, 5001, 9000). A response containing `MediaServer` + a ContentDirectory service
   becomes a card (`id = "dlna:" + controlURL`). 16 requests at a time, 1 s timeout.
-- Scan status has its own line (`#scan`) with spinner and percent, separate from `#status`. Each Refresh cancels the
+- Scan status has its own line (`#scan`, in the header under the "n / m" count, right-aligned) with spinner and percent, separate from `#status`. Each Refresh cancels the
   previous scan (`scanRun`) and starts a new one. Result line: "Media servers found: N" or "No media servers found on x.y.z.x".
 - Servers can also be forced via `dlna: [{name, control}]` in `sources.js`.
 - Browser overlay: `soap()` does UPnP `Browse` (BrowseDirectChildren, up to 300 items). Folders first, then files;
@@ -35,6 +35,12 @@
   (`id = "app:<key>"`, themes `youtube` / `netflix`). OK launches the app with `tizen.application.launch`.
 - **Recommendations are not shown by the deck.** YouTube and Netflix expose no API for personal home-feed recommendations (Netflix has no public API,
   YouTube's Data API dropped the recommendations feed and needs OAuth). The app's own screen, which opens on OK, shows them.
+- **YouTube login + feed** (only on the YouTube tile): footer gets a first button "Log in" (becomes "Log out"). Log in shows a code and google.com/device (Google OAuth device flow, needs `app/youtube-config.js`, see `youtube-setup.md`).
+  After login a panel appears above the tiles: avatars of your subscribed channels (up to 50) and a row of recent videos from up to 15 subscribed channels (newest first, 3 each,
+  via each channel's uploads playlist `UU…`). Cached 10 min in `localStorage`. Up from the tiles enters the video row, Left/Right move, OK opens the video in the TV's YouTube app
+  (`launchAppControl` operation `default`, no uri, extra data `PAYLOAD` = `#watch?v=ID&launch=launcher`, tried on `com.samsung.tv.cobalt-yt` then `9Ur5IzDKqV.TizenYouTube`;
+  format from flutter-tizen's example, success callback does not prove the video started). Up again from the videos reaches the channel row ("All" + avatars): OK on a channel (the cursor stays on the channel row) loads
+  its latest 24 uploads into the video row ("All" restores the mixed feed). Down or Back steps back out to the tiles.
 - Add another app: append `{key, name, theme, ids}` to `APPS` (find ids by logging `getAppsInfo`, see `tv-platform-notes.md`) and optionally a theme.
 
 ## Change theme

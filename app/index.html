@@ -11,7 +11,7 @@ position:relative;overflow:hidden;min-height:100vh;padding:6vh 7vw;display:flex;
 main>*{position:relative;z-index:1}
 main::before,main::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none}
 header,.nav,footer{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-header{justify-content:space-between;letter-spacing:.16em;text-transform:uppercase;font-size:.8rem}
+header{align-items:flex-start;justify-content:space-between;letter-spacing:.16em;text-transform:uppercase;font-size:.8rem}
 small,#meta{color:var(--accent);letter-spacing:.13em;text-transform:uppercase}
 h1{font:var(--title-weight) clamp(2.8rem,9vw,9rem)/1 var(--title-font);text-transform:var(--title-case);letter-spacing:var(--title-track);margin:12px 0;overflow-wrap:anywhere}
 button{background:var(--btn-bg);color:white;border:var(--btn-border);border-radius:var(--radius);padding:12px 18px;font:inherit;font-family:var(--btn-font);text-transform:var(--btn-case);letter-spacing:var(--btn-track);box-shadow:var(--btn-shadow);}
@@ -52,9 +52,33 @@ select{font:inherit;padding:10px;margin:12px}
 main>section{flex:1 1 auto;min-height:0}
 footer.nav{flex:0 0 68px;height:68px;flex-wrap:nowrap}
 footer.nav button{height:100%;padding-top:0;padding-bottom:0}
+#loginView{position:absolute;inset:0;z-index:6;padding:12vh 8vw;background:linear-gradient(120deg,#080d17,var(--base))}
+#loginView h2{margin:0 0 18px;font-size:2.4rem;color:var(--accent)}
+#loginText{font-size:1.5rem;max-width:34em;line-height:1.4}
+#loginCode{font-size:5rem;font-weight:900;letter-spacing:.12em;margin:.3em 0}
+#feed{display:flex;flex-direction:column;gap:14px;margin-bottom:44px}
+#subs{display:flex;gap:8px;overflow:hidden;height:48px;align-items:center}
+/* Edge fades: rows turn transparent (showing the background) on a side only when more content is scrolled out of view. */
+#strip,#subs,#vids{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 var(--fl,0px),#000 calc(100% - var(--fr,0px)),transparent 100%)}
+#subs{position:relative}
+.chan{flex:0 0 auto;width:42px;height:42px;padding:0;border-radius:50%;border:3px solid transparent;overflow:hidden;background:#222}
+.chan img{display:block;width:100%;height:100%;object-fit:cover}
+.chan.all{width:auto;min-width:48px;padding:0 12px;border-radius:999px;font-size:.85rem;font-weight:700;color:#fff;text-transform:none;letter-spacing:0;background:#ffffff26}
+.chan.cur{border-color:#fff;outline:none}
+#feedStatus{font-size:.95rem;margin:2px 0 8px;min-height:1.5em}
+#vids{display:flex;gap:14px;overflow:hidden;position:relative}
+.vid{flex:0 0 222px;text-align:left;padding:0;border:3px solid transparent;border-radius:10px;overflow:hidden;background:#000000a0}
+.vid,.vid *{text-transform:none;letter-spacing:0;font-family:system-ui,sans-serif;color:#fff}
+.vid img{display:block;width:100%;height:125px;object-fit:cover;background:#222}
+.vid span{display:block;padding:6px 8px 0;font-size:.85rem;font-weight:700;line-height:1.25;height:2.6em;overflow:hidden}
+.vid small{display:block;padding:0 8px 6px;font-size:.72rem;opacity:.8}
+.vid.cur{border-color:#fff;outline:none}
+/* On the TV (1080p) the YouTube slide keeps the normal padding and title size. Only short windows get a compact layout. */
+@media (max-height:800px){main.feedon{padding-top:3vh;padding-bottom:3vh}main.feedon h1{font-size:clamp(2rem,4vw,3.4rem);margin:4px 0}main.feedon section{overflow:hidden}}
 section{animation:in .25s ease-out both}
 @keyframes in{from{opacity:0}to{opacity:1;transform:none}}
-#scan{min-height:1.5em;margin:0;color:var(--accent);font-size:.95rem;letter-spacing:.06em}
+#headRight{text-align:right}
+#scan{min-height:1.5em;margin:6px 0 0;color:var(--accent);font-size:.9rem;letter-spacing:.06em;text-transform:none}
 #scan.busy::before{content:"";display:inline-block;width:.8em;height:.8em;margin-right:.6em;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #refresh.busy::before{content:"";display:inline-block;width:.9em;height:.9em;margin-right:.6em;vertical-align:-.1em;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
@@ -94,20 +118,20 @@ main[data-theme=gta6]::after{background:linear-gradient(90deg,#ff9a4a,#ff3d9a 50
 main[data-theme=gta6] section{padding-top:9vh}
 main[data-theme=gta6] h1{font-style:italic;color:#fff;text-transform:none;text-shadow:0 3px 0 #8a2f78,0 6px 16px #00000066}
 main[data-theme=gta6] small{color:#fff}
-main[data-theme=gta6] button.cur:not(.tile){background:#e08a3c;color:#1b1024;outline:none}
+main[data-theme=gta6] button.cur:not(.tile):not(.vid){background:#e08a3c;color:#1b1024;outline:none}
 main[data-theme=gta6] .tile.cur{outline-color:#e08a3c}
 main[data-theme=gta6] #meta,main[data-theme=gta6] #detail,main[data-theme=gta6] #scan,main[data-theme=gta6] #status{color:#fff;font-weight:700;text-shadow:-2px 0px 0 #2a0a33,2px 0px 0 #2a0a33,0px -2px 0 #2a0a33,0px 2px 0 #2a0a33,-2px -2px 0 #2a0a33,2px -2px 0 #2a0a33,-2px 2px 0 #2a0a33,2px 2px 0 #2a0a33}
 
 /* YouTube: dark mode, red accent, faint video-card grid */
 main[data-theme=youtube]{--glow:#ff2a2a;--base:#1a0a0a;--accent:#ff4e45;--ink:#fff;--radius:999px;--btn-bg:#ffffff1a;--btn-border:1px solid #ffffff33;--title-weight:700;background:linear-gradient(120deg,#0f0f0f,#241010)}
 main[data-theme=youtube]::before{background:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%201920%201080%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3CradialGradient%20id=%22g%22%20cx=%22.82%22%20cy=%22.3%22%20r=%22.6%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ff2a2a%22%20stop-opacity=%22.35%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23ff2a2a%22%20stop-opacity=%220%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width=%221920%22%20height=%221080%22%20fill=%22url%28%23g%29%22/%3E%3Cg%20fill=%22none%22%20stroke=%22%23fff%22%20stroke-opacity=%22.09%22%20stroke-width=%223%22%3E%3Crect%20x=%22980%22%20y=%2280%22%20width=%22360%22%20height=%22203%22%20rx=%2218%22/%3E%3Crect%20x=%221380%22%20y=%2280%22%20width=%22360%22%20height=%22203%22%20rx=%2218%22/%3E%3Crect%20x=%221180%22%20y=%22320%22%20width=%22360%22%20height=%22203%22%20rx=%2218%22/%3E%3Crect%20x=%221580%22%20y=%22320%22%20width=%22320%22%20height=%22203%22%20rx=%2218%22/%3E%3Crect%20x=%22980%22%20y=%22320%22%20width=%22160%22%20height=%22203%22%20rx=%2218%22/%3E%3Crect%20x=%221080%22%20y=%22560%22%20width=%22360%22%20height=%22203%22%20rx=%2218%22/%3E%3Crect%20x=%221480%22%20y=%22560%22%20width=%22360%22%20height=%22203%22%20rx=%2218%22/%3E%3C/g%3E%3Cg%20fill=%22%23fff%22%20fill-opacity=%22.12%22%3E%3Cpath%20d=%22M1130%20150l70%2032-70%2032z%22/%3E%3Cpath%20d=%22M1530%20150l70%2032-70%2032z%22/%3E%3Cpath%20d=%22M1330%20390l70%2032-70%2032z%22/%3E%3Cpath%20d=%22M1230%20630l70%2032-70%2032z%22/%3E%3Cpath%20d=%22M1630%20630l70%2032-70%2032z%22/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat}
-main[data-theme=youtube] button.cur:not(.tile){background:#fff;color:#0f0f0f;outline:none}
+main[data-theme=youtube] button.cur:not(.tile):not(.vid){background:#fff;color:#0f0f0f;outline:none}
 main[data-theme=youtube] .tile.cur{outline-color:#ff4e45}
 
 /* Netflix: black with red cinematic light streaks */
 main[data-theme=netflix]{--glow:#e50914;--base:#000;--accent:#e50914;--ink:#fff;--radius:4px;--btn-bg:#ffffff14;--btn-border:1px solid #ffffff33;--title-weight:900;--title-case:uppercase;--title-track:.04em;background:#050505}
 main[data-theme=netflix]::before{background:url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%201920%201080%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22r%22%20x1=%220%22%20x2=%220%22%20y1=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23e50914%22%20stop-opacity=%220%22/%3E%3Cstop%20offset=%22.5%22%20stop-color=%22%23e50914%22%20stop-opacity=%22.55%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23e50914%22%20stop-opacity=%220%22/%3E%3C/linearGradient%3E%3CradialGradient%20id=%22v%22%20cx=%22.5%22%20cy=%22.5%22%20r=%22.75%22%3E%3Cstop%20offset=%22.55%22%20stop-color=%22%23000%22%20stop-opacity=%220%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23000%22%20stop-opacity=%22.85%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg%3E%3Crect%20x=%221180%22%20y=%22-50%22%20width=%2246%22%20height=%221180%22%20fill=%22url%28%23r%29%22%20transform=%22rotate%2814%201200%20540%29%22/%3E%3Crect%20x=%221290%22%20y=%22-50%22%20width=%2270%22%20height=%221180%22%20fill=%22url%28%23r%29%22%20opacity=%22.8%22%20transform=%22rotate%2814%201320%20540%29%22/%3E%3Crect%20x=%221420%22%20y=%22-50%22%20width=%2230%22%20height=%221180%22%20fill=%22url%28%23r%29%22%20opacity=%22.9%22%20transform=%22rotate%2814%201430%20540%29%22/%3E%3Crect%20x=%221520%22%20y=%22-50%22%20width=%22110%22%20height=%221180%22%20fill=%22url%28%23r%29%22%20opacity=%22.55%22%20transform=%22rotate%2814%201570%20540%29%22/%3E%3Crect%20x=%221690%22%20y=%22-50%22%20width=%2240%22%20height=%221180%22%20fill=%22url%28%23r%29%22%20opacity=%22.7%22%20transform=%22rotate%2814%201710%20540%29%22/%3E%3C/g%3E%3Crect%20width=%221920%22%20height=%221080%22%20fill=%22url%28%23v%29%22/%3E%3C/svg%3E") center/cover no-repeat}
-main[data-theme=netflix] button.cur:not(.tile){background:#e50914;color:#fff;outline:none}
+main[data-theme=netflix] button.cur:not(.tile):not(.vid){background:#e50914;color:#fff;outline:none}
 main[data-theme=netflix] .tile.cur{outline-color:#e50914}
 
 /* Network streams: teal waves */
@@ -119,17 +143,20 @@ main[data-theme=tv]{--glow:#6b4bd6;--base:#16112e;--accent:#d9ccff;--radius:6px}
 main[data-theme=tv]::before{background:linear-gradient(90deg,#ffffff14 0 14%,#ffe60014 14% 28%,#00e5ff14 28% 42%,#00ff6a14 42% 57%,#ff00c814 57% 71%,#ff2a2a14 71% 85%,#2a4bff14 85%);opacity:.7}
 </style>
 <main id="deck">
-<header><strong>Source Deck</strong><span id="count"></span></header>
-<section aria-live="polite"><div id="meta"></div><h1 id="title"></h1><small id="detail"></small><p id="status" role="status"></p><p id="scan" role="status"></p></section>
+<header><strong>Source Deck</strong><div id="headRight"><span id="count"></span><p id="scan" role="status"></p></div></header>
+<section aria-live="polite"><div id="meta"></div><h1 id="title"></h1><small id="detail"></small><p id="status" role="status"></p></section>
 <div id="browser" hidden><h2 id="bpath"></h2><div id="blist" role="list"></div><p id="bhint">↑↓ choose · OK open/play · Back up</p></div>
 <div id="arrangeView" hidden><h2>Arrange sources</h2><div id="alist" role="list"></div><p id="ahint">↑↓ choose · OK show / hide · ← → move up / down · Back done</p></div>
 <div id="themeView" hidden><h2 id="themeFor">Theme</h2><div id="tlist" role="list"></div><p id="thint">↑↓ choose · OK select · Back cancel</p></div>
+<div id="loginView" hidden><h2 id="loginTitle"></h2><p id="loginText"></p><p id="loginCode"></p></div>
+<div id="feed" hidden><div id="subs"></div><div id="feedStatus"></div><div id="vids"></div></div>
 <div id="strip" role="listbox" aria-label="Sources"></div>
-<footer class="nav"><button id="theme">Change theme</button><button id="arrange">Arrange</button><button id="refresh">Refresh</button></footer>
+<footer class="nav"><button id="ytlogin" hidden>Log in</button><button id="theme">Change theme</button><button id="arrange">Arrange</button><button id="refresh">Refresh</button></footer>
 </main>
 <object id="surface" type="application/avplayer" hidden></object>
 <button id="back" hidden>Back to sources</button>
 <script src="$WEBAPIS/webapis/webapis.js"></script>
 <script src="sources.js"></script>
+<script src="youtube-config.js"></script>
 <script src="app.js"></script>
 </html>

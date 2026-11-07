@@ -11,6 +11,7 @@ app/                      the Tizen web app (this folder is what gets packaged)
   config.xml              widget manifest, app id, privileges
   index.html              markup + ALL CSS (themes included)
   sources.js              optional user config (window.sourceDeck: dlna[], streams[])
+  youtube-config.js       YouTube OAuth client id/secret (git-ignored; example file committed)
   app.js                  all logic, one script, no modules
 build/                    generated .wgt packages (git-ignored)
 ```
@@ -71,3 +72,7 @@ Key codes: Back = 10009. `Enter` and arrows are handled manually with `preventDe
 `setBusy/refresh`, `move`, `open/stop/peekBack`, theme picker (`drawPicker/choosePicker/pickerKey`),
 Arrange (`drawArrange/toggleHidden/moveInArrange/commitOrder/arrangeKey`), `playNative`, `probe/scanDlna/scanStatus`,
 `soap/loadFolder/openBrowser/browserKey`.
+
+## YouTube module (`app.js`, section "YouTube")
+`yt` state `{tokens, feed, loading, error, shown, inFeed, idx}`, `loginUi`. `ytLogin` (device flow), `ytAccessToken` (refresh), `ytApi`, `loadFeed`, `renderFeed`, `updateYoutubeUi` (called from `render`),
+`playYoutube`. Zones are now `[tiles, ytlogin, theme, arrange, refresh]` (`ZONES`, `LAST_ZONE`); `ytlogin` is hidden unless the YouTube tile is selected. `yt.inFeed` is a mode on top of the zones.

@@ -15,6 +15,7 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 | `.agents/decisions.md` | Decision log: what was chosen, why, what was rejected |
 | `.agents/tv-platform-notes.md` | Tizen/Samsung API behaviour and pitfalls found on the real TV |
 | `.agents/build-and-deploy.md` | Package, sign, install, run, debug |
+| `.agents/youtube-setup.md` | Google Cloud setup for the YouTube login/feed |
 
 ## Hard rules
 
@@ -31,7 +32,7 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 7. **Layout must not jump.** Tiles and footer are bottom-anchored with a fixed footer height. Do not make their position depend on theme.
 8. **Test on the TV.** Browser demo mode (open `app/index.html` over a local HTTP server) covers logic and layout only.
    Remote keys, focus, HDMI and playback only behave correctly on the real TV.
-9. Do not commit `build/`, signing files, certificates or `.DS_Store`. The Samsung certificate lives in
+9. Do not commit `build/`, signing files, certificates, `app/youtube-config.js` (OAuth secret) or `.DS_Store`. The Samsung certificate lives in
    `~/SamsungCertificate/` (outside the repo). Never commit it or its password.
 
 ## Quick commands

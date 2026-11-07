@@ -91,19 +91,38 @@ function buildStrip() {
 }
 
 // One virtual cursor instead of DOM focus: zone 0 = tiles, then the footer buttons.
-const ZONES = [null, "theme", "arrange", "refresh"];
+const ZONES = [null, "ytlogin", "theme", "arrange", "refresh"];
+const LAST_ZONE = ZONES.length - 1;
 let zone = 0;
-function usable(z) { return z === 0 ? cards.length > 0 : z === 1 ? cards.length > 0 : true; }
-function drawCursor() {
-  if (!usable(zone)) zone = usable(0) ? 0 : 2;
-  [...byId("strip").children].forEach((tile, i) => tile.classList.toggle("cur", zone === 0 && i === index));
-  ZONES.forEach((id, z) => { if (id) byId(id).classList.toggle("cur", zone === z); });
+function usable(z) {
+  return z === 0 ? cards.length > 0 : z === 1 ? !byId("ytlogin").hidden : z === 2 ? cards.length > 0 : true;
 }
-function focusSel() { zone = 0; drawCursor(); }
+function drawCursor() {
+  if (!usable(zone)) zone = usable(0) ? 0 : LAST_ZONE;
+  if (yt.inFeed && !yt.shown) yt.inFeed = false;
+  [...byId("strip").children].forEach((tile, i) => tile.classList.toggle("cur", zone === 0 && !yt.inFeed && i === index));
+  ZONES.forEach((id, z) => { if (id) byId(id).classList.toggle("cur", !yt.inFeed && zone === z); });
+  [...byId("vids").children].forEach((v, i) => v.classList.toggle("cur", yt.inFeed && yt.row === "vids" && i === yt.idx));
+  [...byId("subs").children].forEach((v, i) => v.classList.toggle("cur", yt.inFeed && yt.row === "subs" && i === yt.sidx));
+  const cur = yt.row === "subs" ? byId("subs").children[yt.sidx] : byId("vids").children[yt.idx];
+  const rowEl = yt.row === "subs" ? byId("subs") : byId("vids");
+  if (yt.inFeed && cur) rowEl.scrollLeft = Math.max(0, cur.offsetLeft - 40);
+  fadeEdges();
+}
+// Fade a row's left/right edge only when more items are hidden on that side.
+function fadeEdges() {
+  for (const id of ["strip", "subs", "vids"]) {
+    const el = byId(id);
+    el.style.setProperty("--fl", el.scrollLeft > 2 ? "80px" : "0px");
+    el.style.setProperty("--fr", el.scrollLeft + el.clientWidth < el.scrollWidth - 2 ? "80px" : "0px");
+  }
+}
+window.addEventListener("resize", () => fadeEdges());
+function focusSel() { zone = 0; yt.inFeed = false; drawCursor(); }
 function stepZone(step, wrapFrom) {
   let next = zone;
-  do { next += step; } while (next >= wrapFrom && next <= 3 && !usable(next));
-  return next >= wrapFrom && next <= 3 ? next : zone;
+  do { next += step; } while (next >= wrapFrom && next <= LAST_ZONE && !usable(next));
+  return next >= wrapFrom && next <= LAST_ZONE ? next : zone;
 }
 
 function render() {
@@ -128,8 +147,9 @@ function render() {
   });
   const sel = byId("strip").children[index];
   if (sel) byId("strip").scrollLeft = Math.max(0, sel.offsetLeft - 60);
-  drawCursor();
   byId("theme").hidden = !card;
+  updateYoutubeUi(card);
+  drawCursor();
 }
 
 // Streaming apps. If installed, they get a tile that launches them. Their own screens show the user's personal recommendations.
@@ -623,11 +643,247 @@ function browserKey(event) {
   }
 }
 
+
+// ---- YouTube: Google device-flow login + subscriptions feed (YouTube Data API v3, read-only) ----
+// Needs a Google OAuth client of type "TVs and Limited Input devices" in app/youtube-config.js (see .agents/youtube-setup.md).
+const YT_SCOPE = "https://www.googleapis.com/auth/youtube.readonly";
+const loadJson = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
+const saveJson = (key, value) => { try { if (value == null) localStorage.removeItem(key); else localStorage.setItem(key, JSON.stringify(value)); } catch {} };
+const yt = {tokens: loadJson("yt-tokens"), feed: loadJson("yt-feed"), loading: false, error: "", shown: false, inFeed: false, idx: 0, row: "vids", sidx: 0, view: null};
+const loginUi = {open: false, run: 0};
+const isYoutube = card => card?.id === "app:youtube";
+const ytConfigured = () => !!(window.youtubeAuth && window.youtubeAuth.clientId && window.youtubeAuth.clientSecret);
+
+function httpJson(method, url, {body, token} = {}) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url);
+    xhr.timeout = 15000;
+    if (body) xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    if (token) xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.onload = () => {
+      let json = null;
+      try { json = JSON.parse(xhr.responseText); } catch {}
+      resolve({status: xhr.status, json});
+    };
+    xhr.onerror = () => reject(new Error("network error"));
+    xhr.ontimeout = () => reject(new Error("timeout"));
+    xhr.send(body ? Object.entries(body).map(([k, v]) => encodeURIComponent(k) + "=" + encodeURIComponent(v)).join("&") : null);
+  });
+}
+
+async function ytAccessToken() {
+  if (!yt.tokens) throw new Error("not logged in");
+  if (Date.now() < yt.tokens.expires - 60000) return yt.tokens.access;
+  const {status, json} = await httpJson("POST", "https://oauth2.googleapis.com/token", {body: {
+    client_id: window.youtubeAuth.clientId, client_secret: window.youtubeAuth.clientSecret,
+    refresh_token: yt.tokens.refresh, grant_type: "refresh_token"}});
+  if (status !== 200 || !json?.access_token) { ytLogout(); throw new Error("login expired, please log in again"); }
+  yt.tokens = {...yt.tokens, access: json.access_token, expires: Date.now() + json.expires_in * 1000};
+  saveJson("yt-tokens", yt.tokens);
+  return yt.tokens.access;
+}
+
+async function ytApi(resource, params) {
+  const query = Object.entries(params).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+  const {status, json} = await httpJson("GET", "https://www.googleapis.com/youtube/v3/" + resource + "?" + query, {token: await ytAccessToken()});
+  if (status !== 200) throw new Error(json?.error?.message || "YouTube API " + status);
+  return json;
+}
+
+async function loadFeed(force) {
+  if (!yt.tokens || yt.loading) return;
+  if (!force && yt.feed && Date.now() - yt.feed.at < 10 * 60000) return;
+  yt.loading = true; yt.error = "";
+  renderFeed();
+  try {
+    const subs = await ytApi("subscriptions", {part: "snippet", mine: "true", maxResults: 50, order: "relevance"});
+    const channels = subs.items.map(i => ({id: i.snippet.resourceId.channelId, title: i.snippet.title, thumb: i.snippet.thumbnails?.default?.url}));
+    // A channel's uploads playlist id is its channel id with the "UC" prefix replaced by "UU".
+    const lists = await Promise.all(channels.slice(0, 15).map(c =>
+      ytApi("playlistItems", {part: "snippet,contentDetails", playlistId: "UU" + c.id.slice(2), maxResults: 3}).then(r => ({c, r})).catch(() => null)));
+    const videos = [];
+    for (const entry of lists) for (const item of entry?.r?.items || []) {
+      videos.push(mapVideo(item, entry.c.title));
+    }
+    videos.sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    yt.feed = {at: Date.now(), channels, videos: videos.slice(0, 24)};
+    saveJson("yt-feed", yt.feed);
+  } catch (error) { yt.error = error.message; }
+  yt.loading = false;
+  renderFeed();
+}
+
+const currentVideos = () => yt.view?.videos || yt.feed?.videos || [];
+const mapVideo = (item, fallbackChannel) => ({id: item.contentDetails.videoId, title: item.snippet.title,
+  channel: item.snippet.videoOwnerChannelTitle || fallbackChannel, at: item.contentDetails.videoPublishedAt || item.snippet.publishedAt,
+  thumb: item.snippet.thumbnails?.medium?.url});
+
+async function selectChannel(channel) {
+  yt.error = "";
+  if (!channel) { yt.view = null; yt.idx = 0; renderFeed(); byId("vids").scrollLeft = 0; fadeEdges(); return; }
+  yt.loading = true; yt.view = null;
+  renderFeed();
+  try {
+    const r = await ytApi("playlistItems", {part: "snippet,contentDetails", playlistId: "UU" + channel.id.slice(2), maxResults: 24});
+    yt.view = {channel, videos: r.items.map(i => mapVideo(i, channel.title))};
+    yt.idx = 0; // the cursor stays on the channel row
+  } catch (error) { yt.error = error.message; }
+  yt.loading = false;
+  renderFeed();
+  byId("vids").scrollLeft = 0;
+  fadeEdges();
+}
+
+function renderFeed() {
+  const card = cards[index];
+  const show = isYoutube(card) && !!yt.tokens;
+  byId("feed").hidden = !show;
+  deck.classList.toggle("feedon", show);
+  yt.shown = show;
+  if (!show) { yt.inFeed = false; return; }
+  const subs = byId("subs"), vids = byId("vids");
+  subs.textContent = ""; vids.textContent = "";
+  const status = byId("feedStatus");
+  status.textContent = yt.loading ? "Loading…" : yt.error ? "Could not load: " + yt.error :
+    yt.view ? "Videos from " + yt.view.channel.title + "  ·  choose All to go back" : yt.feed && !yt.feed.videos.length ? "No recent videos found." : "";
+  if (yt.feed) {
+    const all = document.createElement("button");
+    all.className = "chan all";
+    all.textContent = "All";
+    all.onfocus = () => all.blur();
+    all.onclick = () => selectChannel(null);
+    subs.appendChild(all);
+  }
+  for (const c of yt.feed?.channels || []) {
+    const b = document.createElement("button");
+    b.className = "chan";
+    b.title = c.title;
+    b.onfocus = () => b.blur();
+    const img = document.createElement("img");
+    img.src = c.thumb || ""; img.alt = c.title;
+    b.appendChild(img);
+    b.onclick = () => selectChannel(c);
+    subs.appendChild(b);
+  }
+  for (const v of currentVideos()) {
+    const b = document.createElement("button");
+    b.className = "vid";
+    b.onfocus = () => b.blur();
+    const img = document.createElement("img");
+    img.src = v.thumb || ""; img.alt = "";
+    const t = document.createElement("span");
+    t.textContent = v.title;
+    const ch = document.createElement("small");
+    ch.textContent = v.channel;
+    b.append(img, t, ch);
+    b.onclick = () => playYoutube(v);
+    vids.appendChild(b);
+  }
+  yt.sidx = Math.min(yt.sidx, Math.max(0, subs.children.length - 1));
+  yt.idx = Math.min(yt.idx, Math.max(0, vids.children.length - 1));
+  drawCursor();
+}
+
+function updateYoutubeUi(card) {
+  const button = byId("ytlogin");
+  button.hidden = !isYoutube(card);
+  button.textContent = yt.tokens ? "Log out" : "Log in";
+  renderFeed();
+  if (isYoutube(card) && yt.tokens && !yt.feed) loadFeed(false);
+  else if (isYoutube(card) && yt.tokens && Date.now() - yt.feed.at > 10 * 60000) loadFeed(false);
+}
+
+function ytLogout() {
+  yt.tokens = null; yt.feed = null; yt.view = null; yt.error = ""; yt.inFeed = false; yt.row = "vids";
+  saveJson("yt-tokens", null); saveJson("yt-feed", null);
+  if (cards.length) render();
+}
+
+// Hand a video to the TV's YouTube app. The app is Cobalt-based and takes a PAYLOAD like "#watch?v=ID&launch=launcher"
+// (format taken from flutter-tizen's app_control example). Falls back to plain launch if the app control throws.
+const YT_APP_IDS = ["com.samsung.tv.cobalt-yt", "9Ur5IzDKqV.TizenYouTube"];
+function playYoutube(video) {
+  if (!video) return;
+  if (demo) { message("Would open: " + video.title); return; }
+  const launchWith = attempt => {
+    const appId = YT_APP_IDS[attempt];
+    if (!appId) { message("Could not open the video in YouTube."); return; }
+    try {
+      const control = new tv.ApplicationControl("http://tizen.org/appcontrol/operation/default", null, null, null,
+        [new tv.ApplicationControlData("PAYLOAD", ["#watch?v=" + video.id + "&launch=launcher"])]);
+      tv.application.launchAppControl(control, appId, () => message("Opening in YouTube…"), () => launchWith(attempt + 1));
+    } catch (error) { launchWith(attempt + 1); }
+  };
+  launchWith(0);
+}
+
+function showLogin(title, lines, code) {
+  byId("loginTitle").textContent = title;
+  byId("loginCode").textContent = code || "";
+  byId("loginText").textContent = lines;
+  byId("loginView").hidden = false;
+  loginUi.open = true;
+}
+function closeLogin() {
+  loginUi.run++;
+  loginUi.open = false;
+  byId("loginView").hidden = true;
+  focusSel();
+}
+function loginKey(event) {
+  if (event.keyCode === 10009 || event.key === "Escape" || event.key === "Enter") { event.preventDefault(); closeLogin(); }
+}
+
+async function ytLogin() {
+  if (yt.tokens) { ytLogout(); message("Logged out of YouTube."); return; }
+  if (!ytConfigured()) {
+    showLogin("YouTube login needs setup",
+      "Create a Google OAuth client of type \"TVs and Limited Input devices\", enable YouTube Data API v3, then put the client id and secret in app/youtube-config.js and reinstall. Details: .agents/youtube-setup.md. Press Back to close.");
+    return;
+  }
+  const run = ++loginUi.run;
+  showLogin("Log in to YouTube", "Starting…");
+  try {
+    const {status, json} = await httpJson("POST", "https://oauth2.googleapis.com/device/code", {body: {client_id: window.youtubeAuth.clientId, scope: YT_SCOPE}});
+    if (run !== loginUi.run) return;
+    if (status !== 200 || !json?.device_code) throw new Error(json?.error_description || json?.error || "HTTP " + status);
+    showLogin("Log in to YouTube", "On your phone or computer open " + json.verification_url + " and enter this code. Waiting for you… (Back cancels)", json.user_code);
+    let interval = (json.interval || 5) * 1000;
+    const deadline = Date.now() + json.expires_in * 1000;
+    while (run === loginUi.run && Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, interval));
+      if (run !== loginUi.run) return;
+      const poll = await httpJson("POST", "https://oauth2.googleapis.com/token", {body: {
+        client_id: window.youtubeAuth.clientId, client_secret: window.youtubeAuth.clientSecret,
+        device_code: json.device_code, grant_type: "urn:ietf:params:oauth:grant-type:device_code"}});
+      const err = poll.json?.error;
+      if (poll.status === 200 && poll.json?.access_token) {
+        yt.tokens = {access: poll.json.access_token, refresh: poll.json.refresh_token, expires: Date.now() + poll.json.expires_in * 1000};
+        saveJson("yt-tokens", yt.tokens);
+        closeLogin();
+        message("Logged in to YouTube.");
+        render();
+        loadFeed(true);
+        return;
+      }
+      if (err === "slow_down") interval += 5000;
+      else if (err && err !== "authorization_pending") throw new Error(poll.json.error_description || err);
+    }
+    if (run === loginUi.run) showLogin("Log in to YouTube", "The code expired. Press Back and try again.");
+  } catch (error) {
+    if (run === loginUi.run) showLogin("Log in failed", error.message + " (Back closes)");
+  }
+}
+byId("ytlogin").onclick = ytLogin;
+
 document.addEventListener("keydown", event => {
+  if (loginUi.open) { loginKey(event); return; }
   if (picker.open) { pickerKey(event); return; }
   if (arr.open) { arrangeKey(event); return; }
   if (browser.server && !active && !byId("browser").hidden) { browserKey(event); return; }
   if (active && event.keyCode !== 10009 && event.key !== "Escape") peekBack();
+  if ((event.key === "Escape" || event.keyCode === 10009) && yt.inFeed) { event.preventDefault(); yt.inFeed = false; yt.row = "vids"; drawCursor(); return; }
   if (event.key === "Escape" || event.keyCode === 10009) {
     if (active) { event.preventDefault(); stop(); }
     else if (tv) tv.application.getCurrentApplication().exit();
@@ -635,18 +891,42 @@ document.addEventListener("keydown", event => {
   }
   if (active) return;
   const key = event.key;
+  if (yt.inFeed) {
+    const subsRow = yt.row === "subs";
+    const n = byId(subsRow ? "subs" : "vids").children.length;
+    const pos = subsRow ? yt.sidx : yt.idx;
+    if (key === "ArrowLeft" || key === "ArrowRight") {
+      event.preventDefault();
+      const next = Math.max(0, Math.min(n - 1, pos + (key === "ArrowLeft" ? -1 : 1)));
+      if (subsRow) yt.sidx = next; else yt.idx = next;
+      drawCursor();
+    } else if (key === "ArrowUp") {
+      event.preventDefault();
+      if (!subsRow && byId("subs").children.length) { yt.row = "subs"; drawCursor(); }
+    } else if (key === "ArrowDown") {
+      event.preventDefault();
+      if (subsRow && byId("vids").children.length) yt.row = "vids"; else yt.inFeed = false;
+      drawCursor();
+    } else if (key === "Enter") {
+      event.preventDefault();
+      if (subsRow) selectChannel(yt.sidx === 0 ? null : yt.feed?.channels?.[yt.sidx - 1]);
+      else playYoutube(currentVideos()[yt.idx]);
+    }
+    return;
+  }
   if (key === "ArrowLeft" || key === "ArrowRight") {
     event.preventDefault();
     const step = key === "ArrowLeft" ? -1 : 1;
     if (zone === 0) move(step);
     else {
       let next = zone;
-      do { next = next + step < 1 ? 3 : next + step > 3 ? 1 : next + step; } while (!usable(next) && next !== zone);
+      do { next = next + step < 1 ? LAST_ZONE : next + step > LAST_ZONE ? 1 : next + step; } while (!usable(next) && next !== zone);
       zone = next;
       drawCursor();
     }
   } else if (key === "ArrowUp" || key === "ArrowDown") {
     event.preventDefault();
+    if (key === "ArrowUp" && zone === 0 && yt.shown && byId("vids").children.length) { yt.inFeed = true; yt.row = "vids"; yt.idx = Math.min(yt.idx, byId("vids").children.length - 1); drawCursor(); return; }
     zone = stepZone(key === "ArrowUp" ? -1 : 1, 0);
     drawCursor();
   } else if (key === "Enter") {
@@ -654,7 +934,7 @@ document.addEventListener("keydown", event => {
     if (zone === 0) open(); else byId(ZONES[zone]).click();
   }
 });
-for (const id of ["theme", "arrange", "refresh"]) byId(id).onfocus = () => byId(id).blur();
+for (const id of ["ytlogin", "theme", "arrange", "refresh"]) byId(id).onfocus = () => byId(id).blur();
 window.addEventListener("error", e => message("Error: " + e.message));
 detectApps();
 refresh();
