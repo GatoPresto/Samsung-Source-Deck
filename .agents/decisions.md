@@ -57,3 +57,10 @@ packages are not bundled; packaging writes signature XML into `app/`, delete it 
 ## D12. Switch theme redone as Zelda-inspired Hyrule dusk
 The user wanted a richer Switch look. Original SVG artwork was drawn in code (Triforce, mountains, pines, sword in pedestal, stars) instead of
 sourcing images from the internet, to avoid copyright issues and keep it a small static layer (performance rule D8). Joy-Con red/blue survives only as thin edge lines.
+
+## D13. GTA 6 theme: original Vice City-style art, no logos
+Added `gta6` to `THEMES` (glyph "VI") with hand-drawn SVG (sun, skyline, palms, grid). No Rockstar logos or game artwork are used, only a generic neon-sunset style.
+
+## D14. Two GTA 6 themes; key rename with migration
+The first look became `gta6classic` (label "GTA 6 Retro"), and `gta6` now means the new screenshot-based look. `prefs.v` (set to 1) triggers a one-time
+migration in `app.js` that turns saved `gta6` choices into `gta6classic`, so users keep the look they picked. Bump `prefs.v` for future key renames.

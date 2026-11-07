@@ -16,6 +16,12 @@ let themeTarget = null;
 // Remembered choices: theme per source, hidden sources, and display order (all keyed by stable source id).
 const prefs = {theme: {}, hidden: {}, order: []};
 try { Object.assign(prefs, JSON.parse(localStorage.getItem("deck-prefs")) || {}); } catch {}
+// v1: the first "gta6" look was renamed "gta6classic"; keep users who picked it on that look.
+if (!prefs.v) {
+  for (const id of Object.keys(prefs.theme)) if (prefs.theme[id] === "gta6") prefs.theme[id] = "gta6classic";
+  prefs.v = 1;
+  try { localStorage.setItem("deck-prefs", JSON.stringify(prefs)); } catch {}
+}
 function savePrefs() {
   try { localStorage.setItem("deck-prefs", JSON.stringify(prefs)); }
   catch (error) { message("Could not save settings: " + error.message); }
@@ -37,6 +43,8 @@ const THEMES = [
   {key: "xbox", label: "Xbox", glyph: "Ⓧ"},
   {key: "stream", label: "Network media", glyph: "≈≈≈"},
   {key: "tv", label: "Live TV", glyph: "▦"},
+  {key: "gta6", label: "GTA 6", glyph: "VI"},
+  {key: "gta6classic", label: "GTA 6 Retro", glyph: "VI"},
 ];
 const GLYPH = Object.fromEntries(THEMES.map(t => [t.key, t.glyph]));
 
@@ -44,7 +52,7 @@ function detectTheme(card) {
   const name = card.name;
   return card.url || card.dlna ? "stream" : card.source?.type === "TV" ? "tv" :
     /playstation|\bps\s?\d/i.test(name) ? "ps" : /switch|nintendo/i.test(name) ? "switch" :
-    /xbox/i.test(name) ? "xbox" : "default";
+    /xbox/i.test(name) ? "xbox" : /gta|grand theft/i.test(name) ? "gta6" : "default";
 }
 
 function themeOf(card) {
