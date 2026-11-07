@@ -190,3 +190,6 @@ The login screen shows the device code and a QR code. The QR encodes Google's de
 
 ## D46. Privacy policy and the rule to keep it in sync
 Google requires a privacy policy URL to publish the OAuth consent screen, so `PRIVACY.md` was added (linked from the Branding page; the logo is left empty to avoid mandatory verification). To stop it going stale, `AGENTS.md` rule 10 and `.agents/privacy.md` list the data inventory, the external hosts and a checklist that must be followed whenever data handling changes.
+
+## D47. Up from the footer goes straight to the tiles
+The footer buttons used to be stepped through with Up/Down like a column, so Up from "Refresh" moved to "Arrange" first. They are a horizontal row: Up from any button now returns to the thumbnails at once, Down from the thumbnails lands on the first usable button.

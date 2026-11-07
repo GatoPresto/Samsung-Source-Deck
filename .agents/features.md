@@ -83,8 +83,7 @@
 - Button turns into a spinner "Scanning…" for at least 0.9 s, status "Scanning for inputs…", then runs the DLNA scan.
 
 ## Main-screen navigation
-Left/Right: previous/next tile (wraps). Down from tiles: Change theme -> Arrange -> Refresh; Up goes back. Left/Right
-between footer buttons cycle them. OK activates the cursor. Back exits the app.
+Left/Right: previous/next tile (wraps). The footer buttons are one row: Down from the tiles lands on the first button, Left/Right move (and wrap) between buttons, and Up from any button goes straight back to the tiles. OK activates the cursor. Back exits the app.
 
 ## Persistence
 Only `localStorage["deck-prefs"]` (theme, hidden, order). Discovered servers are not stored and reappear after each scan.

@@ -48,7 +48,9 @@ export function initKeys() {
         drawCursor();
         return;
       }
-      state.zone = stepZone(key === "ArrowUp" ? -1 : 1, 0);
+      // The footer buttons are one row: Up goes straight back to the thumbnails (not button by button), Down from the thumbnails lands on the first button.
+      if (key === "ArrowUp") state.zone = 0;
+      else if (state.zone === 0) state.zone = stepZone(1, 0);
       drawCursor();
     } else if (key === "Enter") {
       event.preventDefault();
