@@ -2,8 +2,15 @@
 #browser,#arrangeView,#themeView{position:absolute;inset:0;z-index:5;padding:6vh 7vw;background:linear-gradient(120deg,#080d17,var(--base));overflow:auto}
 #browser h2,#arrangeView h2,#themeView h2{margin:0 0 18px;font-size:2rem;color:var(--accent)}
 #alist .off{opacity:.55}
-#blist .cur,#alist .cur,#tlist .cur{background:var(--accent);color:var(--ink);outline-offset:-4px;font-weight:700}
-#blist button,#alist button,#tlist button{display:block;width:100%;text-align:left;margin:0 0 8px;font-size:1.3rem}
+#arrCols{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.col{opacity:.6}
+.col.active{opacity:1}
+.col h3{margin:0 0 14px;font-size:1.2rem;letter-spacing:.06em;color:var(--accent)}
+#alist,#slist{max-height:calc(100vh - 330px);overflow:hidden}
+#alist .grab{outline:4px solid #fff;outline-offset:-4px}
+#slist .sys{opacity:.8}
+#blist .cur,#alist .cur,#slist .cur,#tlist .cur{background:var(--accent);color:var(--ink);outline-offset:-4px;font-weight:700}
+#blist button,#alist button,#slist button,#tlist button{display:block;width:100%;text-align:left;margin:0 0 8px;font-size:1.3rem}
 #bhint,#ahint,#thint{color:var(--accent);letter-spacing:.1em;font-size:.85rem}
 #searchView{position:absolute;inset:0;z-index:6;padding:12vh 8vw;background:linear-gradient(120deg,#080d17,var(--base))}
 #searchView h2{margin:0 0 24px;font-size:2.4rem;color:var(--accent)}

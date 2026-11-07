@@ -1,7 +1,7 @@
 // Source list -> screen: ordering/hiding, the tile strip, and the main title area.
 import { byId, deck, message } from "./dom.js";
 import { state, demo, streams, dlnaFound } from "./state.js";
-import { prefs } from "./prefs.js";
+import { prefs, savePrefs } from "./prefs.js";
 import { themeOf } from "./themes.js";
 import { makeTile } from "./templates.js";
 import { drawCursor } from "./cursor.js";
@@ -9,12 +9,38 @@ import { updateYoutubeUi } from "./youtube.js";
 import { updateMusicUi } from "./music.js";
 import { open } from "./playback.js";
 
-/** Rebuild state.allCards / state.cards from state.natural using the saved order and hidden sources. */
+const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
+const GROUP = card => card.source ? 0 : card.url ? 1 : card.dlna ? 2 : card.generic ? 4 : 3;
+
+/**
+ * One-time migration to the Arrange list (prefs.added = ids in deck order). Everything the deck showed before stays in it, in the order the user had;
+ * generic apps and anything found later start in the Source list. Waits until the TV's app list was read (or `force`), so curated apps are not missed.
+ */
+export function migrateToArrangeList(force = false) {
+  if (prefs.added || !(force || demo || state.appsReady)) return;
+  const old = prefs.order || [];
+  prefs.added = [...old, ...state.natural.filter(defaultAdded).map(c => c.id).filter(id => !old.includes(id))];
+  delete prefs.order;
+  prefs.v = 2;
+  savePrefs();
+}
+
+/** Rebuild state.allCards (Arrange list), state.cards (visible part) and state.pool (Source list) from state.natural and the saved choices. */
 export function applyPrefs() {
   const selected = state.cards[state.index]?.id;
-  const rank = id => { const i = prefs.order.indexOf(id); return i < 0 ? 1e9 : i; };
-  state.allCards = state.natural.map((card, i) => ({card, i}))
-    .sort((a, b) => (rank(a.card.id) - rank(b.card.id)) || a.i - b.i).map(x => x.card);
+  migrateToArrangeList();
+  const byId = new Map(state.natural.map(c => [c.id, c]));
+  if (prefs.added) {
+    state.allCards = prefs.added.map(id => byId.get(id)).filter(Boolean);
+  } else {   // not migrated yet (the app list is still loading): behave like before
+    const order = prefs.order || [];
+    const rank = id => { const i = order.indexOf(id); return i < 0 ? 1e9 : i; };
+    state.allCards = state.natural.filter(defaultAdded).map((card, i) => ({card, i}))
+      .sort((a, b) => (rank(a.card.id) - rank(b.card.id)) || a.i - b.i).map(x => x.card);
+  }
+  const inDeck = new Set(state.allCards.map(c => c.id));
+  state.pool = state.natural.filter(c => !inDeck.has(c.id))
+    .sort((a, b) => (GROUP(a) - GROUP(b)) || a.name.localeCompare(b.name));
   state.cards = state.allCards.filter(card => !prefs.hidden[card.id]);
   state.index = Math.max(0, state.cards.findIndex(card => card.id === selected));
 }
@@ -22,12 +48,13 @@ export function applyPrefs() {
 /** Build the source list from a VIDEOSOURCE result (plus streams, apps, media servers) and redraw. */
 export function populate(sources) {
   state.lastSources = sources;
+  const apps = state.installedApps.filter(c => !c.system || state.showSystem || (prefs.added && prefs.added.includes(c.id)));
   state.natural = sources.filter(entry => entry.source.type === "HDMI" || entry.source.type === "TV")
     .sort((a, b) => (a.source.type === "TV" ? -1 : 0) - (b.source.type === "TV" ? -1 : 0) || a.source.number - b.source.number)
     .map(({source, connected}) => ({
       id: source.type + "-" + source.number, source, connected,
       name: source.type === "TV" ? "Live TV" : source.editName || "HDMI " + source.number,
-    })).concat(streams, state.installedApps, dlnaFound);
+    })).concat(streams, apps, dlnaFound);
   applyPrefs();
   buildStrip();
   render();

@@ -47,11 +47,11 @@ build/                    generated .wgt packages (git-ignored)
 | `cursor.js` | virtual cursor: `ZONES`, `usable`, `drawCursor`, `fadeEdges`, `focusSel`, `stepZone` |
 | `render.js` | `applyPrefs`, `populate`, `buildStrip`, `move`, `render` |
 | `inputs.js` | `refresh()` (VIDEOSOURCE, busy spinner) |
-| `apps.js` | `APPS` catalogue + `detectApps()` |
+| `apps.js` | curated `APPS` catalogue + `detectApps()` (also every other launchable app as a generic card, flagged `system` for Samsung internals) |
 | `playback.js` | `open`, `stop`, `peekBack` (HDMI full switch, AVPlay streams, app launch) |
 | `dlna.js` | subnet scan, `scanStatus`, media browser (SOAP), `playNative` |
 | `picker.js` | theme picker overlay |
-| `arrange.js` | Arrange overlay (hide/show, reorder) |
+| `arrange.js` | Arrange screen: Arrange list (reorder, hide/show, remove) and Source list (add; all TV apps) |
 | `music.js` | Apple Music panel: tabs, charts, search, album view, 30 s previews, play history. Reuses the feed DOM and the `yt.inFeed/row/idx/sidx` cursor state |
 | `http.js` | `httpJson` XHR wrapper (used by youtube.js and music.js) |
 | `youtube.js` | login (device flow), token refresh, feed, channel filter, `playYoutube` |

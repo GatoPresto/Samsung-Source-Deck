@@ -15,7 +15,10 @@ export const state = {
   lastSources: [],      // last VIDEOSOURCE list, lets late scan results re-run populate()
   zone: 0,              // virtual cursor zone, see cursor.js
   themeTarget: null,    // card id the theme picker is editing
-  installedApps: [],    // streaming apps found on the TV (see apps.js)
+  installedApps: [],    // apps found on the TV: the curated ones (YouTube, Netflix...) and every other launchable app (see apps.js)
+  appsReady: false,     // true once the TV's app list has been read (needed before the one-time migration to the Arrange list)
+  showSystem: false,    // Source list: also show system apps (session only)
+  pool: [],             // the Source list: known sources that are not in the Arrange list
 };
 
 export const streams = (config.streams || [])

@@ -69,10 +69,14 @@
   (so PS5 and PS5 Pro are one theme); `switch|nintendo` -> `switch` (Switch and Switch 2 are one theme); `xbox` -> `xbox`;
   else `default`. A saved choice always wins over detection.
 
-## Arrange (show/hide + reorder)
-- Footer "Arrange" opens `#arrangeView` listing every source including hidden ones (dimmed, "hidden").
-- OK toggles show/hide (`prefs.hidden`), Left moves the item up, Right moves it down (`prefs.order`, full id list),
-  Back saves and closes. New sources not in `prefs.order` are appended at the end in default order.
+## Arrange (two lists)
+- Footer "Arrange" opens a screen with two columns:
+  - **Arrange list** (left) = the sources shown in the deck, in order (`prefs.added`). Navigation: Up/Down choose, **OK** enters edit mode for the row; in edit mode Up/Down **move** it, OK **hides/shows** it (hidden rows stay in
+    the list, dimmed), Left **removes** it (it goes back to the Source list), Back/Right leave edit mode. Right (outside edit mode) switches to the Source list.
+  - **Source list** (right) = every known source that is not in the Arrange list: unused HDMI/Live TV, streams, media servers, curated apps and **all apps found on the TV**. OK **adds** the row to the end of the Arrange list; Left goes back.
+    First row "Show system apps (N)" toggles the Samsung system/service apps (session only); store apps (ids like `FyObqYlHVG.SWEETTV`) and a few useful built-ins (Internet, SmartThings...) are listed by default.
+- New apps, servers or ports found later go to the Source list only; nothing is added to the deck automatically. Generic apps (not in the curated `APPS`) use the generic theme and launch with `tizen.application.launch`.
+- One-time migration (`migrateToArrangeList` in render.js): everything the deck showed before (old `prefs.order` plus every non-generic source) becomes the Arrange list, then `prefs.order` is dropped and `prefs.v = 2`.
 - If every source is hidden the title shows "All sources hidden" and the detail line points to Arrange.
 
 ## Refresh

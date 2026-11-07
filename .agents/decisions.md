@@ -149,3 +149,8 @@ Also: when a preview ends and playback moves to the next track, `mu.audio.onende
 
 ## D33. Media keys for Apple Music previews
 The TV only delivers the remote's media keys to an app that registered them, so `registerMediaKeys()` registers MediaPlayPause/Play/Pause/Stop at start-up and `keys.js` routes them to `musicMediaKey` only when the Apple Music slide is shown (before the other handlers, so the cursor position does not matter).
+
+## D34. Arrange list + Source list
+The Arrange screen had grown too long (every app, server and port in one list). It is now two lists: the Arrange list (`prefs.added`, ordered, with hide/show kept) and the Source list (`state.pool`, everything else including all TV apps).
+Rules from the user: new discoveries never enter the deck by themselves; every installed app is available; generic theme for apps without a curated look. Replaced `prefs.order` (a full ordering of everything) with `prefs.added` (membership + order); migrated once so the existing deck does not change.
+`getAppsInfo` reports 243 launchable (`show:true`) apps on this TV, most of them Samsung internals, so apps are split into store/useful apps (default) and `system` apps (behind a toggle). Edit mode (OK on a row) is used because the remote has no spare key for move/hide/remove.
