@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="423" viewBox="0 0 512 423">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d2b55"/><stop offset=".55" stop-color="#101735"/><stop offset="1" stop-color="#2a0f3d"/></linearGradient>
+<radialGradient id="glow" cx=".5" cy=".62" r=".55"><stop offset="0" stop-color="#7aa8ff" stop-opacity=".55"/><stop offset="1" stop-color="#7aa8ff" stop-opacity="0"/></radialGradient>
+<linearGradient id="c1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff4fa3"/><stop offset="1" stop-color="#5a1c9a"/></linearGradient>
+<linearGradient id="c2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6dd400"/><stop offset="1" stop-color="#0b4d0b"/></linearGradient>
+<linearGradient id="c3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff3b4e"/><stop offset=".55" stop-color="#7a1d2e"/><stop offset="1" stop-color="#f1c35a"/></linearGradient>
+<linearGradient id="c4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3f8bff"/><stop offset="1" stop-color="#0b1c6b"/></linearGradient>
+<filter id="sh" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity=".55"/></filter>
+<clipPath id="r"><rect width="512" height="423" rx="72"/></clipPath>
+</defs>
+<g clip-path="url(#r)">
+<rect width="512" height="423" fill="url(#bg)"/>
+<rect width="512" height="423" fill="url(#glow)"/>
+<g fill="none" stroke="#fff" stroke-opacity=".06" stroke-width="3"><circle cx="256" cy="400" r="150"/><circle cx="256" cy="400" r="230"/><circle cx="256" cy="400" r="310"/></g>
+</g>
+<g transform="translate(256 211) scale(1.03 0.85) translate(-256 -211)"><g filter="url(#sh)">
+<g transform="rotate(-36 256 405)"><rect x="181" y="118" width="150" height="224" rx="22" fill="url(#c1)" stroke="#fff" stroke-opacity=".35" stroke-width="3"/></g>
+<g transform="rotate(-13 256 405)"><rect x="181" y="118" width="150" height="224" rx="22" fill="url(#c2)" stroke="#fff" stroke-opacity=".35" stroke-width="3"/></g>
+<g transform="rotate(13 256 405)"><rect x="181" y="118" width="150" height="224" rx="22" fill="url(#c4)" stroke="#fff" stroke-opacity=".35" stroke-width="3"/></g>
+<g transform="rotate(36 256 405)"><rect x="181" y="118" width="150" height="224" rx="22" fill="url(#c3)" stroke="#fff" stroke-opacity=".35" stroke-width="3"/></g>
+</g>
+<g>
+<rect x="176" y="104" width="160" height="236" rx="24" fill="#0e1430" stroke="#fff" stroke-width="7"/>
+<rect x="176" y="104" width="160" height="236" rx="24" fill="url(#glow)" opacity=".7"/>
+<path d="M229 170 L229 254 L297 212 Z" fill="#fff"/>
+<rect x="204" y="292" width="104" height="10" rx="5" fill="#fff" fill-opacity=".85"/>
+<rect x="204" y="311" width="66" height="8" rx="4" fill="#fff" fill-opacity=".45"/>
+</g>
+</g>
+</svg>

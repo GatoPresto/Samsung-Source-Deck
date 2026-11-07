@@ -23,6 +23,14 @@ $T run -p SrcDeck001.SourceDeck -t QE77S95CAUXUA
 - Install failing with no message: check for a space in the package name, a stale `.wgt` inside `app/`, or certificate/DUID mismatch.
 - Long commands can hang when the TV sleeps: use timeouts and retry the connect first.
 
+## App icon
+`app/icon.png` (512x423, transparent corners) is rendered from `design/icon.svg` with headless Chrome (no other SVG tool is installed):
+```sh
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu --hide-scrollbars \
+  --default-background-color=00000000 --window-size=512,423 --screenshot="$PWD/app/icon.png" "file://$PWD/design/icon.svg"
+```
+`config.xml` has `<icon src="icon.png"/>`. After changing the icon, reinstall; the TV may take a moment to refresh the Apps row.
+
 ## Checking changes without a TV
 ```sh
 for f in app/js/*.js; do node --input-type=module --check < "$f"; done

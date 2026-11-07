@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="423" viewBox="0 0 512 423">
+<rect width="512" height="423" fill="#1a1f3a"/>
+<rect x="0" y="0" width="170" height="423" fill="#c0392b" opacity=".55"/><rect x="171" y="0" width="170" height="423" fill="#27ae60" opacity=".55"/><rect x="342" y="0" width="170" height="423" fill="#2980b9" opacity=".55"/>
+<rect x="6" y="6" width="500" height="411" fill="none" stroke="#fff" stroke-width="12"/>
+<line x1="0" y1="0" x2="512" y2="423" stroke="#fff" stroke-width="4"/><line x1="512" y1="0" x2="0" y2="423" stroke="#fff" stroke-width="4"/>
+<circle cx="256" cy="211.5" r="150" fill="none" stroke="#ffe600" stroke-width="14"/>
+<rect x="136" y="91" width="240" height="240" fill="none" stroke="#00e5ff" stroke-width="8"/>
+<g font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="64" fill="#fff"><text x="22" y="76">TL</text><text x="402" y="76">TR</text><text x="22" y="398">BL</text><text x="402" y="398">BR</text></g>
+<text x="256" y="226" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="54" fill="#fff" text-anchor="middle">TEST</text>
+</svg>

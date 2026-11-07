@@ -10,6 +10,7 @@ README.md                 user-facing setup (outdated, see AGENTS.md "Known gaps
 app/                      the Tizen web app (this folder is what gets packaged)
   config.xml              widget manifest, app id, privileges
   index.html              markup, <link>s to css/, <template>s, <script type="module" src="js/main.js">
+  icon.png                app icon (512x423 PNG with alpha), referenced by <icon> in config.xml
   sources.js              optional user config (window.sourceDeck: dlna[], streams[])
   youtube-config.js       YouTube OAuth client id/secret (git-ignored; youtube-config.example.js is committed)
   css/
@@ -20,6 +21,7 @@ app/                      the Tizen web app (this folder is what gets packaged)
     fades.css             edge fade masks for the three scrolling rows
     themes/<key>.css      one file per theme: main[data-theme=KEY] look + .tile[data-theme=KEY] thumbnail
   js/                     native ES modules (see below)
+design/icon.svg           source artwork of the app icon (fan of four themed cards + play card)
 build/                    generated .wgt packages (git-ignored)
 ```
 

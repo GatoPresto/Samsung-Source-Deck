@@ -10,5 +10,6 @@
   <tizen:privilege name="http://tizen.org/privilege/application.info"/>
   <access origin="*" subdomains="true"/>
   <content src="index.html"/>
+  <icon src="icon.png"/>
   <name>Source Deck</name>
 </widget>

@@ -77,9 +77,21 @@ Client id/secret live in a git-ignored `app/youtube-config.js`. Video playback i
 ## D17. Channel selection filters in-deck, video deep link uses PAYLOAD
 Opening a channel in the native YouTube app has no known deep link, so choosing a channel shows that channel's uploads in the deck's own video row instead. Videos use the Cobalt `PAYLOAD` format (D16 replaced the earlier guessed `view` + uri attempt, which did not open the video). If the TV changes the YouTube app id, update `YT_APP_IDS`.
 
+## D19. App icon: fan of themed cards
+The icon shows the idea of the app: a fan of four source cards (pink/purple, green, blue, red-gold, echoing the PS5/Xbox/Switch/GTA looks) behind a selected
+dark card with a play triangle. Drawn as SVG in `design/icon.svg` (original artwork, no logos) and rendered to `app/icon.png` at 512x423, the size Samsung's launcher expects.
+
 ## D18. Split into ES modules, CSS files and HTML templates
 `app.js` (about 940 lines) and the inline CSS in `index.html` were split: `js/` ES modules (one concern each, entry `main.js`), `css/` files (base, tiles, overlays, feed, fades, one per theme),
 and `<template>`s for repeated elements. Native ES modules were chosen over concatenation to keep "no build step"; a throwaway test on the TV confirmed `<script type="module">`,
 static `import` and `import.meta` work from the installed widget (`import.meta.url` is `file:///js/...`). Shared mutable state moved to one `state` object because
 exported `let` bindings cannot be reassigned from other modules. The refactor was verified by hashing element geometry, classes and computed styles in 8 states
 before and after (identical). Unused `dialog`/`select` CSS was dropped.
+
+## D20. Icon is pre-stretched for the home tile (measured, not guessed)
+A calibration image (`design/icon-test.svg`: circle, square, stripes, corner letters) installed on the TV and photographed showed: the Apps tab shows `icon.png` undistorted at 512x423, while the
+home-screen row squeezes the whole image into a square-ish squircle tile (the yellow circle became an oval 0.83 as wide as tall = 423/512) and the squircle mask clips the corners.
+Samsung's guide (https://developer.samsung.com/smarttv/design/app-icons-and-screenshots.html) asks for a 1920x1080 logo+background pair plus a 512x423 logo, but only in the store portal;
+a sideloaded app gets the single `config.xml` icon (a second `<icon>` with 1920x1080 was tried and ignored).
+So the artwork in `design/icon.svg` is drawn pre-stretched by 1/0.826 (scale 1.03 x 0.85) so it looks right on the home tile, and slightly wide on the Apps tab. Keep important content away from
+the corners (squircle mask). To re-measure, render `icon-test.svg` into `app/icon.png`, reinstall and photograph the tile.
