@@ -61,6 +61,7 @@
 - Add another app: append `{key, name, theme, ids}` to `APPS` (find ids by logging `getAppsInfo`, see `tv-platform-notes.md`) and optionally a theme.
 
 ## Change theme
+- The screen has **two lists**: Themes (left) and Accent color (right). The right list shows the accents of the *highlighted* theme (a note "This theme has no accent colors." when it has none). OK on a theme applies it (the saved accent stays); **Right** moves to the accents (only if the theme has some), OK there applies the theme **and** the accent; Left returns, Back cancels. A radio dot and a colour swatch mark the current accent. Today only **Home** has accents: Blue (default), Purple, Pink, Red, Orange, Yellow, Green, Teal, Graphite. The choice is saved per source in `prefs.accent[cardId]` (the theme's first accent = default = nothing saved).
 - Footer button "Change theme" opens a full-screen list (`#themeView`) for the selected source: "Auto (<detected>)" plus
   every theme in `THEMES`. A filled dot marks the current choice. Up/Down move, OK applies and closes, Back/Left cancel.
 - Choice saved in `prefs.theme[id]`; "Auto" deletes the entry so detection applies again. Works for every source

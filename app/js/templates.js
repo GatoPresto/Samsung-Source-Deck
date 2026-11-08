@@ -1,5 +1,5 @@
 // Builders for repeated elements. The markup lives in the <template> tags of index.html.
-import { GLYPH, themeOf, kindOf } from "./themes.js";
+import { GLYPH, themeOf, kindOf, accentOf } from "./themes.js";
 
 const clone = id => document.getElementById(id).content.firstElementChild.cloneNode(true);
 const noFocus = el => { el.onfocus = () => el.blur(); return el; };   // selection is drawn by the virtual cursor, never by DOM focus
@@ -8,6 +8,8 @@ export function makeTile(card) {
   const tile = noFocus(clone("tpl-tile"));
   const theme = themeOf(card);
   tile.dataset.theme = theme;
+  const accent = accentOf(card, theme);
+  if (accent) tile.style.setProperty("--tile-glow", accent.glow);   // themes with accents tint their own tile
   tile.querySelector("b").textContent = GLYPH[theme];
   tile.querySelector("[data-name]").textContent = card.name;
   tile.querySelector("small").textContent = kindOf(card);

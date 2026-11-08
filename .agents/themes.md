@@ -42,6 +42,9 @@ Each theme file ends with `--dr-bg`, `--dr-ink`, `--dr-focus-bg`, `--dr-focus-in
 
 The widgets (css/widgets.css) and the widget editor use the same `--dr-*` colours, so a new theme file needs them too.
 
+## Accent colours
+A theme can offer accent colours: give its entry in `THEMES` (js/themes.js) an `accents` list of `{key, label, glow, accent, ink}` (first = the theme's normal look). `render()` sets `--glow`, `--accent`, `--ink` on the page for a non-default accent (and the tile gets `--tile-glow`), so the theme's css must build its colours from those variables (see `css/themes/home.css`, which derives background, `--base` and the `--dr-*` drawer colours from `--glow`/`--accent`/`--ink` with `color-mix`). Pick `ink` with strong contrast against `accent`. The theme picker shows the list automatically. Labels go through `T()`.
+
 ## Adding a theme
 1. Add `{key, label, glyph}` to `THEMES` (and extend `detectTheme` if it should auto-apply).
 2. Create `css/themes/<name>.css`, link it in `index.html`, and add `main[data-theme=KEY]{...variables...}` with optional `::before/::after`, and

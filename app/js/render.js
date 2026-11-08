@@ -2,7 +2,7 @@
 import { byId, deck, message } from "./dom.js";
 import { state, demo, streams, dlnaFound } from "./state.js";
 import { prefs, savePrefs } from "./prefs.js";
-import { themeOf } from "./themes.js";
+import { themeOf, accentOf, THEMES } from "./themes.js";
 import { makeTile } from "./templates.js";
 import { drawCursor } from "./cursor.js";
 import { updateYoutubeUi } from "./youtube.js";
@@ -84,6 +84,18 @@ export function move(offset) {
   render();
 }
 
+/** Set the theme's accent colours as CSS variables on the page (only when the choice changed; the theme's first accent means "no override"). */
+let accentSig = "";
+function applyAccent(card, theme) {
+  const accent = accentOf(card, theme);
+  const sig = accent && accent !== THEMES.find(th => th.key === theme).accents[0] ? theme + ":" + accent.key : "";
+  if (sig === accentSig) return;
+  accentSig = sig;
+  for (const [prop, field] of [["--glow", "glow"], ["--accent", "accent"], ["--ink", "ink"]]) {
+    if (sig) deck.style.setProperty(prop, accent[field]); else deck.style.removeProperty(prop);
+  }
+}
+
 export function render() {
   const {cards, allCards, index} = state;
   const card = cards[index];
@@ -94,6 +106,7 @@ export function render() {
     section.style.animation = "none"; void section.offsetWidth; section.style.animation = "";
   }
   deck.dataset.theme = theme;
+  applyAccent(card, theme);
   updateGlass(theme);
   deck.dataset.card = card?.id;
   deck.dataset.home = card?.home ? "1" : "";

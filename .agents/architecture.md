@@ -50,7 +50,7 @@ build/                    generated .wgt packages (git-ignored)
 | `apps.js` | curated `APPS` catalogue + `detectApps()` (also every other launchable app as a generic card, flagged `system` for Samsung internals) |
 | `playback.js` | `open`, `stop`, `peekBack` (HDMI full switch, AVPlay streams, app launch) |
 | `dlna.js` | subnet scan, `scanStatus`, media browser (SOAP), `playNative` |
-| `picker.js` | theme picker overlay |
+| `picker.js` | theme picker: two lists (themes, and the highlighted theme's accent colours); `accentOf()` in themes.js resolves the accent, `applyAccent()` in render.js sets the CSS variables |
 | `arrange.js` | Arrange screen: Arrange list (reorder, hide/show, remove) and Source list (add; all TV apps) |
 | `music.js` | Apple Music panel: tabs, charts, search, album view, 30 s previews, play history. Reuses the feed DOM and the `yt.inFeed/row/idx/sidx` cursor state |
 | `glass.js` | Liquid Glass lens: paints a displacement map from the lens shape and installs an SVG filter (3 channel-shifted `feDisplacementMap`s + specular rim) used as `backdrop-filter: url(#lg-lens)` on `#glassLens` |
