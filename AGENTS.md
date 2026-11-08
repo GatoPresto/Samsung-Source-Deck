@@ -41,6 +41,8 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 
 11. **Translate every visible string.** Use `t("English text")` (or `T()` for constants) and add the translation to every file in `app/js/lang/`; `node scripts/check-i18n.mjs` must print "i18n ok". See `.agents/features.md` (Settings and languages).
 
+12. **Licensing.** The project is PolyForm Noncommercial 1.0.0 (`LICENSE`, with a `Required Notice:` line that must stay). Only the author may monetize it. New third-party code, icons or fonts must be compatible and listed in `THIRD-PARTY-NOTICES.md`; do not copy code under GPL/AGPL or other terms that conflict with that. Check the terms of a service before adding it (see the notes in `THIRD-PARTY-NOTICES.md`).
+
 ## Quick commands
 
 See `.agents/build-and-deploy.md` for the full flow. One script does everything (profile `GatoPresto`, TV `QE77S95CAUXUA` at `192.168.50.204`):

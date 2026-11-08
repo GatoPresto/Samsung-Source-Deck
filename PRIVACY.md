@@ -2,7 +2,7 @@
 
 _Last updated: 8 November 2026 (background pictures added)_
 
-Source Deck is a personal, open-source app for Samsung TVs. It shows your TV inputs, apps and media in one place. This page explains what the app does with data.
+Source Deck is a personal app for Samsung TVs (its source code is public). It shows your TV inputs, apps and media in one place. This page explains what the app does with data.
 
 ## What the app accesses
 

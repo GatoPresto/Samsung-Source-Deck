@@ -42,3 +42,11 @@ Samsung docs:
 - https://developer.samsung.com/smarttv/develop/getting-started/quick-start-guide.html
 - https://developer.samsung.com/smarttv/develop/api-references/tizen-web-device-api-references/tvwindow-api.html
 - https://developer.samsung.com/smarttv/develop/guides/multimedia/adaptive-streaming.html
+
+## License
+
+Source Deck is **source-available, not open source**: you can use, modify and share it for **noncommercial purposes** under the [PolyForm Noncommercial License 1.0.0](LICENSE) (personal use, hobby projects, study, and the other uses that license lists). **Commercial use, including selling the app or including it in a paid product, needs the author's written permission.** Third-party parts are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+
+This license applies to all versions of Source Deck, including commits made before the license file was added.
+
+Contributions: please open an issue first. By sending a contribution you agree that it may be used under this license and that the author may also use and license it commercially.
