@@ -2,6 +2,7 @@
 // zone 0 = the source tiles, then the footer buttons. YouTube's feed rows are a mode on top (yt.inFeed).
 import { byId } from "./dom.js";
 import { state, yt, wf } from "./state.js";
+import { revealX, onScrollFrame } from "./scroll.js";
 
 /** Modules that draw extra cursor state register a function here (called at the end of drawCursor). */
 export const cursorHooks = [];
@@ -22,7 +23,7 @@ export function drawCursor() {
   [...byId("subs").children].forEach((v, i) => v.classList.toggle("cur", yt.inFeed && yt.row === "subs" && i === yt.sidx));
   const cur = yt.row === "subs" ? byId("subs").children[yt.sidx] : byId("vids").children[yt.idx];
   const rowEl = yt.row === "subs" ? byId("subs") : byId("vids");
-  if (yt.inFeed && cur) rowEl.scrollLeft = Math.max(0, cur.offsetLeft - 40);
+  if (yt.inFeed && cur) revealX(rowEl, cur, {margin: 50});
   byId("musicOpen").classList.toggle("cur", yt.inFeed && yt.row === "open");
   cursorHooks.forEach(fn => fn());
   fadeEdges();
@@ -39,6 +40,7 @@ export function fadeEdges() {
   }
 }
 window.addEventListener("resize", () => fadeEdges());
+onScrollFrame(fadeEdges);   // the edge fades follow a smooth scroll
 
 export function focusSel() { state.zone = 0; yt.inFeed = false; drawCursor(); }
 

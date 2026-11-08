@@ -61,4 +61,4 @@ main[data-theme=applemusicglass]{--dr-bg:#eef1f7;--dr-ink:#0c0d12;--dr-focus-bg:
 main[data-theme=applemusicglass] :is(#bgList,#setList,#bgSheetList,#wList) button{background:linear-gradient(180deg,#ffffff70,#ffffff26);border:1px solid #ffffffe6;box-shadow:inset 0 1.5px 1px #fff,inset 2px 0 4px #00b4ff33,inset -2px 0 4px #ff3c7833,0 6px 14px #1b2a6a24}
 main[data-theme=applemusicglass] :is(#bgList,#setList,#bgSheetList,#wList) button.cur{background:linear-gradient(180deg,#ffffff70,#ffffff26);color:#0a3fb8;font-weight:800}   /* the floating glass bubble (glass.js) marks the focus, like on the other lists */
 main[data-theme=applemusicglass] #bgView[data-view=grid]{background:linear-gradient(135deg,#f6f7fa,#dfe3ec)}
-main[data-theme=applemusicglass] .bgtile.cur{outline:4px solid #0a84ff;outline-offset:3px}
+main[data-theme=applemusicglass] .bgtile.cur{outline:none}

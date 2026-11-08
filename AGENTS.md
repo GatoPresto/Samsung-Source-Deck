@@ -25,7 +25,7 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 2. **Never use DOM focus for navigation.** The app has its own virtual cursor (`.cur` class). Native focus and
    the TV's spatial navigation caused double selections and lag. Native `<select>`/`<dialog>` controls are also
    unusable with the remote. Use the list overlays instead. See `decisions.md` D3.
-3. **Keep the TV light.** No full-screen animations (background-position, big shadows, scale transforms). They lagged.
+3. **Keep the TV light.** No full-screen animations (background-position, big shadows, scale transforms). They lagged. The only motion is small: the focus ring glide (150 ms, transform/size of one element) and the strip scroll (170 ms); keep any new motion that small.
 4. **Stable ids.** Anything the user customises is keyed by source id (`HDMI-2`, `TV-1`, `dlna:<control url>`, `stream:<url>`).
    Never key by array index.
 5. **Port names come from the TV** (`editName` from `VIDEOSOURCE`). The app does not rename ports.

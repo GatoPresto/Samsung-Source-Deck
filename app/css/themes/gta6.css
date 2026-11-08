@@ -8,7 +8,7 @@ main[data-theme=gta6] section{padding-top:3vh}
 main[data-theme=gta6] h1{font-style:italic;color:#fff;text-transform:none;text-shadow:0 3px 0 #8a2f78,0 6px 16px #00000066}
 main[data-theme=gta6] small{color:#fff}
 main[data-theme=gta6] button.cur:not(.tile):not(.vid){background:#e08a3c;color:#1b1024;outline:none}
-main[data-theme=gta6] .tile.cur{outline-color:#e08a3c}
+main[data-theme=gta6] .tile.cur{--cur:#e08a3c}
 main[data-theme=gta6] #meta,main[data-theme=gta6] #detail,main[data-theme=gta6] #scan,main[data-theme=gta6] #status{color:#fff;font-weight:700;text-shadow:-2px 0px 0 #2a0a33,2px 0px 0 #2a0a33,0px -2px 0 #2a0a33,0px 2px 0 #2a0a33,-2px -2px 0 #2a0a33,2px -2px 0 #2a0a33,-2px 2px 0 #2a0a33,2px 2px 0 #2a0a33}
 .tile[data-theme=gta6]{background:linear-gradient(160deg,#ffa86a,#ff7a9a 50%,#a98bc0);border-color:#e08a3c}
 /* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */

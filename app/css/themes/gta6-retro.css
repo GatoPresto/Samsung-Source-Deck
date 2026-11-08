@@ -4,7 +4,7 @@ main[data-theme=gta6classic]::before{background:url("data:image/svg+xml,%3Csvg%2
 main[data-theme=gta6classic]::after{inset:2.5vh 1.6vw;border:2px solid #38e8ff99;border-radius:4px;box-shadow:0 0 0 3px #ff3d9a55}
 main[data-theme=gta6classic] h1{font-style:italic;background:linear-gradient(180deg,#fff6a8 10%,#ff7ac8 55%,#ff3d9a 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 3px 0 #2b0b5a)}
 main[data-theme=gta6classic] #meta,main[data-theme=gta6classic] small{color:#38e8ff}
-main[data-theme=gta6classic] .cur{outline-color:#38e8ff}
+main[data-theme=gta6classic] .cur{--cur:#38e8ff}
 .tile[data-theme=gta6classic]{background:linear-gradient(160deg,#ff3d9a,#7a1fa2 55%,#2b0b5a);border-color:#38e8ff}
 /* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */
 main[data-theme=gta6classic]{--dr-bg:#12052e;--dr-ink:#fff;--dr-focus-bg:#ff9ad5;--dr-focus-ink:#2b0b5a}

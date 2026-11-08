@@ -11,6 +11,7 @@ import { updateGlass } from "./glass.js";
 import { applyBackground } from "./background.js";
 import { open } from "./playback.js";
 import { renderWidgets, allowsWidgets } from "./widgets.js";
+import { revealX } from "./scroll.js";
 import { t } from "./i18n.js";
 
 const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
@@ -67,9 +68,11 @@ export function populate(sources) {
   render();
 }
 
+let stripFresh = true;   // the strip was just (re)built: its first reveal is instant
 export function buildStrip() {
   const strip = byId("strip");
   strip.textContent = "";
+  stripFresh = true;
   state.cards.forEach((card, i) => {
     const tile = makeTile(card);
     tile.onclick = () => { state.index = i; open(); };
@@ -122,7 +125,7 @@ export function render() {
     tile.setAttribute("aria-selected", i === index);
   });
   const sel = byId("strip").children[index];
-  if (sel) byId("strip").scrollLeft = Math.max(0, sel.offsetLeft - 60);
+  if (sel) { revealX(byId("strip"), sel, {instant: stripFresh}); stripFresh = false; }   // scrolls only when the tile reaches the edge
   byId("theme").hidden = !card;
   byId("bgbtn").hidden = !card;
   byId("widgetsbtn").hidden = !allowsWidgets(card);

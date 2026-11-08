@@ -37,6 +37,9 @@ A theme is a key in `THEMES` (`app/js/themes.js`) plus one CSS file `app/css/the
   (opacity) on card change.
 - Bottom anchoring: `main>section{flex:1}` and `footer.nav{height:68px}` keep tiles from moving between themes.
 
+## Focus ring colour
+The focus is drawn by one floating ring (`#focusRing`, js/glass.js `placeRing`), not by an outline on each element, so a theme must not style `.cur` outlines. To colour the ring set `--cur` on the focused element (`main[data-theme=x] .tile.cur{--cur:#e50914}`; default white). An element with an opaque background on `.cur` (filled button or row) gets a ring in its fill colour; in drawers and widgets the ring uses `--fbg` / `--dr-focus-bg`. The Liquid Glass theme has its own bubble look for tiles, buttons and rows.
+
 ## Change background drawer colours
 Each theme file ends with `--dr-bg`, `--dr-ink`, `--dr-focus-bg`, `--dr-focus-ink` for the "Change background" drawer/grid (`css/background.css`). Pick a dark (or, for light themes, light) `--dr-bg`, and a focus colour with strong contrast against both the drawer and its own ink. Without them the screen falls back to a neutral dark palette.
 

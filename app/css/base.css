@@ -12,6 +12,10 @@ h1{font:var(--title-weight) clamp(2.8rem,9vw,9rem)/1 var(--title-font);text-tran
 button{background:var(--btn-bg);color:white;border:var(--btn-border);border-radius:var(--radius);padding:12px 18px;font:inherit;font-family:var(--btn-font);text-transform:var(--btn-case);letter-spacing:var(--btn-track);box-shadow:var(--btn-shadow);}
 button:focus-visible{outline:none}
 .cur{outline:4px solid white;outline-offset:4px}
+/* The focus is drawn by ONE floating ring (#focusRing, js/glass.js) that glides from element to element, so the elements draw no outline of their own.
+   A theme tells the ring its colour with --cur on .cur (default white); filled focus (background on .cur) uses its fill colour. */
+main:not([data-theme=applemusicglass]) .cur{outline:none}
+#focusRing[data-look=plain]{box-sizing:border-box;border-style:solid;background:none;box-shadow:0 0 0 1px #0000004d,inset 0 0 0 1px #0000004d;transition:transform .15s cubic-bezier(.2,.7,.2,1),width .15s cubic-bezier(.2,.7,.2,1),height .15s cubic-bezier(.2,.7,.2,1),border-radius .15s,border-color .15s}
 #status{min-height:1.5em;max-width:60ch}
 #surface{position:fixed;inset:0;pointer-events:none}
 #back{position:fixed;z-index:2;top:18px;left:18px;background:#080d17}

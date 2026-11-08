@@ -5,6 +5,8 @@
 //     and is used as `backdrop-filter: url(#id)` so the glass bends whatever is behind it (Chromium, which the TV's browser is).
 // Used by the Apple Music Liquid Glass theme (#glassLens). One element only, so the TV stays smooth.
 import { cursorHooks } from "./cursor.js";
+import { wf } from "./state.js";
+import { scrolling, onScrollFrame } from "./scroll.js";
 
 const NS = "http://www.w3.org/2000/svg";
 
@@ -177,7 +179,7 @@ export function refreshGlass() {
   const on = isGlassTheme();
   const level = (window.sourceDeck && window.sourceDeck.glass) || "quality";
   const live = document.querySelectorAll("[data-lg]");
-  placeRing(on);
+  placeRing();
   if (!on || level === "lens") { live.forEach(clearGlass); return; }
   const wanted = new Set();
   const take = (node, mode, kind, hot) => { wanted.add(node); setGlass(node, mode, kind, hot); };
@@ -194,45 +196,74 @@ export function refreshGlass() {
 const OVERLAYS = ["widgetsView", "settingsView", "bgView", "themeView", "browser", "arrangeView", "searchView"];
 const isGlassTheme = () => document.getElementById("deck").dataset.theme === "applemusicglass";
 
-/** Where the highlight is: inside an open overlay list (theme picker, media browser, Arrange, search) or on the main screen. */
+/** Where the highlight is: inside an open overlay (theme picker, media browser, Arrange, search, drawers) or on the main screen. */
 function ringTarget() {
   for (const id of OVERLAYS) {
     const overlay = document.getElementById(id);
-    // the picture grid of "Change background" gets no bubble (it would blur the picture you are choosing); the tile has its own outline
-    if (overlay && !overlay.hidden) return {node: overlay.dataset.view === "grid" ? null : overlay.querySelector(".cur"), ctx: "overlay"};
+    if (overlay && !overlay.hidden) {
+      // while a widget is moved or resized the drawer is hidden and nothing is highlighted
+      if (overlay.dataset.view === "grid" && id === "widgetsView") return {node: null, ctx: "overlay"};
+      return {node: overlay.querySelector("#bgSheet:not([hidden]) .cur") || overlay.querySelector(".cur"), ctx: "overlay"};
+    }
   }
-  return {node: document.querySelector("#strip .cur, #vids .cur, #subs .cur, footer .cur, #musicOpen.cur"), ctx: "main"};
+  const widget = wf.active ? document.querySelector(".widget.wfocus") : null;   // an interactive widget (News cards) has the cursor
+  return {node: widget || document.querySelector("#strip .cur, #vids .cur, #subs .cur, footer .cur, #musicOpen.cur"), ctx: "main"};
 }
+
+const opaqueFill = cs => {
+  const m = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/.exec(cs.backgroundColor);
+  return m && (m[4] === undefined || parseFloat(m[4]) > 0.6) ? cs.backgroundColor : "";
+};
 
 /**
- * The highlight is ONE floating glass bubble above the UI (#focusRing): it glides to the focused element (CSS transition), is slightly larger than it, and refracts what is under it
- * with its own live filter. Moving it repaints only the bubble, never a filtered element. Style writes are skipped when nothing changed.
+ * The highlight is ONE floating element above the UI (#focusRing) that glides to the focused element (CSS transition) instead of every element drawing its own outline.
+ * Two looks: "glass" (Liquid Glass theme: a refracting bubble, see css/themes/applemusicglass.css) and "plain" (every other theme and the picture tiles / widgets: a ring in the
+ * colour the theme uses for focus). While a row scrolls the ring follows the moving item frame by frame instead of gliding. Style writes are skipped when nothing changed.
  */
-function placeRing(on) {
-  const ring = document.getElementById("focusRing");
-  const {node: target, ctx} = on ? ringTarget() : {node: null, ctx: ""};
+function placeRing() {
+  const ring = document.getElementById("focusRing"), deckEl = document.getElementById("deck");
+  const {node: target, ctx} = deckEl.hidden ? {node: null, ctx: ""} : ringTarget();
   const set = (prop, value) => { if (ring.style[prop] !== value) ring.style[prop] = value; };
   if (!target) { set("display", "none"); return; }
-  // appearing, or jumping between the main screen and an overlay: place it without gliding across the screen
-  const jump = ring.style.display !== "block" || ring.dataset.ctx !== ctx;
-  if (jump) ring.style.transition = "none";
+  const look = isGlassTheme() && !target.matches(".widget, .bgtile") ? "glass" : "plain";
+  // appearing, or jumping between the main screen and an overlay: place it without gliding across the screen; while scrolling it sticks to the item
+  const jump = ring.style.display !== "block" || ring.dataset.ctx !== ctx || ring.dataset.look !== look;
+  const instant = jump || scrolling.active;
+  if (instant) ring.style.transition = "none";
   ring.dataset.ctx = ctx;
-  const deck = document.getElementById("deck").getBoundingClientRect();
+  ring.dataset.look = look;
+  const deck = deckEl.getBoundingClientRect();
   const r = target.getBoundingClientRect();
-  const grow = 7;
-  const w = Math.round(r.width + 2 * grow), h = Math.round(r.height + 2 * grow);
-  const radius = Math.min((parseFloat(getComputedStyle(target).borderTopLeftRadius) || 0) + grow, h / 2, w / 2);
   set("display", "block");
-  set("width", w + "px"); set("height", h + "px"); set("borderRadius", radius + "px");
-  set("transform", "translate(" + Math.round(r.left - deck.left - grow) + "px," + Math.round(r.top - deck.top - grow) + "px)");
-  // the filter cost grows with the area it bends: big bubbles (wide list rows) use the single-pass version, small ones keep the colour fringe
-  const css = "url(#" + filterId(w, h, radius, "ring", w * h < 40000) + ") saturate(1.5)";
-  if (ring.style.backdropFilter !== css) { ring.style.backdropFilter = css; ring.style.webkitBackdropFilter = css; }
-  if (jump) { void ring.offsetWidth; ring.style.transition = ""; }
+  if (look === "glass") {
+    const grow = 7;
+    const w = Math.round(r.width + 2 * grow), h = Math.round(r.height + 2 * grow);
+    const radius = Math.min((parseFloat(getComputedStyle(target).borderTopLeftRadius) || 0) + grow, h / 2, w / 2);
+    set("borderWidth", ""); set("borderColor", "");
+    set("width", w + "px"); set("height", h + "px"); set("borderRadius", radius + "px");
+    set("transform", "translate(" + Math.round(r.left - deck.left - grow) + "px," + Math.round(r.top - deck.top - grow) + "px)");
+    // the filter cost grows with the area it bends: big bubbles (wide list rows) use the single-pass version, small ones keep the colour fringe
+    const css = "url(#" + filterId(w, h, radius, "ring", w * h < 40000) + ") saturate(1.5)";
+    if (ring.style.backdropFilter !== css) { ring.style.backdropFilter = css; ring.style.webkitBackdropFilter = css; }
+  } else {
+    const cs = getComputedStyle(target), prop = name => cs.getPropertyValue(name).trim();
+    // thick ring like the old outline (4px, 4px away) for tiles, buttons and cards; slimmer for list rows that touch each other
+    const rows = ctx === "overlay" && !target.matches(".bgtile, #searchInput, #searchGo, #searchCancel");
+    const bw = rows ? 3 : 4, grow = bw + (rows ? 2 : 4);
+    const color = prop("--cur") || prop("--fbg") || (target.matches(".widget") ? prop("--dr-focus-bg") : "") || opaqueFill(cs) || "#fff";
+    const w = Math.round(r.width + 2 * grow), h = Math.round(r.height + 2 * grow);
+    const radius = Math.min((parseFloat(cs.borderTopLeftRadius) || 0) + grow, h / 2, w / 2);
+    set("backdropFilter", ""); set("webkitBackdropFilter", "");
+    set("borderWidth", bw + "px"); set("borderColor", color);
+    set("width", w + "px"); set("height", h + "px"); set("borderRadius", radius + "px");
+    set("transform", "translate(" + Math.round(r.left - deck.left - grow) + "px," + Math.round(r.top - deck.top - grow) + "px)");
+  }
+  if (instant) { void ring.offsetWidth; ring.style.transition = ""; }
 }
 
-/** Overlay lists call this after they move their cursor (they do not go through drawCursor). */
-export function syncRing() { placeRing(isGlassTheme()); }
+/** Overlays and widgets call this after they move their cursor (they do not go through drawCursor). */
+export function syncRing() { placeRing(); }
+onScrollFrame(() => placeRing());
 
 let lensReady = false;
 /** Called by render(): set up the lens the first time the Liquid Glass theme is shown. */

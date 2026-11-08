@@ -64,6 +64,7 @@ build/                    generated .wgt packages (git-ignored)
 | `openurl.js` | `openUrl(url, {opening, failed})`: Tizen `view` app control (system choice, then `org.tizen.browser`); `window.open` in the demo |
 | `wtypes/*.js` | widget types `inputs`, `news`, `newscards` (interactive), `currency`, `sports` (each a default-exported `{name, size, min, options, build, update}`; registered in `TYPES` of widgets.js) |
 | `weather.js` | Open-Meteo city search + forecast, 20 min cache, WMO code -> condition and inline SVG icons |
+| `scroll.js` | `revealX(row, child)` (scroll only when the item is not fully visible, smooth), `smoothScrollTo`, frame hooks (edge fades and the focus ring follow the scroll) |
 | `qr.js` | `qrSvg(text)` shared by the YouTube login and About screens |
 | `lang/*.js` | one file per language: `export default {"English text": "translation"}` |
 | `textprompt.js` | shared on-screen text entry (`openPrompt({title, placeholder, value, okLabel, allowEmpty, onSubmit, onCancel})`) on the `#searchView` overlay; used by Apple Music search and the background searches |

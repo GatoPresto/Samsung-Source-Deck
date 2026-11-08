@@ -4,6 +4,7 @@
 import { byId, deck } from "./dom.js";
 import { state, wf } from "./state.js";
 import { drawCursor } from "./cursor.js";
+import { syncRing } from "./glass.js";
 import { prefs, savePrefs } from "./prefs.js";
 import { t, T, currentLanguage } from "./i18n.js";
 import { cachedWeather, fetchWeather, isStale, conditionOf, iconSvg } from "./weather.js";
@@ -202,6 +203,7 @@ function drawFocus() {
     l.el.classList.toggle("wfocus", on);
     if (l.type.focus) l.type.focus(l.el, l.w, on);
   }
+  syncRing();   // the focus ring glides to the widget
 }
 /** Put the cursor on the first interactive widget of the slide. Returns false when there is none. */
 export function enterWidgets() {

@@ -60,7 +60,7 @@
 
 #wfHint{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);z-index:4;padding:14px 30px;font-size:1.2rem;white-space:nowrap;background:var(--dr-bg,#0b0f1a);color:var(--dr-ink,#fff);border:2px solid var(--accent);border-radius:min(var(--radius),22px)}
 /* News cards (interactive): a row of cards; the chosen one is outlined while the widget has the cursor. */
-.widget.wfocus{outline:4px solid var(--dr-focus-bg,#fff);outline-offset:3px}
+.widget.wfocus{outline:none}   /* the focus ring is drawn by #focusRing */
 .wcards{width:100%;height:100%;display:flex;flex-direction:column;padding:4cqh 3cqw;min-height:0}
 .wcards h4{display:flex;justify-content:space-between;gap:2cqw}
 .npos{font-weight:500;letter-spacing:.04em;opacity:.8}

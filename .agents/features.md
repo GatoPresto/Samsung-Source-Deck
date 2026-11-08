@@ -111,7 +111,7 @@ The footer button formerly called Refresh. It re-reads the TV's inputs (HDMI por
 - Button turns into a spinner "Scanning…" for at least 0.9 s, status "Scanning for inputs…", then runs the DLNA scan.
 
 ## Main-screen navigation
-Left/Right: previous/next tile (wraps). The footer buttons are one row: Down from the tiles lands on the first button, Left/Right move (and wrap) between buttons, and Up from any button goes straight back to the tiles. OK activates the cursor. Back exits the app.
+Left/Right: previous/next tile (wraps). The thumbnail strip scrolls only when the chosen tile reaches an edge (70 px are kept free on a side with more tiles, where the strip fades out) and then by just enough to show it fully, in 170 ms (`scroll.js`); the same rule applies to the feed rows. The focus is one ring that glides to the next element in 150 ms (`#focusRing`, see decisions D60). The footer buttons are one row: Down from the tiles lands on the first button, Left/Right move (and wrap) between buttons, and Up from any button goes straight back to the tiles. OK activates the cursor. Back exits the app.
 
 ## Persistence
 `localStorage["deck-prefs"]` (theme, hidden, order, background choices) and, for background pictures, IndexedDB `deck-bg`. Discovered servers are not stored and reappear after each scan.
