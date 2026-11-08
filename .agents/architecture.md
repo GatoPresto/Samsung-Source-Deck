@@ -63,7 +63,7 @@ build/                    generated .wgt packages (git-ignored)
 | `background.js` | background pictures: `bgPrefs`, `keyFor`, `applyBackground` (called by `render()`), `assignBackground`, `removeBackground`, `gc` (deletes stored pictures nobody uses), `DIM_LEVELS` |
 | `bgpicker.js` | "Change background" overlay (`#bgView`): menu rows, picture grid, folder navigation, `choose()` (download -> `toBackgroundJpeg` -> IndexedDB -> assign) |
 | `bgsources.js` | picture sources: Unsplash (key from `backgrounds-config.js`), Wallhaven (no key), router/DLNA image folders (`soapBrowse(..., "images")`), USB via the Tizen filesystem API |
-| `bgstore.js` | IndexedDB `deck-bg` / `images` (`bgPut/bgGet/bgDelete/bgAll`); recreates the store if an old empty DB exists |
+| `bgstore.js` | IndexedDB `deck-bg` / `images` (`bgPut` keeps star fields, `bgGet/bgDelete/bgAll`, `bgSetStar`); recreates the store if an old empty DB exists |
 | `imageutil.js` | `toBackgroundJpeg`: shrink to fit 1920x1080, re-encode as JPEG |
 | `youtube.js` | login (device flow), token refresh, feed, channel filter, `playYoutube` |
 | `keys.js` | the single keydown router (+ YouTube feed keys) |

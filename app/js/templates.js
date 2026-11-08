@@ -65,7 +65,7 @@ export function makeRow(text, className = "") {
 }
 
 /** A tile in the background-picture grid: a picture (thumbnail + credit) or a folder. */
-export function makeBgTile(item) {
+export function makeBgTile(item, starred = false) {
   const el = noFocus(clone("tpl-bgtile"));
   const label = el.querySelector("span");
   if (item.kind === "folder") {
@@ -79,5 +79,6 @@ export function makeBgTile(item) {
     img.onerror = () => { img.remove(); el.classList.add("nothumb"); };
     label.textContent = item.credit ? item.credit.replace(/^Photo by /, "") : item.title;
   }
+  if (starred) { const star = document.createElement("i"); star.className = "star"; star.textContent = "★"; el.appendChild(star); }
   return el;
 }

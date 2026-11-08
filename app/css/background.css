@@ -11,12 +11,15 @@
 #bgPanel,#setPanel{box-sizing:border-box;height:100%;padding:6vh 4vw}
 :is(#bgView,#settingsView)[data-view=menu] :is(#bgPanel,#setPanel){width:40vw;min-width:780px;background:color-mix(in srgb,var(--bg) 94%,transparent);border-right:2px solid color-mix(in srgb,var(--accent) 55%,transparent)}
 :is(#bgView,#settingsView) h2{margin:0 0 18px;font-size:2rem;font-family:var(--title-font);text-transform:var(--title-case);letter-spacing:var(--title-track);color:var(--accent)}
-:is(#bgList,#setList) button{display:block;width:100%;margin:0 0 10px;padding:15px 24px;text-align:left;font-size:1.3rem;font-weight:500;color:var(--ink);background:var(--btn-bg);border:var(--btn-border);border-radius:var(--radius);box-shadow:var(--btn-shadow)}
-:is(#bgList,#setList) button.cur{color:var(--fink);background:var(--fbg);font-weight:800;outline:none}
+:is(#bgList,#setList,#bgSheetList) button{display:block;width:100%;margin:0 0 10px;padding:15px 24px;text-align:left;font-size:1.3rem;font-weight:500;color:var(--ink);background:var(--btn-bg);border:var(--btn-border);border-radius:var(--radius);box-shadow:var(--btn-shadow)}
+:is(#bgList,#setList,#bgSheetList) button.cur{color:var(--fink);background:var(--fbg);font-weight:800;outline:none}
+#bgSheet{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);z-index:2;box-sizing:border-box;width:min(620px,70vw);padding:26px 30px 18px;background:var(--bg);border:2px solid var(--accent);border-radius:min(var(--radius),22px);box-shadow:0 22px 60px #000000a0}
+#bgSheetTitle{margin:0 0 16px;font-size:1.15rem;font-weight:500;letter-spacing:.02em;color:var(--accent);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-transform:none}
 #bgGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-height:calc(100vh - 300px);overflow:hidden;padding:12px 14px 22px;margin:0 -14px}
 .bgtile{position:relative;padding:0;aspect-ratio:16/9;border-radius:min(var(--radius),14px);overflow:hidden;background:var(--btn-bg);border:2px solid color-mix(in srgb,var(--accent) 40%,transparent);box-shadow:none;opacity:.72;scroll-margin:30px 0}
 .bgtile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .bgtile span{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 9px;font-size:.85rem;font-weight:500;text-align:left;text-transform:none;letter-spacing:0;color:#fff;background:linear-gradient(transparent,#000000c0);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bgtile .star{position:absolute;top:8px;right:11px;font-style:normal;font-size:1.5rem;line-height:1;color:#ffd54a;text-shadow:0 1px 4px #000c}
 .bgtile.cur{opacity:1;border-color:var(--fbg);outline:5px solid var(--fbg);outline-offset:3px}
 .bgtile.folder,.bgtile.nothumb{display:flex;align-items:center;justify-content:center}
 .bgtile.folder span,.bgtile.nothumb span{position:static;background:none;font-size:1.15rem;padding:0 14px;white-space:normal;text-align:center;color:var(--ink)}

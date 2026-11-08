@@ -69,13 +69,13 @@ export function removeBackground(scope, cardId) {
   return gc();
 }
 
-/** Delete every stored picture that no source uses any more. */
+/** Delete every stored picture that no source uses any more (starred ones are kept). */
 export async function gc() {
   const b = bgPrefs();
   const used = new Set([b.all, ...Object.values(b.map)].filter(Boolean));
   try {
     for (const record of await bgAll()) {
-      if (used.has(record.key)) continue;
+      if (used.has(record.key) || record.starred) continue;   // starred pictures stay even when no source uses them
       await bgDelete(record.key);
       const info = urls.get(record.key);
       if (info) { URL.revokeObjectURL(info.url); urls.delete(record.key); }

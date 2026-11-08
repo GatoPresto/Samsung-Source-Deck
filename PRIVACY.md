@@ -20,7 +20,7 @@ Source Deck is a personal, open-source app for Samsung TVs. It shows your TV inp
 
 ## Where data is stored
 
-Everything stays **on your TV**. Login tokens, your settings (themes, order, hidden sources, language, background choices), a **history of the last 60 Apple Music previews you played in this app** (used only for the "For you" suggestions), a short-lived cache of your YouTube feed and the **background pictures you chose** (kept only while in use; deleted when you replace or remove them) are stored in the app's local storage on the TV. The app has **no server of its own**: nothing is sent to the developer or to any third party except the direct requests to Google (YouTube API), Apple (public feeds) and, if you use background pictures, Unsplash and Wallhaven, that are needed to show the content.
+Everything stays **on your TV**. Login tokens, your settings (themes, order, hidden sources, language, background choices), a **history of the last 60 Apple Music previews you played in this app** (used only for the "For you" suggestions), a short-lived cache of your YouTube feed and the **background pictures you chose** (kept while a source uses them, or until you remove their star; deleted when you replace or remove them otherwise) are stored in the app's local storage on the TV. The app has **no server of its own**: nothing is sent to the developer or to any third party except the direct requests to Google (YouTube API), Apple (public feeds) and, if you use background pictures, Unsplash and Wallhaven, that are needed to show the content.
 
 ## What the app does not do
 
@@ -30,7 +30,7 @@ Everything stays **on your TV**. Login tokens, your settings (themes, order, hid
 
 ## Your control
 
-- Choose **Log out** on the YouTube slide to delete the stored login and cached feed from the TV. Background pictures are deleted when you remove or replace them. The Apple Music play history stays until the app is uninstalled or its data is cleared on the TV.
+- Choose **Log out** on the YouTube slide to delete the stored login and cached feed from the TV. Background pictures are deleted when you remove or replace them (pictures you starred stay until you remove the star). The Apple Music play history stays until the app is uninstalled or its data is cleared on the TV.
 - Remove the app's access any time at <https://myaccount.google.com/permissions>.
 - Uninstalling the app from the TV deletes all of its stored data.
 

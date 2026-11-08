@@ -1,8 +1,10 @@
 // Turning a downloaded picture into something cheap to keep and to draw on the TV: at most 1920x1080, JPEG.
-const MAX_W = 1920, MAX_H = 1080;
-
 /** Decode `blob`, shrink it to fit 1920x1080 (never enlarge) and return a JPEG blob (~200-500 KB). */
-export function toBackgroundJpeg(blob, quality = 0.85) {
+export const toBackgroundJpeg = (blob, quality = 0.85) => shrinkToJpeg(blob, 1920, 1080, quality);
+/** A small JPEG (480x270 at most) for the Starred grid. */
+export const toThumbJpeg = blob => shrinkToJpeg(blob, 480, 270, 0.8);
+
+function shrinkToJpeg(blob, MAX_W, MAX_H, quality) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(blob);
     const img = new Image();

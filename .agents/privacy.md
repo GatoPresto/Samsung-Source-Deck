@@ -14,7 +14,7 @@
 | YouTube subscriptions + latest uploads (cache, 10 min) | YouTube Data API v3 | `localStorage["yt-feed"]` | no |
 | Apple Music play history (60 songs) | what the user plays | `localStorage["music-history"]` | no; only artist ids go to Apple's public lookup to find more songs |
 | Apple Music charts/search/previews | Apple's public iTunes feeds (no login) | not stored | yes, to `itunes.apple.com`: search text, song/album/artist ids, country from the TV locale, plus the IP address (spelled out in PRIVACY.md) |
-| Background pictures | chosen by the user from Unsplash, Wallhaven, the router's media server or a USB drive | IndexedDB `deck-bg`, only while in use (deleted when replaced/removed); choices in `localStorage["deck-prefs"].bg` | search text and the picture requests go to Unsplash/Wallhaven (plus IP); router/USB files are only read locally |
+| Background pictures | chosen by the user from Unsplash, Wallhaven, the router's media server or a USB drive | IndexedDB `deck-bg`, while in use or starred (deleted when replaced/removed and not starred); choices in `localStorage["deck-prefs"].bg` | search text and the picture requests go to Unsplash/Wallhaven (plus IP); router/USB files are only read locally |
 | Unsplash API key | the developer (`backgrounds-config.js`, git-ignored) | in the installed app only | sent to Unsplash as the API key |
 | Google OAuth client id/secret | the developer (`youtube-config.js`, git-ignored) | in the installed app only | sent to Google during login |
 
