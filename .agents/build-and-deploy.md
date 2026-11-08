@@ -40,3 +40,6 @@ Temporarily add `new Image().src = "http://<mac-ip>:8099/log?" + encodeURICompon
 ## Git
 Repo: https://github.com/GatoPresto/Samsung-Source-Deck (branch `main`). `.gitignore`: `build/`, `.DS_Store`,
 `app/.manifest.tmp`, `app/*signature*.xml`. Commit messages end with the Claude co-author line.
+
+## Demo screenshots (DEMO.md, README.md)
+`screenshots/` (git-ignored) holds 1920 x 1080 PNGs taken from the browser demo mode (serve `app/` over HTTP, open it in Chrome at a 1920 x 1080 viewport, drive it with synthetic `keydown` events like the TV remote). For stable, correct data the shots used the real APIs where the browser allows it and local copies of RSS feeds / sample wallpapers where CORS blocks it (the TV itself ignores CORS). `DEMO.md` and `README.md` refer to the images as `screenshots/<name>.png`; GitHub cannot be uploaded to by script, so: drag the files into a GitHub comment box (do not submit), paste the generated markdown into `screenshots/github-urls.md`, then run `node scripts/link-screenshots.mjs` to replace the local paths by the `https://github.com/user-attachments/assets/...` links.

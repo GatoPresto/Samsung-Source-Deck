@@ -4,3 +4,6 @@ app/.manifest.tmp
 app/*signature*.xml
 app/youtube-config.js
 app/backgrounds-config.js
+
+# Screenshots for DEMO.md / README.md (local only; they are linked through GitHub user-attachments, see scripts/link-screenshots.mjs)
+screenshots/

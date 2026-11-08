@@ -50,6 +50,8 @@ scripts/deploy.sh              # package, sign, install, launch. Leaves exactly 
 scripts/deploy.sh --no-run     # package + install      scripts/deploy.sh --build    # package only
 ```
 
+Demo screenshots: `screenshots/` is git-ignored; `node scripts/link-screenshots.mjs` swaps the local image paths in `DEMO.md`/`README.md` for GitHub upload links (see `.agents/build-and-deploy.md`).
+
 If `sdb connect` fails (TV asleep/restarted): `~/tizen-studio/tools/sdb kill-server; ~/tizen-studio/tools/sdb start-server; ~/tizen-studio/tools/sdb connect 192.168.50.204`, then rerun.
 
 ## Known gaps
