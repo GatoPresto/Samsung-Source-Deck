@@ -11,6 +11,7 @@ import { initKeys } from "./keys.js";
 import { registerMediaKeys } from "./music.js";
 import { initPrompt } from "./textprompt.js";
 import { openSettings } from "./settings.js";
+import { openWidgetEditor } from "./widgetedit.js";
 import { applyLanguage } from "./i18n.js";
 
 byId("refresh").onclick = refresh;
@@ -19,9 +20,10 @@ byId("theme").onclick = openPicker;
 byId("arrange").onclick = openArrange;
 byId("bgbtn").onclick = openBgPicker;
 byId("settings").onclick = openSettings;
+byId("widgetsbtn").onclick = () => openWidgetEditor();
 byId("ytlogin").onclick = ytLogin;
 // Selection is drawn by the virtual cursor, never by DOM focus.
-for (const id of ["ytlogin", "theme", "bgbtn", "arrange", "refresh", "settings"]) byId(id).onfocus = () => byId(id).blur();
+for (const id of ["ytlogin", "theme", "bgbtn", "widgetsbtn", "arrange", "refresh", "settings"]) byId(id).onfocus = () => byId(id).blur();
 
 initKeys();
 initPrompt();

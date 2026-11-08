@@ -15,10 +15,12 @@
 | Apple Music play history (60 songs) | what the user plays | `localStorage["music-history"]` | no; only artist ids go to Apple's public lookup to find more songs |
 | Apple Music charts/search/previews | Apple's public iTunes feeds (no login) | not stored | yes, to `itunes.apple.com`: search text, song/album/artist ids, country from the TV locale, plus the IP address (spelled out in PRIVACY.md) |
 | Background pictures | chosen by the user from Unsplash, Wallhaven, the router's media server or a USB drive | IndexedDB `deck-bg`, while in use or starred (deleted when replaced/removed and not starred); choices in `localStorage["deck-prefs"].bg` | search text and the picture requests go to Unsplash/Wallhaven (plus IP); router/USB files are only read locally |
+| Widget layouts, weather city (name + coordinates) | the user | `localStorage["deck-prefs"].widgets` | the city name goes to Open-Meteo (geocoding) when searching; the coordinates go to Open-Meteo (forecast) to read the weather (plus IP) |
+| Last weather per city (cache, 20 min) | Open-Meteo forecast API | `localStorage["weather-cache"]` | no |
 | Unsplash API key | the developer (`backgrounds-config.js`, git-ignored) | in the installed app only | sent to Unsplash as the API key |
 | Google OAuth client id/secret | the developer (`youtube-config.js`, git-ignored) | in the installed app only | sent to Google during login |
 
-External hosts the app talks to: `oauth2.googleapis.com`, `www.googleapis.com` (YouTube Data API), `itunes.apple.com`, `api.unsplash.com`, `images.unsplash.com`, `wallhaven.cc`, `w.wallhaven.cc`, `th.wallhaven.cc`, song-preview/artwork hosts of Apple and YouTube thumbnails (`i.ytimg.com` etc.), and local-network media servers. Nothing else.
+External hosts the app talks to: `oauth2.googleapis.com`, `www.googleapis.com` (YouTube Data API), `itunes.apple.com`, `api.unsplash.com`, `images.unsplash.com`, `geocoding-api.open-meteo.com`, `api.open-meteo.com`, `wallhaven.cc`, `w.wallhaven.cc`, `th.wallhaven.cc`, song-preview/artwork hosts of Apple and YouTube thumbnails (`i.ytimg.com` etc.), and local-network media servers. Nothing else.
 
 ## Checklist when adding or changing a feature
 

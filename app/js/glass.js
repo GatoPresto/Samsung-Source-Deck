@@ -191,7 +191,7 @@ export function refreshGlass() {
   live.forEach(node => { if (!wanted.has(node)) clearGlass(node); });
 }
 
-const OVERLAYS = ["settingsView", "bgView", "themeView", "browser", "arrangeView", "searchView"];
+const OVERLAYS = ["widgetsView", "settingsView", "bgView", "themeView", "browser", "arrangeView", "searchView"];
 const isGlassTheme = () => document.getElementById("deck").dataset.theme === "applemusicglass";
 
 /** Where the highlight is: inside an open overlay list (theme picker, media browser, Arrange, search) or on the main screen. */

@@ -8,6 +8,7 @@ export const THEMES = [
   {key: "switch", label: "Nintendo Switch", glyph: "◖ ◗"},
   {key: "xbox", label: "Xbox", glyph: "Ⓧ"},
   {key: "stream", label: T("Network media"), glyph: "≈≈≈"},
+  {key: "home", label: T("Home"), glyph: "⌂"},
   {key: "tv", label: T("Live TV"), glyph: "▦"},
   {key: "youtube", label: "YouTube", glyph: "▶"},
   {key: "netflix", label: "Netflix", glyph: "N"},
@@ -23,6 +24,7 @@ export const GLYPH = Object.fromEntries(THEMES.map(t => [t.key, t.glyph]));
 
 /** Theme chosen automatically from what the source is and what it is called. */
 export function detectTheme(card) {
+  if (card.home) return "home";
   if (card.app) return card.appTheme;
   const name = card.name;
   return card.url || card.dlna ? "stream" : card.source?.type === "TV" ? "tv" :
@@ -38,6 +40,6 @@ export function themeOf(card) {
 }
 
 export function kindOf(card) {
-  return card.app ? t("App") : card.dlna ? t("Media server") : card.url ? t("Stream") :
+  return card.home ? t("Widgets") : card.app ? t("App") : card.dlna ? t("Media server") : card.url ? t("Stream") :
     card.source?.type === "TV" ? t("Live TV") : t("HDMI {n}", {n: card.source.number});
 }

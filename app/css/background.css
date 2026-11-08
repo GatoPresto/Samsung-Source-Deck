@@ -6,13 +6,13 @@
 /* "Change background" screen: a drawer on the left (menu) or a full screen (picture grid), styled with the current theme.
    Each theme sets --dr-bg / --dr-ink / --dr-focus-bg / --dr-focus-ink (its own file) so text and focus stay readable; shape, font and borders come from the theme's button variables.
    Menu view: only the drawer is drawn, the slide stays visible so Dimming / Apply to show their effect at once. */
-:is(#bgView,#settingsView){--bg:var(--dr-bg,#0b0f1a);--ink:var(--dr-ink,#fff);--fbg:var(--dr-focus-bg,#fff);--fink:var(--dr-focus-ink,#0b0f1a);position:absolute;inset:0;z-index:5;overflow:hidden;color:var(--ink)}
+:is(#bgView,#settingsView,#widgetsView){--bg:var(--dr-bg,#0b0f1a);--ink:var(--dr-ink,#fff);--fbg:var(--dr-focus-bg,#fff);--fink:var(--dr-focus-ink,#0b0f1a);position:absolute;inset:0;z-index:5;overflow:hidden;color:var(--ink)}
 #bgView[data-view=grid]{background:var(--bg)}
-#bgPanel,#setPanel{box-sizing:border-box;height:100%;padding:6vh 4vw}
-:is(#bgView,#settingsView)[data-view=menu] :is(#bgPanel,#setPanel){width:40vw;min-width:780px;background:color-mix(in srgb,var(--bg) 94%,transparent);border-right:2px solid color-mix(in srgb,var(--accent) 55%,transparent)}
-:is(#bgView,#settingsView) h2{margin:0 0 18px;font-size:2rem;font-family:var(--title-font);text-transform:var(--title-case);letter-spacing:var(--title-track);color:var(--accent)}
-:is(#bgList,#setList,#bgSheetList) button{display:block;width:100%;margin:0 0 10px;padding:15px 24px;text-align:left;font-size:1.3rem;font-weight:500;color:var(--ink);background:var(--btn-bg);border:var(--btn-border);border-radius:var(--radius);box-shadow:var(--btn-shadow)}
-:is(#bgList,#setList,#bgSheetList) button.cur{color:var(--fink);background:var(--fbg);font-weight:800;outline:none}
+#bgPanel,#setPanel,#wPanel{box-sizing:border-box;height:100%;padding:6vh 4vw}
+:is(#bgView,#settingsView,#widgetsView)[data-view=menu] :is(#bgPanel,#setPanel,#wPanel){width:40vw;min-width:780px;background:color-mix(in srgb,var(--bg) 94%,transparent);border-right:2px solid color-mix(in srgb,var(--accent) 55%,transparent)}
+:is(#bgView,#settingsView,#widgetsView) h2{margin:0 0 18px;font-size:2rem;font-family:var(--title-font);text-transform:var(--title-case);letter-spacing:var(--title-track);color:var(--accent)}
+:is(#bgList,#setList,#bgSheetList,#wList) button{display:block;width:100%;margin:0 0 10px;padding:15px 24px;text-align:left;font-size:1.3rem;font-weight:500;color:var(--ink);background:var(--btn-bg);border:var(--btn-border);border-radius:var(--radius);box-shadow:var(--btn-shadow)}
+:is(#bgList,#setList,#bgSheetList,#wList) button.cur{color:var(--fink);background:var(--fbg);font-weight:800;outline:none}
 #bgSheet{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);z-index:2;box-sizing:border-box;width:min(620px,70vw);padding:26px 30px 18px;background:var(--bg);border:2px solid var(--accent);border-radius:min(var(--radius),22px);box-shadow:0 22px 60px #000000a0}
 #bgSheetTitle{margin:0 0 16px;font-size:1.15rem;font-weight:500;letter-spacing:.02em;color:var(--accent);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-transform:none}
 #bgGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-height:calc(100vh - 300px);overflow:hidden;padding:12px 14px 22px;margin:0 -14px}
@@ -25,8 +25,8 @@
 .bgtile.folder span,.bgtile.nothumb span{position:static;background:none;font-size:1.15rem;padding:0 14px;white-space:normal;text-align:center;color:var(--ink)}
 .bgtile.folder.cur{background:var(--fbg)}
 .bgtile.folder.cur span{color:var(--fink);font-weight:800}
-#bgStatus,#setStatus{min-height:1.5em;margin:10px 0 0;font-size:1.1rem;color:var(--ink)}
-#bgHint,#setHint{margin:12px 0 0;color:var(--accent);letter-spacing:.08em;font-size:.9rem}
+#bgStatus,#setStatus,#wStatus{min-height:1.5em;margin:10px 0 0;font-size:1.1rem;color:var(--ink)}
+#bgHint,#setHint,#wHint{margin:12px 0 0;color:var(--accent);letter-spacing:.08em;font-size:.9rem}
 #setList{max-height:calc(100vh - 330px);overflow:hidden}
 #setAbout{margin:0 0 16px}
 #setAbout h3{margin:0 0 10px;font-size:1.8rem;font-family:var(--title-font);text-transform:var(--title-case);letter-spacing:var(--title-track);color:var(--ink)}

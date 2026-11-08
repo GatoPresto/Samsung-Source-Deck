@@ -8,6 +8,7 @@ import { syncRing } from "./glass.js";
 import { populate, render } from "./render.js";
 import { t, T, LANGUAGES, languageName, systemLanguage, setLanguage } from "./i18n.js";
 import { qrSvg } from "./qr.js";
+import { refreshWidgets } from "./widgets.js";
 
 export const settings = {open: false};
 const ui = {view: "menu", cur: 0, rows: [], status: ""};
@@ -94,6 +95,7 @@ async function activate() {
     await setLanguage(row.id);
     populate(state.lastSources);   // card names and the main screen texts in the new language
     render();
+    refreshWidgets();   // dates and weather texts in the new language
     draw();
   } else if (row.id === "linkedin") openUrl(LINKEDIN);
 }

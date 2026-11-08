@@ -10,6 +10,7 @@ import { updateMusicUi } from "./music.js";
 import { updateGlass } from "./glass.js";
 import { applyBackground } from "./background.js";
 import { open } from "./playback.js";
+import { renderWidgets, allowsWidgets } from "./widgets.js";
 import { t } from "./i18n.js";
 
 const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
@@ -32,6 +33,8 @@ export function migrateToArrangeList(force = false) {
 export function applyPrefs() {
   const selected = state.cards[state.index]?.id;
   migrateToArrangeList();
+  // the Home slide is put at the front of an existing Arrange list once (the user may move or remove it afterwards)
+  if (prefs.added && !prefs.homeSeeded) { if (!prefs.added.includes("home")) prefs.added.unshift("home"); prefs.homeSeeded = true; savePrefs(); }
   const byId = new Map(state.natural.map(c => [c.id, c]));
   if (prefs.added) {
     state.allCards = prefs.added.map(id => byId.get(id)).filter(Boolean);
@@ -58,6 +61,7 @@ export function populate(sources) {
       id: source.type + "-" + source.number, source, connected,
       name: source.type === "TV" ? t("Live TV") : source.editName || t("HDMI {n}", {n: source.number}),
     })).concat(streams, apps, dlnaFound);
+  state.natural.unshift({id: "home", home: true, name: t("Home")});   // the Home slide (widgets) comes first
   applyPrefs();
   buildStrip();
   render();
@@ -92,9 +96,10 @@ export function render() {
   deck.dataset.theme = theme;
   updateGlass(theme);
   deck.dataset.card = card?.id;
+  deck.dataset.home = card?.home ? "1" : "";
   byId("title").textContent = name;
-  byId("meta").textContent = demo ? t("Browser demo") : card?.app ? t("Apps") : card?.url || card?.dlna ? t("Network media") : t("TV inputs");
-  byId("detail").textContent = card?.id === "app:applemusic" ? t("OK opens Apple Music · Up for charts, search and previews") : card?.app ? t("Opens the app with your own recommendations") : card?.dlna ? t("UPnP / DLNA media server") :
+  byId("meta").textContent = card?.home ? t("Home") : demo ? t("Browser demo") : card?.app ? t("Apps") : card?.url || card?.dlna ? t("Network media") : t("TV inputs");
+  byId("detail").textContent = card?.home ? t("OK opens the widget editor") : card?.id === "app:applemusic" ? t("OK opens Apple Music · Up for charts, search and previews") : card?.app ? t("Opens the app with your own recommendations") : card?.dlna ? t("UPnP / DLNA media server") :
     card?.url ? t("HTTP media stream") : card?.source ?
       (card.source.type === "TV" ? t("Antenna / apps") : t("HDMI {n}", {n: card.source.number})) :
       allCards.length ? t("Open Arrange to show sources again") : t("Rescan or add a network stream");
@@ -107,6 +112,8 @@ export function render() {
   if (sel) byId("strip").scrollLeft = Math.max(0, sel.offsetLeft - 60);
   byId("theme").hidden = !card;
   byId("bgbtn").hidden = !card;
+  byId("widgetsbtn").hidden = !allowsWidgets(card);
+  renderWidgets(card);
   applyBackground(card);
   updateYoutubeUi(card);
   updateMusicUi(card);

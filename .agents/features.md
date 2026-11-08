@@ -88,6 +88,14 @@
 - One-time migration (`migrateToArrangeList` in render.js): everything the deck showed before (old `prefs.order` plus every non-generic source) becomes the Arrange list, then `prefs.order` is dropped and `prefs.v = 2`.
 - If every source is hidden the title shows "All sources hidden" and the detail line points to Arrange.
 
+## Home slide and widgets
+- **Home** is a built-in slide (card id `home`, theme `home`, tile glyph ⌂). It is put at the front of the Arrange list once (`prefs.homeSeeded`); the user can move or remove it (it then waits in the Source list). It starts with a Clock, the Date and a Weather widget (no city yet). OK on the Home tile opens the widget editor.
+- **Widgets** are small panels on a 12 x 6 grid (an absolute layer between the header and the thumbnails, `#widgets`, so tiles and footer never move). Every slide can have its own widgets (`prefs.widgets[cardId]`) except the ones that draw a feed: YouTube and Apple Music (`allowsWidgets` in widgets.js). The footer button **Widgets** (hidden on those slides) opens the editor.
+- **Editor** (drawer, like Change background): "＋ Add widget" (a type; placed at the first free spot, right side first) and one row per widget. OK on a widget: **Move** (arrows, 1 cell; the drawer hides), **Resize** (←→ width, ↑↓ height), options (OK cycles the value), **City** (Weather: text prompt, then a list of matches), **Remove widget**. Widgets cannot overlap or leave the grid. The widget under the cursor is outlined on the slide.
+- **Options**: every widget has *Card* (Panel = translucent panel in the theme colours, None, Accent). Clock: Time format (Auto/24-hour/12-hour), Seconds. Date: Long/Short/Numeric. Weather: Units (Auto/Celsius/Fahrenheit; Auto = Fahrenheit for en-US), Details (feels like, high/low, wind), City. Text scales with the widget size (container units).
+- **Weather** comes from Open-Meteo (no key): geocoding for the city search, forecast for the conditions; cached 20 min; shows "…" while loading. Times and dates use the app language (`Intl`) and the TV's clock.
+- Adding a widget type: one entry in `TYPES` (widgets.js) + CSS in `css/widgets.css` + the strings through `t()`/`T()`.
+
 ## Settings (gear button) and languages
 - A gear icon button ends the footer row, right-aligned (the only icon-only button). OK opens a drawer like "Change background" with two rows: **Language** and **About the developer**.
 - **Language**: "System language (<name>)" plus English, Ukrainian, Spanish, French, German, Italian, Portuguese, Polish, Dutch, Czech, Swedish, Turkish, Japanese, Korean, Simplified Chinese (native names; no Russian, no right-to-left languages). "System" follows `navigator.language` (the TV's menu language); if it is not in the list (or is Traditional Chinese) the app falls back to English. The choice is saved in `prefs.lang` (`"system"` by default) and applies at once (static texts via `applyStatic`, cards via `populate`, everything else on redraw).

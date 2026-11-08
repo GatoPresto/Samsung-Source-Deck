@@ -57,6 +57,9 @@ build/                    generated .wgt packages (git-ignored)
 | `http.js` | `httpJson` (optional headers) and `httpBlob` XHR wrappers (youtube.js, music.js, bgsources.js) |
 | `i18n.js` | `t("English text", {vars})` (the English text is the key), `T()` marker for constants, `LANGUAGES`, `systemLanguage()`, `applyLanguage()` (lazy-loads `js/lang/<code>.js`), `applyStatic()` for `data-i18n*` attributes in index.html |
 | `settings.js` | gear button screen: Language list (System + 15 languages) and About the developer (name, bio, LinkedIn row + QR) in a drawer |
+| `widgets.js` | widget registry `TYPES` (clock, date, weather: name, default/min size, options, `build`/`update`), per-slide layout in `prefs.widgets[cardId]`, grid helpers (12 x 6), `renderWidgets(card)` (called by `render()`), `refreshWidgets()`, a 1 s ticker |
+| `widgetedit.js` | the widget editor drawer: Add widget, per-widget Move / Resize / options / City / Remove (move and resize hide the drawer and use the arrow keys) |
+| `weather.js` | Open-Meteo city search + forecast, 20 min cache, WMO code -> condition and inline SVG icons |
 | `qr.js` | `qrSvg(text)` shared by the YouTube login and About screens |
 | `lang/*.js` | one file per language: `export default {"English text": "translation"}` |
 | `textprompt.js` | shared on-screen text entry (`openPrompt({title, placeholder, value, okLabel, allowEmpty, onSubmit, onCancel})`) on the `#searchView` overlay; used by Apple Music search and the background searches |
@@ -88,7 +91,7 @@ Outside `main`: `<object id="surface">` (AVPlay target) and `#back` (Back to sou
 | `state.allCards` | `natural` sorted by `prefs.order` (includes hidden) |
 | `state.cards` | `allCards` minus hidden. This is what the strip shows |
 | `state.index` | selected index into `cards` |
-| `state.zone` | virtual cursor zone: index into `ZONES` in cursor.js (0 tiles, then the footer buttons: ytlogin, theme, bgbtn, arrange, refresh, settings) |
+| `state.zone` | virtual cursor zone: index into `ZONES` in cursor.js (0 tiles, then the footer buttons: ytlogin, theme, bgbtn, widgetsbtn, arrange, refresh, settings) |
 | `state.active` | the card currently open (HDMI/stream); `null` on the picker |
 | `prefs` (prefs.js) | `{theme:{id:key}, hidden:{id:true}, order:[id]}`, persisted in `localStorage["deck-prefs"]` |
 | `dlnaFound` (state.js) | DLNA servers found by scan (kept for the session), plus any from `sources.js` |

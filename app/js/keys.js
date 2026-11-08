@@ -12,10 +12,12 @@ import { musicShown, musicEnter, musicOpenFull, musicMediaKey } from "./music.js
 import { prompt, promptKey } from "./textprompt.js";
 import { bg, bgKey } from "./bgpicker.js";
 import { settings, settingsKey } from "./settings.js";
+import { widgetEdit, widgetKey } from "./widgetedit.js";
 
 export function initKeys() {
   document.addEventListener("keydown", event => {
     if (prompt.open) { promptKey(event); return; }
+    if (widgetEdit.open) { widgetKey(event); return; }
     if (settings.open) { settingsKey(event); return; }
     if (bg.open) { bgKey(event); return; }
     if (loginUi.open) { loginKey(event); return; }

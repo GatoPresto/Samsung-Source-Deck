@@ -1,0 +1,6 @@
+/* Home slide: calm blue, widgets only (the title area is hidden by css/widgets.css rules in base) */
+main[data-theme=home]{--glow:#3a5bd9;--base:#0d1426;--accent:#a9c4ff;--ink:#0d1426;--radius:20px;--btn-bg:#ffffff14;--btn-border:1px solid #ffffff33;--title-weight:600;--title-track:-.01em;background:linear-gradient(135deg,#070b16,#13203f 55%,#1d2f63)}
+.tile[data-theme=home]{background:linear-gradient(135deg,#3a5bd9,#0d1426)}
+main[data-home="1"] #title,main[data-home="1"] #detail,main[data-home="1"] #meta{visibility:hidden}
+/* Change background drawer colours (kept readable on this theme: drawer, text, focused row/picture) */
+main[data-theme=home]{--dr-bg:#0d1426;--dr-ink:#fff;--dr-focus-bg:#a9c4ff;--dr-focus-ink:#0d1426}
