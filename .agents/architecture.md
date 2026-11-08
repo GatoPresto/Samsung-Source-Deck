@@ -55,6 +55,10 @@ build/                    generated .wgt packages (git-ignored)
 | `music.js` | Apple Music panel: tabs, charts, search, album view, 30 s previews, play history. Reuses the feed DOM and the `yt.inFeed/row/idx/sidx` cursor state |
 | `glass.js` | Liquid Glass lens: paints a displacement map from the lens shape and installs an SVG filter (3 channel-shifted `feDisplacementMap`s + specular rim) used as `backdrop-filter: url(#lg-lens)` on `#glassLens` |
 | `http.js` | `httpJson` (optional headers) and `httpBlob` XHR wrappers (youtube.js, music.js, bgsources.js) |
+| `i18n.js` | `t("English text", {vars})` (the English text is the key), `T()` marker for constants, `LANGUAGES`, `systemLanguage()`, `applyLanguage()` (lazy-loads `js/lang/<code>.js`), `applyStatic()` for `data-i18n*` attributes in index.html |
+| `settings.js` | gear button screen: Language list (System + 15 languages) and About the developer (name, bio, LinkedIn row + QR) in a drawer |
+| `qr.js` | `qrSvg(text)` shared by the YouTube login and About screens |
+| `lang/*.js` | one file per language: `export default {"English text": "translation"}` |
 | `textprompt.js` | shared on-screen text entry (`openPrompt({title, placeholder, value, okLabel, allowEmpty, onSubmit, onCancel})`) on the `#searchView` overlay; used by Apple Music search and the background searches |
 | `background.js` | background pictures: `bgPrefs`, `keyFor`, `applyBackground` (called by `render()`), `assignBackground`, `removeBackground`, `gc` (deletes stored pictures nobody uses), `DIM_LEVELS` |
 | `bgpicker.js` | "Change background" overlay (`#bgView`): menu rows, picture grid, folder navigation, `choose()` (download -> `toBackgroundJpeg` -> IndexedDB -> assign) |
@@ -73,7 +77,7 @@ Cursor zones (`cursor.js` `ZONES`): thumbnails, ytlogin, theme, bgbtn, arrange, 
 `<main id="deck" data-theme data-card>` is a flex column:
 header (title + count) -> `section` (meta, title `h1`, detail, `#status`, `#scan`) -> overlays (`#browser`,
 `#arrangeView`, `#themeView`, absolute, full-screen, inside `main` so they inherit theme variables) ->
-`#strip` (thumbnail tiles) -> `footer.nav` (Change theme, Arrange, Refresh).
+`#strip` (thumbnail tiles) -> `footer.nav` (Change theme, Change background, Arrange, Rescan sources, and the gear Settings button on the right).
 Outside `main`: `<object id="surface">` (AVPlay target) and `#back` (Back to sources button).
 
 ## State (`js/state.js`, `state.*`)
@@ -84,7 +88,7 @@ Outside `main`: `<object id="surface">` (AVPlay target) and `#back` (Back to sou
 | `state.allCards` | `natural` sorted by `prefs.order` (includes hidden) |
 | `state.cards` | `allCards` minus hidden. This is what the strip shows |
 | `state.index` | selected index into `cards` |
-| `state.zone` | virtual cursor zone: 0 tiles, 1 Change theme, 2 Arrange, 3 Refresh |
+| `state.zone` | virtual cursor zone: index into `ZONES` in cursor.js (0 tiles, then the footer buttons: ytlogin, theme, bgbtn, arrange, refresh, settings) |
 | `state.active` | the card currently open (HDMI/stream); `null` on the picker |
 | `prefs` (prefs.js) | `{theme:{id:key}, hidden:{id:true}, order:[id]}`, persisted in `localStorage["deck-prefs"]` |
 | `dlnaFound` (state.js) | DLNA servers found by scan (kept for the session), plus any from `sources.js` |
@@ -97,7 +101,7 @@ HDMI/TV cards carry the TV's `source` object (needed verbatim by `tvwindow.setSo
 ## Data flow
 
 1. `refresh()` -> `setBusy(true)` -> `tizen.systeminfo.getPropertyValue("VIDEOSOURCE")` (4 s timeout) ->
-   `populate(list)`. A minimum 0.9 s busy time makes the spinner visible. Refresh also cancels an old scan.
+   `populate(list)`. A minimum 0.9 s busy time makes the spinner visible. Rescan also cancels an old scan.
 2. `populate()` builds `natural` -> `applyPrefs()` (order, hidden, keeps selection by id) -> `buildStrip()` -> `render()`.
 3. `scanDlna()` runs after inputs load (see `features.md`), calling `populate(lastSources)` per server found.
 4. `render()` sets `deck.dataset.theme` from `themeOf(card)`, updates title/detail/count, marks `.sel`, scrolls the

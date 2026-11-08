@@ -4,12 +4,13 @@ import { state, tv, demo, streams } from "./state.js";
 import { populate } from "./render.js";
 import { detectApps } from "./apps.js";
 import { scanDlna } from "./dlna.js";
+import { t } from "./i18n.js";
 
 function setBusy(on) {
   deck.classList.toggle("busy", on);
   byId("refresh").classList.toggle("busy", on);
-  byId("refresh").textContent = on ? "Scanning…" : "Refresh";
-  if (on) message("Scanning for inputs…");
+  byId("refresh").textContent = t(on ? "Scanning…" : "Rescan sources");
+  if (on) message(t("Scanning for inputs…"));
 }
 
 export function refresh() {
@@ -17,7 +18,7 @@ export function refresh() {
   if (state.lastSources.length) detectApps();
   const started = Date.now();
   setBusy(true);
-  // Keep the busy state visible for at least 0.9 s so the user sees Refresh did something.
+  // Keep the busy state visible for at least 0.9 s so the user sees the rescan did something.
   const settle = work => setTimeout(() => {
     if (request !== state.refreshGeneration) return;
     setBusy(false);
@@ -38,7 +39,7 @@ export function refresh() {
   function fail(why) {
     if (done || request !== state.refreshGeneration) return;
     done = true;
-    settle(() => { populate([]); message("Could not read TV inputs: " + why); scanDlna(); });
+    settle(() => { populate([]); message(t("Could not read TV inputs: {why}", {why})); scanDlna(); });
   }
   setTimeout(() => fail("timeout"), 4000);
   try {
@@ -58,7 +59,7 @@ export function refresh() {
       }
       settle(() => {
         populate(list);
-        if (!list.length) message("TV reported no inputs: " + JSON.stringify(result));
+        if (!list.length) message(t("TV reported no inputs: {result}", {result: JSON.stringify(result)}));
         scanDlna();
       });
     }, error => fail((error && error.message) || "error"));

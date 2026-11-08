@@ -39,6 +39,8 @@ servers. Left/Right choose a source, OK opens it. The whole screen restyles per 
 
 10. **Keep `PRIVACY.md` true.** It is the public privacy policy linked from the Google OAuth consent screen. Whenever a change touches what data the app reads, stores, or sends, update `PRIVACY.md` in the same change and tell the user (a changed policy may also need the Google Cloud consent screen updated). Triggers: a new external service or API (anything beyond Google/YouTube and Apple's public iTunes feeds), a new Google scope (today only `youtube.readonly`), new data kept in `localStorage` (today: theme/hidden/order prefs, YouTube tokens and cached feed, Apple Music play history, the remote-service token if ever re-added), any request that sends user data off the TV, analytics/logging, accounts, or sharing. See `.agents/privacy.md`.
 
+11. **Translate every visible string.** Use `t("English text")` (or `T()` for constants) and add the translation to every file in `app/js/lang/`; `node scripts/check-i18n.mjs` must print "i18n ok". See `.agents/features.md` (Settings and languages).
+
 ## Quick commands
 
 See `.agents/build-and-deploy.md` for the full flow. One script does everything (profile `GatoPresto`, TV `QE77S95CAUXUA` at `192.168.50.204`):
@@ -52,6 +54,6 @@ If `sdb connect` fails (TV asleep/restarted): `~/tizen-studio/tools/sdb kill-ser
 
 ## Known gaps
 
-- `README.md` still describes the first version (Assign console, manual stream/server entries). Refresh it.
+- `README.md` still describes the first version (Assign console, manual stream/server entries). Bring it up to date.
 - Network streams (`streams` in `app/sources.js`) are implemented but were never tested on the TV.
 - Playback of DLNA files depends on the TV's native Video Player accepting the URL. Format support is the TV's.

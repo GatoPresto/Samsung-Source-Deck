@@ -10,6 +10,7 @@ import { makeRow } from "./templates.js";
 import { focusSel } from "./cursor.js";
 import { applyPrefs, buildStrip, render, populate, migrateToArrangeList } from "./render.js";
 import { syncRing } from "./glass.js";
+import { t, T } from "./i18n.js";
 
 export const arr = {open: false, col: "A", curA: 0, curS: 0, edit: false};
 
@@ -18,9 +19,9 @@ const hasSystemApps = () => state.installedApps.some(c => c.system);
 const sourceRows = () => (hasSystemApps() ? [{toggle: true}] : []).concat(state.pool);
 
 const HINTS = {
-  A: "↑↓ choose · OK edit · → Source list · Back done",
-  edit: "EDIT: ↑↓ move · OK show / hide · ← remove from list · Back finish",
-  S: "↑↓ choose · OK add to the Arrange list · ← Arrange list · Back done",
+  A: T("↑↓ choose · OK edit · → Source list · Back done"),
+  edit: T("EDIT: ↑↓ move · OK show / hide · ← remove from list · Back finish"),
+  S: T("↑↓ choose · OK add to the Arrange list · ← Arrange list · Back done"),
 };
 
 function clamp() {
@@ -33,28 +34,29 @@ function drawArrange() {
   const listA = byId("alist"), listS = byId("slist");
   listA.textContent = ""; listS.textContent = "";
   const shown = state.cards.length;
-  byId("hA").textContent = "Arrange list · " + shown + " shown" + (state.allCards.length > shown ? ", " + (state.allCards.length - shown) + " hidden" : "");
-  byId("hS").textContent = "Source list · " + state.pool.length;
+  byId("hA").textContent = state.allCards.length > shown ? t("Arrange list · {shown} shown, {hidden} hidden", {shown, hidden: state.allCards.length - shown}) : t("Arrange list · {shown} shown", {shown});
+  byId("hS").textContent = t("Source list · {n}", {n: state.pool.length});
   byId("colA").classList.toggle("active", arr.col === "A");
   byId("colS").classList.toggle("active", arr.col === "S");
   state.allCards.forEach((card, i) => {
     const hidden = prefs.hidden[card.id];
     const cls = (arr.col === "A" && i === arr.curA ? "cur " + (arr.edit ? "grab " : "") : "") + (hidden ? "off" : "");
-    const row = makeRow((hidden ? "☐  " : "☑  ") + card.name + "  ·  " + kindOf(card) + (hidden ? "  ·  hidden" : ""), cls);
+    const row = makeRow((hidden ? "☐  " : "☑  ") + card.name + "  ·  " + kindOf(card) + (hidden ? "  ·  " + t("hidden") : ""), cls);
     row.onclick = () => { arr.col = "A"; arr.curA = i; arr.edit = true; drawArrange(); };
     listA.appendChild(row);
   });
-  if (!state.allCards.length) listA.textContent = "Empty. Add sources from the Source list.";
+  if (!state.allCards.length) listA.textContent = t("Empty. Add sources from the Source list.");
   sourceRows().forEach((item, i) => {
     const cls = arr.col === "S" && i === arr.curS ? "cur" : "";
     const row = item.toggle
-      ? makeRow((state.showSystem ? "☑  " : "☐  ") + "Show system apps (" + state.installedApps.filter(c => c.system).length + ")", cls + " sys")
-      : makeRow("＋  " + item.name + "  ·  " + kindOf(item) + (item.system ? "  ·  system" : ""), cls);
+      ? makeRow((state.showSystem ? "☑  " : "☐  ") + t("Show system apps ({n})", {n: state.installedApps.filter(c => c.system).length}), cls + " sys")
+      : makeRow("＋  " + item.name + "  ·  " + kindOf(item) + (item.system ? "  ·  " + t("system") : ""), cls);
     row.onclick = () => { arr.col = "S"; arr.curS = i; activateSource(); };
     listS.appendChild(row);
   });
-  if (!sourceRows().length) listS.textContent = "Nothing else found. New apps and servers show up here.";
-  byId("ahint").textContent = HINTS[arr.col === "A" && arr.edit ? "edit" : arr.col];
+  if (!sourceRows().length) listS.textContent = t("Nothing else found. New apps and servers show up here.");
+  const hint = HINTS[arr.col === "A" && arr.edit ? "edit" : arr.col];
+  byId("ahint").textContent = t(hint);
   (arr.col === "A" ? listA : listS).querySelector(".cur")?.scrollIntoView({block: "nearest"});
   syncRing();
 }

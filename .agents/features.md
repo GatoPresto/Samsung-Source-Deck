@@ -87,7 +87,14 @@
 - One-time migration (`migrateToArrangeList` in render.js): everything the deck showed before (old `prefs.order` plus every non-generic source) becomes the Arrange list, then `prefs.order` is dropped and `prefs.v = 2`.
 - If every source is hidden the title shows "All sources hidden" and the detail line points to Arrange.
 
-## Refresh
+## Settings (gear button) and languages
+- A gear icon button ends the footer row, right-aligned (the only icon-only button). OK opens a drawer like "Change background" with two rows: **Language** and **About the developer**.
+- **Language**: "System language (<name>)" plus English, Ukrainian, Spanish, French, German, Italian, Portuguese, Polish, Dutch, Czech, Swedish, Turkish, Japanese, Korean, Simplified Chinese (native names; no Russian, no right-to-left languages). "System" follows `navigator.language` (the TV's menu language); if it is not in the list (or is Traditional Chinese) the app falls back to English. The choice is saved in `prefs.lang` (`"system"` by default) and applies at once (static texts via `applyStatic`, cards via `populate`, everything else on redraw).
+- **About the developer**: name, bio, a button that opens https://www.linkedin.com/in/gatopresto and a QR code for the same address. The button asks Tizen to `view` the URL (first with no app id so the system picks a handler, then the Samsung browser `org.tizen.browser`); if both fail the screen tells the user to scan the QR. Samsung TVs have no LinkedIn app, so in practice it opens the TV browser (not yet verified on the TV).
+- Rule: every user-visible string goes through `t("English text")` (or `T()` for constants) and gets a translation in every `js/lang/*.js`; run `node scripts/check-i18n.mjs` (it lists missing/unused keys and mismatched `{placeholders}`). Brand names, music genre names and developer-only setup messages stay English.
+
+## Rescan sources
+The footer button formerly called Refresh. It re-reads the TV's inputs (HDMI ports, Live TV), re-detects installed apps and rescans the network for media servers (busy label "Scanning…").
 - Button turns into a spinner "Scanning…" for at least 0.9 s, status "Scanning for inputs…", then runs the DLNA scan.
 
 ## Main-screen navigation

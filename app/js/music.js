@@ -9,6 +9,7 @@ import { makeChip, makeTrack, makeSkeleton } from "./templates.js";
 import { drawCursor, focusSel, cursorHooks } from "./cursor.js";
 import { httpJson } from "./http.js";
 import { openPrompt } from "./textprompt.js";
+import { t, T } from "./i18n.js";
 
 const isMusic = card => card?.id === "app:applemusic";
 const country = () => ((window.sourceDeck && window.sourceDeck.musicCountry) || (navigator.language || "en-US").split("-")[1] || "us").toLowerCase();
@@ -16,10 +17,10 @@ const bigArt = url => (url || "").replace(/\/\d+x\d+bb/, "/300x300bb");
 
 const GENRES = [["Pop", 14], ["Hip-Hop", 18], ["Rock", 21], ["Electronic", 7], ["R&B", 15], ["Country", 6], ["Latin", 12], ["Dance", 17], ["Alternative", 20], ["Jazz", 2], ["Classical", 5]];
 const TABS = [
-  {key: "foryou", label: "For you"},
-  {key: "songs", label: "Top songs"},
-  {key: "albums", label: "Top albums"},
-  {key: "search", label: "Search"},
+  {key: "foryou", label: T("For you")},
+  {key: "songs", label: T("Top songs")},
+  {key: "albums", label: T("Top albums")},
+  {key: "search", label: T("Search")},
   ...GENRES.map(([name, id]) => ({key: "g" + id, label: name, genre: id})),
 ];
 
@@ -69,7 +70,7 @@ async function loadTab(tab) {
 
 /** Rough "recommendations" from this app's own play history: more top songs by the artists played most recently. */
 async function forYou() {
-  if (!mu.history.length) { mu.note = "Play a few songs and your picks will show up here."; return []; }
+  if (!mu.history.length) { mu.note = t("Play a few songs and your picks will show up here."); return []; }
   const artists = [...new Set(mu.history.map(h => h.artistId).filter(Boolean))].slice(0, 4);
   const played = new Set(mu.history.map(h => h.id));
   const lists = await Promise.all(artists.map(id =>
@@ -79,7 +80,7 @@ async function forYou() {
   for (let i = 0; out.length < 24 && lists.some(l => i < l.length); i++) {
     for (const l of lists) if (l[i] && !played.has(l[i].id) && !out.some(o => o.id === l[i].id)) out.push(l[i]);
   }
-  mu.note = out.length ? "Picked from artists you played" : "Nothing new yet. Here is what you played:";
+  mu.note = out.length ? t("Picked from artists you played") : t("Nothing new yet. Here is what you played:");
   return out.length ? out : mu.history.slice(0, 24);
 }
 
@@ -126,7 +127,7 @@ function audio() {
         play(next, mu.queue);
       } else { mu.playing = null; renderMusic(); }
     };
-    mu.audio.onerror = () => { mu.error = "Could not play this preview"; mu.playing = null; renderMusic(); };
+    mu.audio.onerror = () => { mu.error = t("Could not play this preview"); mu.playing = null; renderMusic(); };
   }
   return mu.audio;
 }
@@ -148,7 +149,7 @@ function play(item, list) {
   mu.playing = item; mu.paused = false; mu.queue = list; mu.error = "";
   a.src = item.preview;
   const p = a.play();
-  if (p && p.catch) p.catch(error => { mu.error = "Could not play: " + error.message; mu.playing = null; renderMusic(); });
+  if (p && p.catch) p.catch(error => { mu.error = t("Could not play: {why}", {why: error.message}); mu.playing = null; renderMusic(); });
   remember(item);
   renderMusic();
 }
@@ -160,16 +161,16 @@ export function stopMusic() {
 
 // ---- search: the TV-keyboard prompt lives in textprompt.js ----
 function openSearch() {
-  openPrompt({title: "Search Apple Music", placeholder: "Artist, song or album", value: mu.searchTerm, onSubmit: term => runSearch(term)});
+  openPrompt({title: t("Search Apple Music"), placeholder: t("Artist, song or album"), value: mu.searchTerm, onSubmit: term => runSearch(term)});
 }
 
 async function runSearch(term) {
-  mu.tab = "search"; mu.loadedFor = "search"; mu.searchTerm = term; mu.album = null; mu.items = []; mu.loading = true; mu.error = ""; mu.note = "Results for “" + term + "”"; yt.idx = 0;
+  mu.tab = "search"; mu.loadedFor = "search"; mu.searchTerm = term; mu.album = null; mu.items = []; mu.loading = true; mu.error = ""; mu.note = t("Results for “{term}”", {term}); yt.idx = 0;
   renderMusic();
   try {
     const r = await getJson("https://itunes.apple.com/search?term=" + encodeURIComponent(term) + "&media=music&entity=song&limit=25&country=" + country());
     mu.items = (r.results || []).filter(x => x.trackId && x.previewUrl).map(songItem);
-    if (!mu.items.length) mu.note = "No songs found for “" + term + "”";
+    if (!mu.items.length) mu.note = t("No songs found for “{term}”", {term});
   } catch (error) { mu.error = error.message; }
   mu.loading = false;
   renderMusic();
@@ -187,15 +188,15 @@ export function musicOpenFull() {
   const item = currentItems()[yt.idx];
   if (!item) return;
   const say = text => { byId("feedStatus").textContent = text; };
-  if (demo) { say("Would open “" + item.name + "” in Apple Music"); return; }
+  if (demo) { say(t("Would open “{name}” in Apple Music", {name: item.name})); return; }
   const appId = state.installedApps.find(a => a.id === "app:applemusic")?.app || APPLE_MUSIC_ID;
   try {
     const control = new tv.ApplicationControl("http://tizen.org/appcontrol/operation/default", null, null, null,
       [new tv.ApplicationControlData("PAYLOAD", [JSON.stringify({values: albumLink(item)})])]);
     tv.application.launchAppControl(control, appId,
-      () => say("Opening the album of “" + item.name + "” in Apple Music…"),
-      () => say("Could not open Apple Music"));
-  } catch (error) { say("Could not open Apple Music: " + error.message); }
+      () => say(t("Opening the album of “{name}” in Apple Music…", {name: item.name})),
+      () => say(t("Could not open Apple Music")));
+  } catch (error) { say(t("Could not open Apple Music: {why}", {why: error.message})); }
 }
 
 // ---- UI ----
@@ -206,7 +207,7 @@ function refreshOpenButton() {
   const btn = byId("musicOpen");
   const item = currentItems()[yt.idx];
   const name = item ? (item.name.length > 38 ? item.name.slice(0, 37) + "…" : item.name) : "";
-  const label = item ? "Open “" + name + "” in Apple Music" : "Open in Apple Music";
+  const label = item ? t("Open “{name}” in Apple Music", {name}) : t("Open in Apple Music");
   if (btn.textContent !== label) btn.textContent = label;   // writing identical text still replaces the text node and repaints the button
   btn.classList.toggle("hidden", !item);
 }
@@ -216,13 +217,13 @@ export function renderMusic() {
   const subs = byId("subs"), vids = byId("vids");
   const keep = [subs.scrollLeft, vids.scrollLeft];
   subs.textContent = ""; vids.textContent = "";
-  TABS.forEach(t => subs.appendChild(makeChip(t.label, t.key === mu.tab)));
+  TABS.forEach(tab => subs.appendChild(makeChip(t(tab.label), tab.key === mu.tab)));
   const list = currentItems();
   if (mu.loading) {
     for (let i = 0; i < 9; i++) vids.appendChild(makeSkeleton());
   }
   // The empty-state text is drawn by CSS (::before) so it is not a child: the cursor never lands on it.
-  vids.dataset.empty = !mu.loading && !list.length ? (mu.error ? "Could not load this list." : mu.note || "Nothing here.") : "";
+  vids.dataset.empty = !mu.loading && !list.length ? (mu.error ? t("Could not load this list.") : mu.note || t("Nothing here.")) : "";
   for (const item of list) vids.appendChild(makeTrack(item, mu.playing?.id === item.id));
   subs.scrollLeft = keep[0]; vids.scrollLeft = keep[1];
   if (mu.follow) {   // auto-advanced: bring the new track into view
@@ -232,10 +233,10 @@ export function renderMusic() {
   }
   yt.sidx = Math.min(yt.sidx, subs.children.length - 1);
   yt.idx = Math.min(yt.idx, Math.max(0, vids.children.length - 1));
-  byId("feedStatus").textContent = mu.error ? "Could not load: " + mu.error :
+  byId("feedStatus").textContent = mu.error ? t("Could not load: {why}", {why: mu.error}) :
     mu.loading ? "" :
-    mu.playing ? (mu.paused ? "❚❚ " : "▶ ") + mu.playing.name + " — " + mu.playing.artist + "  ·  30 s preview  ·  OK pauses" :
-    mu.album ? "Album: " + mu.album.name + "  ·  choose a tab above to go back" :
+    mu.playing ? (mu.paused ? "❚❚ " : "▶ ") + mu.playing.name + " — " + mu.playing.artist + "  ·  " + t("30 s preview  ·  OK pauses") :
+    mu.album ? t("Album: {name}  ·  choose a tab above to go back", {name: mu.album.name}) :
     mu.note;
   drawCursor();
 }
@@ -280,7 +281,7 @@ export function registerMediaKeys() {
 function startFromCursor() {
   const item = currentItems()[yt.idx];
   if (item && item.kind === "song") play(item, currentItems());
-  else { mu.error = ""; byId("feedStatus").textContent = "Open an album or pick a song first, then press Play"; }
+  else { mu.error = ""; byId("feedStatus").textContent = t("Open an album or pick a song first, then press Play"); }
 }
 
 /** Play/Pause key: toggle the current preview, or start the song under the cursor. Returns true if handled. */

@@ -7,7 +7,7 @@ A Tizen TV app for the 2023 Samsung S95C. Left and Right cycle through sources. 
 ## Set up sources
 
 - HDMI sources come from the TV's connected video source list. Use Up/Down to focus **Assign console**, press OK, and select a console for that port. You can also prefill labels in `app/sources.js`. PS5 and Switch labels activate their respective themes. The public HDMI API reports the port and signal, with no console model field.
-- Wake or dock a device and use **Refresh** if the TV omits its HDMI port.
+- Wake or dock a device and use **Rescan sources** if the TV omits its HDMI port.
 - For network media, add a name and a direct HTTP(S) playback URL to `app/sources.js` before packaging. Use a LAN IP reachable by the TV and a supported stream or file, such as HLS (.m3u8), DASH (.mpd), or compatible MP4. A router's administration URL is not a playback URL. The first version does not browse DLNA/UPnP or SMB shares, discover casting targets, or implement wireless screen mirroring. A server that exposes media over HTTP can be added by URL.
 
 ## Preview

@@ -10,19 +10,22 @@ import { ytLogin } from "./youtube.js";
 import { initKeys } from "./keys.js";
 import { registerMediaKeys } from "./music.js";
 import { initPrompt } from "./textprompt.js";
+import { openSettings } from "./settings.js";
+import { applyLanguage } from "./i18n.js";
 
 byId("refresh").onclick = refresh;
 byId("back").onclick = () => stop();
 byId("theme").onclick = openPicker;
 byId("arrange").onclick = openArrange;
 byId("bgbtn").onclick = openBgPicker;
+byId("settings").onclick = openSettings;
 byId("ytlogin").onclick = ytLogin;
 // Selection is drawn by the virtual cursor, never by DOM focus.
-for (const id of ["ytlogin", "theme", "bgbtn", "arrange", "refresh"]) byId(id).onfocus = () => byId(id).blur();
+for (const id of ["ytlogin", "theme", "bgbtn", "arrange", "refresh", "settings"]) byId(id).onfocus = () => byId(id).blur();
 
 initKeys();
 initPrompt();
 registerMediaKeys();
 window.addEventListener("error", e => message("Error: " + e.message));
-detectApps();
-refresh();
+// the language is loaded first so the first draw is already translated
+applyLanguage().catch(() => {}).then(() => { detectApps(); refresh(); });

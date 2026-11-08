@@ -10,6 +10,7 @@ import { updateMusicUi } from "./music.js";
 import { updateGlass } from "./glass.js";
 import { applyBackground } from "./background.js";
 import { open } from "./playback.js";
+import { t } from "./i18n.js";
 
 const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
 const GROUP = card => card.source ? 0 : card.url ? 1 : card.dlna ? 2 : card.generic ? 4 : 3;
@@ -55,7 +56,7 @@ export function populate(sources) {
     .sort((a, b) => (a.source.type === "TV" ? -1 : 0) - (b.source.type === "TV" ? -1 : 0) || a.source.number - b.source.number)
     .map(({source, connected}) => ({
       id: source.type + "-" + source.number, source, connected,
-      name: source.type === "TV" ? "Live TV" : source.editName || "HDMI " + source.number,
+      name: source.type === "TV" ? t("Live TV") : source.editName || t("HDMI {n}", {n: source.number}),
     })).concat(streams, apps, dlnaFound);
   applyPrefs();
   buildStrip();
@@ -82,7 +83,7 @@ export function move(offset) {
 export function render() {
   const {cards, allCards, index} = state;
   const card = cards[index];
-  const name = card ? card.name : allCards.length ? "All sources hidden" : "No sources";
+  const name = card ? card.name : allCards.length ? t("All sources hidden") : t("No sources");
   const theme = themeOf(card);
   if (deck.dataset.theme !== theme || deck.dataset.card !== String(card?.id)) {
     const section = deck.querySelector("section");
@@ -92,12 +93,12 @@ export function render() {
   updateGlass(theme);
   deck.dataset.card = card?.id;
   byId("title").textContent = name;
-  byId("meta").textContent = demo ? "Browser demo" : card?.app ? "Apps" : card?.url || card?.dlna ? "Network media" : "TV inputs";
-  byId("detail").textContent = card?.id === "app:applemusic" ? "OK opens Apple Music · Up for charts, search and previews" : card?.app ? "Opens the app with your own recommendations" : card?.dlna ? "UPnP / DLNA media server" :
-    card?.url ? "HTTP media stream" : card?.source ?
-      (card.source.type === "TV" ? "Antenna / apps" : "HDMI " + card.source.number) :
-      allCards.length ? "Open Arrange to show sources again" : "Refresh or add a network stream";
-  byId("count").textContent = cards.length ? (index + 1) + " / " + cards.length : "0 sources";
+  byId("meta").textContent = demo ? t("Browser demo") : card?.app ? t("Apps") : card?.url || card?.dlna ? t("Network media") : t("TV inputs");
+  byId("detail").textContent = card?.id === "app:applemusic" ? t("OK opens Apple Music · Up for charts, search and previews") : card?.app ? t("Opens the app with your own recommendations") : card?.dlna ? t("UPnP / DLNA media server") :
+    card?.url ? t("HTTP media stream") : card?.source ?
+      (card.source.type === "TV" ? t("Antenna / apps") : t("HDMI {n}", {n: card.source.number})) :
+      allCards.length ? t("Open Arrange to show sources again") : t("Rescan or add a network stream");
+  byId("count").textContent = cards.length ? (index + 1) + " / " + cards.length : t("No sources");
   [...byId("strip").children].forEach((tile, i) => {
     tile.classList.toggle("sel", i === index);
     tile.setAttribute("aria-selected", i === index);

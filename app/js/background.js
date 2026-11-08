@@ -4,8 +4,9 @@
 import { byId, deck } from "./dom.js";
 import { prefs, savePrefs } from "./prefs.js";
 import { bgGet, bgAll, bgDelete } from "./bgstore.js";
+import { T } from "./i18n.js";
 
-export const DIM_LEVELS = [{label: "None", value: 0}, {label: "Light", value: 0.25}, {label: "Medium", value: 0.45}, {label: "Strong", value: 0.65}];
+export const DIM_LEVELS = [{label: T("None"), value: 0}, {label: T("Light"), value: 0.25}, {label: T("Medium"), value: 0.45}, {label: T("Strong"), value: 0.65}];
 const DEFAULT_DIM = 2;   // Medium
 
 export function bgPrefs() {

@@ -6,6 +6,7 @@ import { focusSel } from "./cursor.js";
 import { populate } from "./render.js";
 import { open } from "./playback.js";
 import { syncRing } from "./glass.js";
+import { t } from "./i18n.js";
 
 const text = (node, tag) => node.getElementsByTagName(tag)[0]?.textContent || "";
 
@@ -46,12 +47,12 @@ export async function scanDlna() {
   if (demo) return;
   const run = ++scanRun; // a newer refresh cancels any scan still running
   let ip;
-  try { ip = webapis.network.getIp(); } catch (error) { scanStatus("Network scan unavailable"); return; }
+  try { ip = webapis.network.getIp(); } catch (error) { scanStatus(t("Network scan unavailable")); return; }
   const prefix = ip.split(".").slice(0, 3).join(".");
   const jobs = [];
   for (let n = 254; n >= 1; n--) for (const p of PROBES) jobs.push([prefix + "." + n, p]);
   const total = jobs.length;
-  scanStatus("Looking for media servers… 0%", true);
+  scanStatus(t("Looking for media servers… {pct}%", {pct: 0}), true);
   async function worker() {
     while (jobs.length && run === scanRun) {
       const [host, p] = jobs.pop();
@@ -61,12 +62,13 @@ export async function scanDlna() {
         dlnaFound.push({id: "dlna:" + server.control, name: server.name, dlna: server.control});
         populate(state.lastSources);
       }
-      if (jobs.length % 25 === 0) scanStatus("Looking for media servers… " + Math.round(100 * (1 - jobs.length / total)) + "%", true);
+      if (jobs.length % 25 === 0) scanStatus(t("Looking for media servers… {pct}%", {pct: Math.round(100 * (1 - jobs.length / total))}), true);
     }
   }
   await Promise.all(Array.from({length: 16}, worker));
   if (run !== scanRun) return;
-  scanStatus(dlnaFound.length ? "Media servers found: " + dlnaFound.length : "No media servers found on " + prefix + ".x");
+  const net = prefix + ".x";
+  scanStatus(dlnaFound.length ? t("Media servers found: {n}", {n: dlnaFound.length}) : t("No media servers found on {net}", {net}));
 }
 
 // ---- Browsing a server's folders ----
@@ -130,13 +132,13 @@ export const soapBrowse = (control, objectId, mode) => soap(control, objectId, m
 
 async function loadFolder(id, title) {
   byId("bpath").textContent = browser.server.name + " › " + title;
-  byId("blist").textContent = "Loading…";
+  byId("blist").textContent = t("Loading…");
   let items;
   try { items = await soap(browser.server.dlna, id); }
-  catch (error) { byId("blist").textContent = "Could not read the media server: " + error.message; return; }
+  catch (error) { byId("blist").textContent = t("Could not read the media server: {why}", {why: error.message}); return; }
   byId("blist").textContent = "";
   browser.cursor = 0;
-  if (!items.length) byId("blist").textContent = "Nothing playable here.";
+  if (!items.length) byId("blist").textContent = t("Nothing playable here.");
   items.sort((a, b) => (b.folder ? 1 : 0) - (a.folder ? 1 : 0) || a.title.localeCompare(b.title));
   for (const item of items) {
     const row = makeRow((item.folder ? "📁 " : "▶ ") + item.title);
@@ -182,8 +184,8 @@ export function browserKey(event) {
 // ---- Playing a file: hand it to the TV's native player, fall back to AVPlay inside the app ----
 const PLAYERS = ["org.tizen.video-player-tv", "org.tizen.mycontent-video-player-tv"];
 function playNative(item, attempt = 0) {
-  const inApp = why => { message(why + " Playing inside Source Deck."); open({name: item.title, url: item.url}); };
-  if (!tv?.application || attempt >= PLAYERS.length) { inApp("TV player unavailable."); return; }
+  const inApp = why => { message(t("{why} Playing inside Source Deck.", {why})); open({name: item.title, url: item.url}); };
+  if (!tv?.application || attempt >= PLAYERS.length) { inApp(t("TV player unavailable.")); return; }
   try {
     const control = new tv.ApplicationControl("http://tizen.org/appcontrol/operation/view", item.url, item.mime, null, null);
     tv.application.launchAppControl(control, PLAYERS[attempt], () => {}, () => playNative(item, attempt + 1));

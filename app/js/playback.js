@@ -3,6 +3,7 @@ import { byId, deck, message } from "./dom.js";
 import { state, tv, player, demo } from "./state.js";
 import { focusSel } from "./cursor.js";
 import { browser, openBrowser, showBrowser } from "./dlna.js";
+import { t } from "./i18n.js";
 
 let hideTimer;
 
@@ -22,7 +23,7 @@ export function stop(reason = "") {
   state.generation++;
   try {
     if (previous.url) player.close();
-    else tv.tvwindow.hide(() => {}, error => message("Could not hide HDMI: " + error.message), "MAIN");
+    else tv.tvwindow.hide(() => {}, error => message(t("Could not hide HDMI: {why}", {why: error.message})), "MAIN");
   } catch (error) {
     if (!reason) reason = error.message;
   }
@@ -39,22 +40,22 @@ export function open(target) {
   if (!card || state.active) return;
   if (card.dlna) { openBrowser(card); return; }
   if (card.app) {
-    if (demo) { message("Would launch " + card.name + " on the TV."); return; }
+    if (demo) { message(t("Would launch {name} on the TV.", {name: card.name})); return; }
     try {
-      tv.application.launch(card.app, () => {}, error => message("Could not open " + card.name + ": " + (error?.message || error)));
-    } catch (error) { message("Could not open " + card.name + ": " + error.message); }
+      tv.application.launch(card.app, () => {}, error => message(t("Could not open {name}: {why}", {name: card.name, why: error?.message || error})));
+    } catch (error) { message(t("Could not open {name}: {why}", {name: card.name, why: error.message})); }
     return;
   }
   if (demo) {
-    message("Selected " + card.name + ". Install on the TV to open the source.");
+    message(t("Selected {name}. Install on the TV to open the source.", {name: card.name}));
     return;
   }
-  if (card.url && !player) { message("Samsung AVPlay is unavailable."); return; }
+  if (card.url && !player) { message(t("Samsung AVPlay is unavailable.")); return; }
 
   state.active = card;
   const request = ++state.generation;
   const failed = error => {
-    if (request === state.generation) stop("Could not open " + card.name + ": " + (error?.message || error));
+    if (request === state.generation) stop(t("Could not open {name}: {why}", {name: card.name, why: error?.message || error}));
   };
   deck.hidden = true;
   byId("back").focus();
@@ -66,7 +67,7 @@ export function open(target) {
       byId("surface").hidden = false;
       player.open(card.url);
       player.setListener({onerror: failed, onstreamcompleted: () => {
-        if (request === state.generation) stop("Playback finished.");
+        if (request === state.generation) stop(t("Playback finished."));
       }});
       player.setDisplayRect(0, 0, 1920, 1080);
       player.prepareAsync(() => {

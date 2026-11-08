@@ -7,6 +7,7 @@ import { makeRow } from "./templates.js";
 import { focusSel } from "./cursor.js";
 import { buildStrip, render } from "./render.js";
 import { syncRing } from "./glass.js";
+import { t } from "./i18n.js";
 
 export const picker = {open: false, cursor: 0, options: []};
 
@@ -26,12 +27,12 @@ export function openPicker() {
   const card = state.cards[state.index];
   if (!card) return;
   state.themeTarget = card.id;
-  const chosen = THEMES.some(t => t.key === prefs.theme[card.id]) ? prefs.theme[card.id] : "auto";
-  picker.options = [{key: "auto", label: "Auto (" + THEMES.find(t => t.key === detectTheme(card)).label + ")"}]
-    .concat(THEMES.map(t => ({key: t.key, label: t.label})));
+  const chosen = THEMES.some(th => th.key === prefs.theme[card.id]) ? prefs.theme[card.id] : "auto";
+  picker.options = [{key: "auto", label: t("Auto ({theme})", {theme: t(THEMES.find(th => th.key === detectTheme(card)).label)})}]
+    .concat(THEMES.map(th => ({key: th.key, label: t(th.label)})));
   picker.options.forEach(o => { o.current = o.key === chosen; });
   picker.cursor = Math.max(0, picker.options.findIndex(o => o.current));
-  byId("themeFor").textContent = "Theme for " + card.name;
+  byId("themeFor").textContent = t("Theme for {name}", {name: card.name});
   picker.open = true;
   byId("themeView").hidden = false;
   drawPicker();

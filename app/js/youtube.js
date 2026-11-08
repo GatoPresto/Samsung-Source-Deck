@@ -6,6 +6,8 @@ import { makeVideo, makeChannel, makeAllChip } from "./templates.js";
 import { drawCursor, fadeEdges, focusSel } from "./cursor.js";
 import { render } from "./render.js";
 import { httpJson } from "./http.js";
+import { t } from "./i18n.js";
+import { qrSvg } from "./qr.js";
 
 const YT_SCOPE = "https://www.googleapis.com/auth/youtube.readonly";
 const FEED_TTL = 10 * 60000;
@@ -88,8 +90,8 @@ export function renderFeed() {
   if (!show) { yt.inFeed = false; return; }
   const subs = byId("subs"), vids = byId("vids");
   subs.textContent = ""; vids.textContent = "";
-  byId("feedStatus").textContent = yt.loading ? "Loading…" : yt.error ? "Could not load: " + yt.error :
-    yt.view ? "Videos from " + yt.view.channel.title + "  ·  choose All to go back" : yt.feed && !yt.feed.videos.length ? "No recent videos found." : "";
+  byId("feedStatus").textContent = yt.loading ? t("Loading…") : yt.error ? t("Could not load: {why}", {why: yt.error}) :
+    yt.view ? t("Videos from {channel}  ·  choose All to go back", {channel: yt.view.channel.title}) : yt.feed && !yt.feed.videos.length ? t("No recent videos found.") : "";
   if (yt.feed) {
     const all = makeAllChip();
     all.onclick = () => selectChannel(null);
@@ -114,7 +116,7 @@ export function renderFeed() {
 export function updateYoutubeUi(card) {
   const button = byId("ytlogin");
   button.hidden = !isYoutube(card);
-  button.textContent = yt.tokens ? "Log out" : "Log in";
+  button.textContent = t(yt.tokens ? "Log out" : "Log in");
   renderFeed();
   if (isYoutube(card) && yt.tokens && !yt.feed) loadFeed(false);
   else if (isYoutube(card) && yt.tokens && Date.now() - yt.feed.at > FEED_TTL) loadFeed(false);
@@ -131,32 +133,25 @@ function ytLogout() {
 const YT_APP_IDS = ["com.samsung.tv.cobalt-yt", "9Ur5IzDKqV.TizenYouTube"];
 export function playYoutube(video) {
   if (!video) return;
-  if (demo) { message("Would open: " + video.title); return; }
+  if (demo) { message(t("Would open: {title}", {title: video.title})); return; }
   const launchWith = attempt => {
     const appId = YT_APP_IDS[attempt];
-    if (!appId) { message("Could not open the video in YouTube."); return; }
+    if (!appId) { message(t("Could not open the video in YouTube.")); return; }
     try {
       const control = new tv.ApplicationControl("http://tizen.org/appcontrol/operation/default", null, null, null,
         [new tv.ApplicationControlData("PAYLOAD", ["#watch?v=" + video.id + "&launch=launcher"])]);
-      tv.application.launchAppControl(control, appId, () => message("Opening in YouTube…"), () => launchWith(attempt + 1));
+      tv.application.launchAppControl(control, appId, () => message(t("Opening in YouTube…")), () => launchWith(attempt + 1));
     } catch (error) { launchWith(attempt + 1); }
   };
   launchWith(0);
 }
 
 // ---- Login (OAuth device flow: the user enters a code on their phone) ----
-/** A QR code (inline SVG, drawn from the module matrix) inside #loginQr. Needs vendor/qrcode.js (qrcode-generator, MIT). */
+/** A QR code inside #loginQr. */
 function drawQr(text) {
-  const box = byId("loginQr");
-  if (!text || typeof window.qrcode !== "function") { box.hidden = true; box.textContent = ""; return; }
-  const qr = window.qrcode(0, "M");
-  qr.addData(text);
-  qr.make();
-  const n = qr.getModuleCount(), quiet = 2;
-  let path = "";
-  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) path += "M" + (c + quiet) + " " + (r + quiet) + "h1v1h-1z";
-  const size = n + 2 * quiet;
-  box.innerHTML = '<svg viewBox="0 0 ' + size + " " + size + '" shape-rendering="crispEdges" role="img" aria-label="QR code"><path d="' + path + '" fill="#000"/></svg><p>Scan with your phone</p>';
+  const box = byId("loginQr"), svg = qrSvg(text);
+  if (!svg) { box.hidden = true; box.textContent = ""; return; }
+  box.innerHTML = svg + "<p>" + t("Scan with your phone") + "</p>";
   box.hidden = false;
 }
 
@@ -180,21 +175,21 @@ export function loginKey(event) {
 }
 
 export async function ytLogin() {
-  if (yt.tokens) { ytLogout(); message("Logged out of YouTube."); return; }
+  if (yt.tokens) { ytLogout(); message(t("Logged out of YouTube.")); return; }
   if (!ytConfigured()) {
     showLogin("YouTube login needs setup",
       "Create a Google OAuth client of type \"TVs and Limited Input devices\", enable YouTube Data API v3, then put the client id and secret in app/youtube-config.js and reinstall. Details: .agents/youtube-setup.md. Press Back to close.");
     return;
   }
   const run = ++loginUi.run;
-  showLogin("Log in to YouTube", "Starting…");
+  showLogin(t("Log in to YouTube"), t("Starting…"));
   try {
     const {status, json} = await httpJson("POST", "https://oauth2.googleapis.com/device/code", {body: {client_id: window.youtubeAuth.clientId, scope: YT_SCOPE}});
     if (run !== loginUi.run) return;
     if (status !== 200 || !json?.device_code) throw new Error(json?.error_description || json?.error || "HTTP " + status);
     // The QR opens Google's device page; the code is added as a parameter in case the page pre-fills it (it is shown on screen either way).
     const qrText = json.verification_url + (json.verification_url.includes("?") ? "&" : "?") + "user_code=" + encodeURIComponent(json.user_code);
-    showLogin("Log in to YouTube", "Scan the QR code, or open " + json.verification_url + " and enter this code. Waiting for you… (Back cancels)", json.user_code, qrText);
+    showLogin(t("Log in to YouTube"), t("Scan the QR code, or open {url} and enter this code. Waiting for you… (Back cancels)", {url: json.verification_url}), json.user_code, qrText);
     let interval = (json.interval || 5) * 1000;
     const deadline = Date.now() + json.expires_in * 1000;
     while (run === loginUi.run && Date.now() < deadline) {
@@ -208,7 +203,7 @@ export async function ytLogin() {
         yt.tokens = {access: poll.json.access_token, refresh: poll.json.refresh_token, expires: Date.now() + poll.json.expires_in * 1000};
         saveJson("yt-tokens", yt.tokens);
         closeLogin();
-        message("Logged in to YouTube.");
+        message(t("Logged in to YouTube."));
         render();
         loadFeed(true);
         return;
@@ -216,8 +211,8 @@ export async function ytLogin() {
       if (err === "slow_down") interval += 5000;
       else if (err && err !== "authorization_pending") throw new Error(poll.json.error_description || err);
     }
-    if (run === loginUi.run) showLogin("Log in to YouTube", "The code expired. Press Back and try again.");
+    if (run === loginUi.run) showLogin(t("Log in to YouTube"), t("The code expired. Press Back and try again."));
   } catch (error) {
-    if (run === loginUi.run) showLogin("Log in failed", error.message + " (Back closes)");
+    if (run === loginUi.run) showLogin(t("Log in failed"), t("{why} (Back closes)", {why: error.message}));
   }
 }

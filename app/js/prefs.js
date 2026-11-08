@@ -1,5 +1,6 @@
 // Remembered user choices: theme per source, hidden sources, display order. All keyed by stable source id.
 import { message } from "./dom.js";
+import { t } from "./i18n.js";
 
 export const prefs = {theme: {}, hidden: {}, order: []};
 try { Object.assign(prefs, JSON.parse(localStorage.getItem("deck-prefs")) || {}); } catch {}
@@ -13,5 +14,5 @@ if (!prefs.v) {
 
 export function savePrefs() {
   try { localStorage.setItem("deck-prefs", JSON.stringify(prefs)); }
-  catch (error) { message("Could not save settings: " + error.message); }
+  catch (error) { message(t("Could not save settings: {why}", {why: error.message})); }
 }

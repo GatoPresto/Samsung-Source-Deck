@@ -4,13 +4,14 @@
 import { byId } from "./dom.js";
 import { focusSel } from "./cursor.js";
 import { syncRing } from "./glass.js";
+import { t } from "./i18n.js";
 
 export const prompt = {open: false, cur: 0, onSubmit: null, onCancel: null, allowEmpty: false};
 const els = () => [byId("searchInput"), byId("searchGo"), byId("searchCancel")];
 function draw() { els().forEach((el, i) => el.classList.toggle("cur", prompt.open && i === prompt.cur)); syncRing(); }
 
 /** Show the prompt. onSubmit(text) runs with the typed text; onCancel (optional) runs instead of returning focus to the main screen. */
-export function openPrompt({title = "Search", placeholder = "", value = "", okLabel = "Search", allowEmpty = false, onSubmit, onCancel = null}) {
+export function openPrompt({title = t("Search"), placeholder = "", value = "", okLabel = t("Search"), allowEmpty = false, onSubmit, onCancel = null}) {
   prompt.open = true; prompt.cur = 0; prompt.onSubmit = onSubmit; prompt.onCancel = onCancel; prompt.allowEmpty = allowEmpty;
   byId("searchTitle").textContent = title;
   byId("searchGo").textContent = okLabel;

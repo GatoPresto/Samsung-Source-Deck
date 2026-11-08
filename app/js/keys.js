@@ -11,10 +11,12 @@ import { loginUi, loginKey, currentVideos, selectChannel, playYoutube } from "./
 import { musicShown, musicEnter, musicOpenFull, musicMediaKey } from "./music.js";
 import { prompt, promptKey } from "./textprompt.js";
 import { bg, bgKey } from "./bgpicker.js";
+import { settings, settingsKey } from "./settings.js";
 
 export function initKeys() {
   document.addEventListener("keydown", event => {
     if (prompt.open) { promptKey(event); return; }
+    if (settings.open) { settingsKey(event); return; }
     if (bg.open) { bgKey(event); return; }
     if (loginUi.open) { loginKey(event); return; }
     if (picker.open) { pickerKey(event); return; }

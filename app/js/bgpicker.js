@@ -11,6 +11,7 @@ import { toBackgroundJpeg } from "./imageutil.js";
 import { bgPut } from "./bgstore.js";
 import { bgPrefs, DIM_LEVELS, assignBackground, removeBackground, currentKey, resetBackground } from "./background.js";
 import * as src from "./bgsources.js";
+import { t } from "./i18n.js";
 
 export const bg = {open: false};
 const ui = {view: "menu", cur: 0, gcur: 0, card: null, rows: [], items: [], title: "", stack: [], busy: 0};
@@ -21,14 +22,14 @@ const setStatus = text => { byId("bgStatus").textContent = text || ""; };
 function menuRows() {
   const b = bgPrefs(), card = ui.card;
   const rows = [
-    {id: "unsplash", label: "Search Unsplash" + (src.unsplashReady() ? "" : "  ·  add a free key first")},
-    {id: "wallhaven", label: "Search Wallhaven wallpapers"},
-    {id: "router", label: "Pictures from the router" + (src.servers().length ? "" : "  ·  none found yet")},
-    {id: "usb", label: "Pictures from a USB drive" + (src.usbSupported() ? "" : "  ·  not available")},
-    {id: "scope", label: "Apply to:  " + (b.scope === "all" ? "All sources" : "This source only (" + card.name + ")")},
-    {id: "dim", label: "Dimming:  " + DIM_LEVELS[b.dim].label},
+    {id: "unsplash", label: t("Search Unsplash") + (src.unsplashReady() ? "" : "  ·  " + t("add a free key first"))},
+    {id: "wallhaven", label: t("Search Wallhaven wallpapers")},
+    {id: "router", label: t("Pictures from the router") + (src.servers().length ? "" : "  ·  " + t("none found yet"))},
+    {id: "usb", label: t("Pictures from a USB drive") + (src.usbSupported() ? "" : "  ·  " + t("not available"))},
+    {id: "scope", label: t("Apply to:") + "  " + (b.scope === "all" ? t("All sources") : t("This source only ({name})", {name: card.name}))},
+    {id: "dim", label: t("Dimming:") + "  " + t(DIM_LEVELS[b.dim].label)},
   ];
-  if (currentKey(card)) rows.push({id: "remove", label: "Remove the background" + (b.scope === "all" ? " of all sources" : " of this source")});
+  if (currentKey(card)) rows.push({id: "remove", label: b.scope === "all" ? t("Remove the background of all sources") : t("Remove the background of this source")});
   return rows;
 }
 
@@ -37,8 +38,8 @@ function draw() {
   byId("bgView").dataset.view = menu ? "menu" : "grid";
   byId("bgList").hidden = !menu;
   byId("bgGrid").hidden = menu;
-  byId("bgTitle").textContent = menu ? "Change background · " + ui.card.name : ui.title;
-  byId("bgHint").textContent = menu ? "↑↓ choose · OK select · Back close" : "↑↓←→ choose · OK use this picture / open folder · Back return";
+  byId("bgTitle").textContent = menu ? t("Change background") + " · " + ui.card.name : ui.title;
+  byId("bgHint").textContent = t(menu ? "↑↓ choose · OK select · Back close" : "↑↓←→ choose · OK use this picture / open folder · Back return");
   if (menu) {
     byId("bgGrid").textContent = "";
     const list = byId("bgList");
@@ -93,23 +94,23 @@ async function showGrid(title, itemsOrPromise, keepStack = false) {
   const mine = ++ui.busy;
   if (!keepStack) ui.stack = [];
   ui.view = "grid"; ui.title = title; ui.items = []; ui.gcur = 0;
-  setStatus("Loading…");
+  setStatus(t("Loading…"));
   draw();
   try {
     const items = await itemsOrPromise;
     if (mine !== ui.busy) return;
     ui.items = items;
-    setStatus(items.length ? "" : "Nothing found here.");
+    setStatus(items.length ? "" : t("Nothing found here."));
   } catch (error) {
     if (mine !== ui.busy) return;
-    setStatus("Could not load: " + error.message);
+    setStatus(t("Could not load: {why}", {why: error.message}));
   }
   draw();
 }
 
 function ask(title, placeholder, source, label) {
   openPrompt({
-    title, placeholder, okLabel: "Search", allowEmpty: true, onSubmit: text => showGrid(label + (text ? ": " + text : " · popular"), source(text)),
+    title, placeholder, okLabel: t("Search"), allowEmpty: true, onSubmit: text => showGrid(label + (text ? ": " + text : " · " + t("popular")), source(text)),
     onCancel: () => { draw(); },
   });
 }
@@ -120,17 +121,17 @@ async function activateMenu() {
   if (row.id === "unsplash" || row.id === "wallhaven") {
     const unsplash = row.id === "unsplash", name = unsplash ? "Unsplash" : "Wallhaven";
     if (unsplash && !src.unsplashReady()) { setStatus("Add your free API key to app/backgrounds-config.js (see .agents/backgrounds-setup.md), then reinstall."); return; }
-    ask("Search " + name, "e.g. sunset, mountains, city (empty = popular)", unsplash ? src.unsplash : src.wallhaven, name);
+    ask(t("Search {name}", {name}), t("e.g. sunset, mountains, city (empty = popular)"), unsplash ? src.unsplash : src.wallhaven, name);
   } else if (row.id === "router") {
     const servers = src.servers();
-    if (!servers.length) { setStatus("No media server found yet. Press Refresh on the main screen and try again."); return; }
+    if (!servers.length) { setStatus(t("No media server found yet. Press Rescan sources on the main screen and try again.")); return; }
     const entries = servers.map(s => ({kind: "folder", title: s.name, open: () => src.serverFolder(s, "0", s.name)}));
-    if (entries.length === 1) { ui.stack = []; showGrid(entries[0].title, entries[0].open()); } else showGrid("Media servers", entries);
+    if (entries.length === 1) { ui.stack = []; showGrid(entries[0].title, entries[0].open()); } else showGrid(t("Media servers"), entries);
   } else if (row.id === "usb") {
-    if (!src.usbSupported()) { setStatus("This TV does not expose its file system to apps."); return; }
-    showGrid("USB drive", src.usbStorages().then(list => {
+    if (!src.usbSupported()) { setStatus(t("This TV does not expose its file system to apps.")); return; }
+    showGrid(t("USB drive"), src.usbStorages().then(list => {
       if (!list.length) throw new Error("no USB drive found (plug one in and try again)");
-      return list.map(s => ({kind: "folder", title: s.label || "USB drive", open: () => src.usbFolder(s.label)}));
+      return list.map(s => ({kind: "folder", title: s.label || t("USB drive"), open: () => src.usbFolder(s.label)}));
     }));
   } else if (row.id === "scope") {
     // Applies at once: the picture now in effect moves to "all sources" or becomes this source's own picture.
@@ -141,7 +142,7 @@ async function activateMenu() {
       await assignBackground(b.scope, ui.card.id, key);
       render();
     } else savePrefs();
-    setStatus(key ? (b.scope === "all" ? "This picture now shows on all sources." : "This picture now shows on this source only.") : "");
+    setStatus(!key ? "" : b.scope === "all" ? t("This picture now shows on all sources.") : t("This picture now shows on this source only."));
     draw();
   } else if (row.id === "dim") { b.dim = (b.dim + 1) % DIM_LEVELS.length; savePrefs(); resetBackground(); render(); draw(); }
   else if (row.id === "remove") { await removeBackground(b.scope, ui.card.id); render(); close(); }
@@ -149,11 +150,11 @@ async function activateMenu() {
 
 async function choose(item) {
   const mine = ++ui.busy;
-  setStatus("Downloading…");
+  setStatus(t("Downloading…"));
   try {
     const blob = await item.fetchBlob();
     if (mine !== ui.busy) return;
-    setStatus("Preparing…");
+    setStatus(t("Preparing…"));
     const jpeg = await toBackgroundJpeg(blob);
     if (mine !== ui.busy) return;
     await bgPut({key: item.key, blob: jpeg, source: item.key.split(":")[0], title: item.title, credit: item.credit || "", creditUrl: item.creditUrl || ""});
@@ -162,7 +163,7 @@ async function choose(item) {
     render();
     close();
   } catch (error) {
-    if (mine === ui.busy) setStatus("Could not use this picture: " + error.message);
+    if (mine === ui.busy) setStatus(t("Could not use this picture: {why}", {why: error.message}));
   }
 }
 

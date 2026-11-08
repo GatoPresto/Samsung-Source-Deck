@@ -6,7 +6,7 @@ import { state, yt } from "./state.js";
 /** Modules that draw extra cursor state register a function here (called at the end of drawCursor). */
 export const cursorHooks = [];
 
-export const ZONES = [null, "ytlogin", "theme", "bgbtn", "arrange", "refresh"];
+export const ZONES = [null, "ytlogin", "theme", "bgbtn", "arrange", "refresh", "settings"];
 export const LAST_ZONE = ZONES.length - 1;
 
 export function usable(z) {
@@ -14,7 +14,7 @@ export function usable(z) {
 }
 
 export function drawCursor() {
-  if (!usable(state.zone)) state.zone = usable(0) ? 0 : LAST_ZONE;
+  if (!usable(state.zone)) state.zone = usable(0) ? 0 : ZONES.indexOf("refresh");
   if (yt.inFeed && !yt.shown) yt.inFeed = false;
   [...byId("strip").children].forEach((tile, i) => tile.classList.toggle("cur", state.zone === 0 && !yt.inFeed && i === state.index));
   ZONES.forEach((id, z) => { if (id) byId(id).classList.toggle("cur", !yt.inFeed && state.zone === z); });

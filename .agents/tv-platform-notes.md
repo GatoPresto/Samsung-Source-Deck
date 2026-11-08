@@ -37,5 +37,8 @@ Phone remotes control Samsung TVs over `wss://<tv-ip>:8002/api/v2/channels/samsu
 such as Apple Music `3201908019041`, `metaTag`). It was implemented in the app (formats 1-3 of the Apple Music cycle) and removed once `launchAppControl` format 12 gave the accepted result; whether the TV accepts it from an app on the TV itself was never
 established. Numeric ids: Apple Music `3201908019041`, Apple TV `3201807016597`, Netflix `3201907018807`.
 
+## Opening a web link from the app (unverified)
+Settings > About the developer uses `tizen.application.launchAppControl(new ApplicationControl("http://tizen.org/appcontrol/operation/view", url), null|"org.tizen.browser", ...)`. Not yet tested on the TV; the QR code on the same screen is the fallback. `navigator.language` is used for "System language" (expected to follow the TV's menu language; also unverified).
+
 ## ES modules work
 `<script type="module" src="js/main.js">` with static `import`s (including import cycles) and `import.meta` load fine from the installed widget on this TV (Tizen 9 / Chromium 120). Verified on the TV, not just assumed.
