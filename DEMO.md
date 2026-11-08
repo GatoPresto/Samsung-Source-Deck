@@ -2,6 +2,10 @@
 
 Source Deck is a home screen for a Samsung TV. It puts everything you can watch in one row of thumbnails (Live TV, every HDMI port, apps, network streams and the media servers on your network), restyles the whole screen for the source you select, and adds a **Home slide with widgets**. Everything is driven by the TV remote: **Left/Right** picks a source, **OK** opens it, **Back** goes back.
 
+<p align="center"><img width="800" alt="Source Deck running on a real Samsung TV" src="https://github.com/user-attachments/assets/d2f2aa40-e946-4410-89df-b49722642e27" /></p>
+
+<p align="center"><em>Source Deck running on a real Samsung S95C.</em></p>
+
 > The screenshots below were taken in the browser demo mode at 1920 x 1080 with sample HDMI devices (PS5, Switch, Xbox). On the TV the sources, names and signal state come from the TV itself.
 
 **Contents**

@@ -2,6 +2,8 @@
 
 Source Deck is a personal Samsung TV app that shows every video source as a themed thumbnail, with one slide each for Live TV, HDMI inputs, network streams, media servers and apps. Left/Right picks a source and OK opens it. The whole screen restyles per source (PlayStation, Switch, Xbox and more), and you can pick your own background picture.
 
+<p align="center"><img width="800" alt="Source Deck running on a real Samsung TV" src="https://github.com/user-attachments/assets/d2f2aa40-e946-4410-89df-b49722642e27" /></p>
+
 **[See the demo with screenshots: DEMO.md](DEMO.md)**
 
 ![The Home slide: clock, date, weather, news, currency, sports scores and inputs as widgets](https://github.com/user-attachments/assets/b597c9c3-130b-4f75-bd46-49859b1fbf48)
