@@ -26,6 +26,38 @@
 .wdetails{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:0 3cqw;font-size:min(9cqh,5cqw);opacity:.85;margin-top:3cqh}
 @container (max-height:150px){.wdetails{display:none}}
 
+/* Inputs, News, Currency, Sports: a padded column with an optional small header; row sizes follow the number of rows (--rows) and the widget size. */
+.winputs,.wnews,.wfx,.wsports{width:100%;height:100%;display:flex;flex-direction:column;padding:5cqh 5cqw;min-height:0}
+.widget small{color:inherit;text-transform:none;letter-spacing:0}
+.widget h4{margin:0 0 1cqh;font-size:min(9cqh,5cqw);letter-spacing:.08em;text-transform:uppercase;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--accent)}
+.widget[data-card=accent] h4{color:inherit}
+@container (max-height:140px){.winputs h4,.wsports h4{display:none}}
+.irows,.frows,.srows,.wnews ul{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-around}
+.irow{display:flex;align-items:center;gap:.6em;font-size:min(calc(46cqh / var(--rows,4)),6.5cqw)}
+.irow i{flex:none;width:.55em;height:.55em;border-radius:50%;background:#7b8494}
+.irow.on i{background:#3ddc84;box-shadow:0 0 .6em #3ddc84aa}
+.irow span{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.irow small{font-size:.6em;opacity:.7;white-space:nowrap}
+.irow.off span{opacity:.7}
+.wnews ul{list-style:none;margin:0;padding:0;gap:1cqh}
+.wnews li{display:flex;flex-direction:column;min-width:0}
+.nt{font-size:min(calc(68cqh / var(--rows,1) / 2.6),3.4cqw);line-height:1.15;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.wnews li small{font-size:min(calc(68cqh / var(--rows,1) / 6),2.3cqw);opacity:.65;margin-top:.2em}
+.wfx h4{font-size:min(15cqh,8cqw);text-transform:none;letter-spacing:0;color:inherit;margin-bottom:2cqh}
+.frow{display:flex;align-items:baseline;justify-content:space-between;gap:3cqw;font-size:min(calc(50cqh / var(--rows,2)),8cqw)}
+.frow b{font-weight:700;white-space:nowrap}
+.frow small{font-size:.62em;opacity:.7}
+.fsrc{align-self:flex-end;font-size:min(7cqh,3cqw);opacity:.5}
+@container (max-height:150px){.fsrc{display:none}}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:2cqw;font-size:min(calc(66cqh / var(--rows,2) / 2),4.2cqw)}
+.srow .th,.srow .ta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .th{text-align:right}
+.srow .win{font-weight:700}
+.srow .sm{display:flex;flex-direction:column;align-items:center;min-width:3.6em;line-height:1.1}
+.srow .sm b{font-variant-numeric:tabular-nums}
+.srow .sm small{font-size:.62em;opacity:.75;min-height:1em}
+.srow.in .sm small{color:#ff6b6b;opacity:1;font-weight:700}
+
 /* Widget editor: the drawer styles are shared with "Change background" (css/background.css). While moving/resizing only the hint bar is shown. */
 #widgetsView[data-view=grid]{background:none;pointer-events:none}
 #widgetsView[data-view=grid] #wPanel{display:none}

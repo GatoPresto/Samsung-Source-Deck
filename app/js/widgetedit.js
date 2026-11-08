@@ -22,7 +22,7 @@ function rowsFor(view) {
   if (view === "widget") {
     const w = selected(), type = TYPES[w.type];
     const rows = [{id: "move", label: t("Move")}, {id: "resize", label: t("Resize")}];
-    for (const opt of optionList(w.type)) rows.push({id: "opt", key: opt.key, label: t(opt.label) + ":  " + optionLabel(w, opt)});
+    for (const opt of optionList(w.type)) rows.push({id: "opt", key: opt.key, text: !!opt.text, opt, label: t(opt.label) + ":  " + optionLabel(w, opt)});
     if (type.custom === "city") rows.push({id: "city", label: t("City") + ":  " + (w.o?.city ? w.o.city.name : t("not set"))});
     rows.push({id: "remove", label: t("Remove widget")});
     return rows;
@@ -42,7 +42,7 @@ function draw() {
   }
   const w = view === "widget" ? selected() : null;
   byId("wTitle").textContent = view === "menu" ? t("Widgets") + " · " + ui.card.name : view === "add" ? t("Add widget") : view === "city" ? t("City") : t(TYPES[w.type].name);
-  byId("wHint").textContent = view === "menu" ? t("↑↓ choose · OK select · Back close") : t("↑↓ choose · OK select · Back return");
+  byId("wHint").textContent = view === "menu" ? t("↑↓ choose · OK select · Back close") : view === "widget" ? t("↑↓ choose · OK or ←→ change · Back return") : t("↑↓ choose · OK select · Back return");
   byId("wStatus").textContent = ui.status;
   ui.rows = rowsFor(view);
   ui.cur = Math.max(0, Math.min(ui.cur, ui.rows.length - 1));
@@ -95,6 +95,15 @@ function searchCity(widget) {
   });
 }
 
+/** A text option (feed address, team filter): the TV keyboard prompt with the current value. */
+function typeOption(widget, opt) {
+  openPrompt({
+    title: t(opt.label), placeholder: t(opt.placeholder || ""), value: widget.o?.[opt.key] || "", okLabel: t("Save"), allowEmpty: true,
+    onSubmit: text => { setOption(widget, opt.key, text.trim()); draw(); },
+    onCancel: () => draw(),
+  });
+}
+
 function activate() {
   const row = ui.rows[ui.cur];
   if (!row) return;
@@ -106,7 +115,7 @@ function activate() {
     ui.sel = widget.id;
     show("menu", 1 + listFor(ui.card).findIndex(w => w.id === widget.id));
   } else if (row.id === "move" || row.id === "resize") { ui.view = row.id; setSelected(ui.sel, row.id); draw(); }
-  else if (row.id === "opt") { cycleOption(selected(), row.key); draw(); }
+  else if (row.id === "opt") { if (row.text) typeOption(selected(), row.opt); else { cycleOption(selected(), row.key); draw(); } }
   else if (row.id === "city") searchCity(selected());
   else if (row.id === "pick") { setOption(selected(), "city", {name: row.city.name, lat: row.city.lat, lon: row.city.lon}); show("widget"); }
   else if (row.id === "remove") { removeWidget(ui.card, ui.sel); ui.sel = null; show("menu"); }
@@ -120,6 +129,13 @@ export function widgetKey(event) {
     if (back || key === "Enter") { ui.view = "widget"; setSelected(ui.sel, ""); draw(); return; }
     const d = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1]}[key];
     if (d && w) { if (ui.view === "move") moveWidget(ui.card, w, d[0], d[1]); else resizeWidget(ui.card, w, d[0], d[1]); }
+    return;
+  }
+  const row = ui.rows[ui.cur];
+  if ((key === "ArrowLeft" || key === "ArrowRight") && ui.view === "widget" && row?.id === "opt" && !row.text) {   // change the value of a choice option
+    event.preventDefault();
+    cycleOption(selected(), row.key, key === "ArrowRight" ? 1 : -1);
+    draw();
     return;
   }
   if (back || (key === "ArrowLeft" && ui.view !== "menu")) {

@@ -59,6 +59,8 @@ build/                    generated .wgt packages (git-ignored)
 | `settings.js` | gear button screen: Language list (System + 15 languages) and About the developer (name, bio, LinkedIn row + QR) in a drawer |
 | `widgets.js` | widget registry `TYPES` (clock, date, weather: name, default/min size, options, `build`/`update`), per-slide layout in `prefs.widgets[cardId]`, grid helpers (12 x 6), `renderWidgets(card)` (called by `render()`), `refreshWidgets()`, a 1 s ticker |
 | `widgetedit.js` | the widget editor drawer: Add widget, per-widget Move / Resize / options / City / Remove (move and resize hide the drawer and use the arrow keys) |
+| `wutil.js` | helpers shared by `widgets.js` and the widget types: `esc`, `locale`, option resolution (`optionsFor`), `loadOnce` (one request per widget with a 1-minute pause after a failure), `cache` (localStorage `wcache-<name>`), `pagePlan` (rotating pages), `rowsFit`, `ago`, `plain` |
+| `wtypes/*.js` | widget types `inputs`, `news`, `currency`, `sports` (each a default-exported `{name, size, min, options, build, update}`; registered in `TYPES` of widgets.js) |
 | `weather.js` | Open-Meteo city search + forecast, 20 min cache, WMO code -> condition and inline SVG icons |
 | `qr.js` | `qrSvg(text)` shared by the YouTube login and About screens |
 | `lang/*.js` | one file per language: `export default {"English text": "translation"}` |

@@ -6,20 +6,16 @@ import { state } from "./state.js";
 import { prefs, savePrefs } from "./prefs.js";
 import { t, T, currentLanguage } from "./i18n.js";
 import { cachedWeather, fetchWeather, isStale, conditionOf, iconSvg } from "./weather.js";
+import { locale, esc, cap, setText, optionListOf, optionsFor, loadOnce } from "./wutil.js";
+import inputs from "./wtypes/inputs.js";
+import news from "./wtypes/news.js";
+import currency from "./wtypes/currency.js";
+import sports from "./wtypes/sports.js";
 
 export const COLS = 12, ROWS = 6;
 /** Slides that draw their own content (feeds) have no free space. */
 const NO_WIDGETS = new Set(["app:youtube", "app:applemusic"]);
 export const allowsWidgets = card => !!card && !NO_WIDGETS.has(card.id);
-
-const locale = () => ({zh: "zh-CN"})[currentLanguage()] || currentLanguage();
-const fetchState = new Map();
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
-const cap = s => s ? s.charAt(0).toLocaleUpperCase(locale()) + s.slice(1) : s;
-const setText = (node, text) => { if (node && node.textContent !== text) node.textContent = text; };
-
-/** Options every widget has. values: [[stored value, label], ...]; the first one is the default. */
-const COMMON = [{key: "card", label: T("Card"), values: [["panel", T("Panel")], ["none", T("None")], ["accent", T("Accent")]]}];
 
 export const TYPES = {
   clock: {
@@ -67,17 +63,14 @@ export const TYPES = {
       if (!city) html = '<div class="wicon">' + iconSvg("cloud") + '</div><div class="wmain"><span class="wnote">' + esc(t("Set a city in the widget options")) + "</span></div>";
       else {
         const entry = cachedWeather(city);
-        const wait = fetchState.get(w.id);   // not saved with the layout: {busy, failedAt}
-        if (isStale(entry) && !wait?.busy && !(wait?.failedAt > Date.now() - 60000)) {
-          fetchState.set(w.id, {busy: true});
-          fetchWeather(city).then(() => fetchState.set(w.id, {}), () => fetchState.set(w.id, {failedAt: Date.now()})).then(() => { if (el.isConnected) this.update(el, w); });
-        }
+        loadOnce(w.id, isStale(entry), () => fetchWeather(city), () => { if (el.isConnected) this.update(el, w); });
         if (!entry) html = '<div class="wicon">' + iconSvg("cloud") + '</div><div class="wmain"><b class="wtemp">…</b><span class="wcity">' + esc(city.name) + "</span></div>";
         else html = weatherHtml(entry.data, city, optionsOf(w));
       }
       if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
     },
   },
+  inputs, news, currency, sports,
 };
 
 function weatherHtml(d, city, o) {
@@ -91,23 +84,23 @@ function weatherHtml(d, city, o) {
 }
 
 // ---- options ----
-export const optionList = type => [...COMMON, ...TYPES[type].options];
-export function optionsOf(widget) {
-  const out = {};
-  for (const opt of optionList(widget.type)) out[opt.key] = widget.o?.[opt.key] ?? opt.values[0][0];
-  return out;
-}
-/** Switch an option to its next value. */
-export function cycleOption(widget, key) {
+export const optionList = type => optionListOf(TYPES[type]);
+export const optionsOf = widget => optionsFor(TYPES[widget.type], widget);
+/** Switch an option to its next (dir 1) or previous (dir -1) value. */
+export function cycleOption(widget, key, dir = 1) {
   const opt = optionList(widget.type).find(o => o.key === key);
   const current = optionsOf(widget)[key];
-  const next = opt.values[(opt.values.findIndex(v => v[0] === current) + 1) % opt.values.length][0];
-  widget.o = {...(widget.o || {}), [key]: next};
+  const n = opt.values.length, at = Math.max(0, opt.values.findIndex(v => v[0] === current));
+  widget.o = {...(widget.o || {}), [key]: opt.values[(at + dir + n) % n][0]};
   save();
   refreshWidgets();
 }
 export function setOption(widget, key, value) { widget.o = {...(widget.o || {}), [key]: value}; save(); refreshWidgets(); }
-export const optionLabel = (widget, opt) => t(opt.values.find(v => v[0] === optionsOf(widget)[opt.key])[1]);
+export const optionLabel = (widget, opt) => {
+  const value = optionsOf(widget)[opt.key];
+  if (opt.text) return value ? (value.length > 34 ? value.slice(0, 33) + "…" : value) : t("not set");
+  return t(opt.values.find(v => v[0] === value)[1]);
+};
 
 // ---- layout data ----
 const save = () => savePrefs();

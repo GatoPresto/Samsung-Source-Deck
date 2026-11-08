@@ -1,5 +1,5 @@
 // Checks that every user-visible string marked for translation has a translation in every language file.
-// Strings are found as the first string literals inside t("…") and T("…") calls in app/js/*.js and as data-i18n* attributes in app/index.html.
+// Strings are found as the first string literals inside t("…") and T("…") calls in app/js/*.js, app/js/wtypes/*.js and as data-i18n* attributes in app/index.html.
 // Usage: node scripts/check-i18n.mjs            (exit code 1 when something is missing, extra or has different {placeholders})
 //        node scripts/check-i18n.mjs --list     (print the English strings, e.g. to hand to a translator)
 import fs from "node:fs"; import path from "node:path"; import {pathToFileURL, fileURLToPath} from "node:url";
@@ -8,8 +8,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "a
 const phrases = [];
 const add = s => { if (/[A-Za-z]/.test(s) && !phrases.includes(s)) phrases.push(s); };
 
-for (const file of fs.readdirSync(path.join(root, "js")).filter(f => f.endsWith(".js") && f !== "i18n.js").sort()) {
-  const src = fs.readFileSync(path.join(root, "js", file), "utf8");
+const sources = [];   // app/js/*.js and app/js/wtypes/*.js (widget types)
+for (const dir of ["js", "js/wtypes"]) for (const f of fs.readdirSync(path.join(root, dir)).filter(f => f.endsWith(".js") && f !== "i18n.js").sort()) sources.push(path.join(dir, f));
+for (const file of sources) {
+  const src = fs.readFileSync(path.join(root, file), "utf8");
   for (const m of src.matchAll(/(?<![\w.])[tT]\(/g)) {
     let i = m.index + m[0].length, depth = 1, quote = null, arg = "";
     for (; i < src.length && depth; i++) {

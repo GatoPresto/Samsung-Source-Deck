@@ -33,3 +33,16 @@ export function httpBlob(url, {headers, timeout = 60000} = {}) {
     xhr.send();
   });
 }
+
+/** Resolves {status, text}: for XML/RSS and other non-JSON answers. */
+export function httpText(url, {timeout = 15000} = {}) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.timeout = timeout;
+    xhr.onload = () => resolve({status: xhr.status, text: xhr.responseText});
+    xhr.onerror = () => reject(new Error("network error"));
+    xhr.ontimeout = () => reject(new Error("timeout"));
+    xhr.send();
+  });
+}
