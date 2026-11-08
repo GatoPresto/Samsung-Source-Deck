@@ -36,6 +36,7 @@ Available widgets:
 | **Inputs** | Your HDMI ports with the device name and whether a device is connected, refreshed every few seconds |
 | **News** | Headlines of an RSS feed: BBC, DW, Al Jazeera, NPR, The Verge, Ars Technica, Hacker News, NASA, gaming sites (PlayStation Blog, Xbox Wire, Nintendo Life, IGN and more), Ukrainian news, or any feed address you type |
 | **Currency** | Exchange rates for up to three currencies against a base currency (18 currencies, incl. UAH) |
+| **News cards** | The same feeds as cards with pictures. Press **Up** from the thumbnails to focus it, **Left/Right** to choose a card and **OK** to open the article in the TV browser |
 | **Sports scores** | Today's matches for a football league, NBA, NFL, NHL or MLB, live first; optional team filter |
 
 Each widget has a **Card** style (a panel in the theme colours, none, or the accent colour) and options of its own. Text scales with the widget size, so a widget can be small or fill half the screen.

@@ -1,6 +1,6 @@
 // The single keydown router. Priority: login -> theme picker -> Arrange -> media browser -> (playing) -> Back -> YouTube feed -> main screen.
 import { byId } from "./dom.js";
-import { state, tv, yt } from "./state.js";
+import { state, tv, yt, wf } from "./state.js";
 import { ZONES, LAST_ZONE, usable, drawCursor, stepZone } from "./cursor.js";
 import { move } from "./render.js";
 import { open, stop, peekBack } from "./playback.js";
@@ -13,6 +13,7 @@ import { prompt, promptKey } from "./textprompt.js";
 import { bg, bgKey } from "./bgpicker.js";
 import { settings, settingsKey } from "./settings.js";
 import { widgetEdit, widgetKey } from "./widgetedit.js";
+import { enterWidgets, widgetFocusKey } from "./widgets.js";
 
 export function initKeys() {
   document.addEventListener("keydown", event => {
@@ -24,6 +25,7 @@ export function initKeys() {
     if (picker.open) { pickerKey(event); return; }
     if (arr.open) { arrangeKey(event); return; }
     if (browser.server && !state.active && !byId("browser").hidden) { browserKey(event); return; }
+    if (wf.active && !state.active) { event.preventDefault(); widgetFocusKey(event); return; }   // an interactive widget (News cards) has the cursor
     if (musicShown() && !state.active && musicMediaKey(event.keyCode)) { event.preventDefault(); return; }
     if (state.active && event.keyCode !== 10009 && event.key !== "Escape") peekBack();
     const isBack = event.key === "Escape" || event.keyCode === 10009;
@@ -48,6 +50,7 @@ export function initKeys() {
       }
     } else if (key === "ArrowUp" || key === "ArrowDown") {
       event.preventDefault();
+      if (key === "ArrowUp" && state.zone === 0 && enterWidgets()) return;   // Up from the thumbnails goes into interactive widgets, if the slide has any
       const cards = byId("vids").children.length, chips = byId("subs").children.length;
       if (key === "ArrowUp" && state.zone === 0 && yt.shown && (cards || chips)) {
         // Enter the feed on the video row, or on the top row when there are no cards (e.g. an empty "For you" tab).

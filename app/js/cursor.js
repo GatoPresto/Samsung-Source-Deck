@@ -1,7 +1,7 @@
 // One virtual cursor instead of DOM focus (see AGENTS.md rule 2).
 // zone 0 = the source tiles, then the footer buttons. YouTube's feed rows are a mode on top (yt.inFeed).
 import { byId } from "./dom.js";
-import { state, yt } from "./state.js";
+import { state, yt, wf } from "./state.js";
 
 /** Modules that draw extra cursor state register a function here (called at the end of drawCursor). */
 export const cursorHooks = [];
@@ -16,8 +16,8 @@ export function usable(z) {
 export function drawCursor() {
   if (!usable(state.zone)) state.zone = usable(0) ? 0 : ZONES.indexOf("refresh");
   if (yt.inFeed && !yt.shown) yt.inFeed = false;
-  [...byId("strip").children].forEach((tile, i) => tile.classList.toggle("cur", state.zone === 0 && !yt.inFeed && i === state.index));
-  ZONES.forEach((id, z) => { if (id) byId(id).classList.toggle("cur", !yt.inFeed && state.zone === z); });
+  [...byId("strip").children].forEach((tile, i) => tile.classList.toggle("cur", state.zone === 0 && !yt.inFeed && !wf.active && i === state.index));
+  ZONES.forEach((id, z) => { if (id) byId(id).classList.toggle("cur", !yt.inFeed && !wf.active && state.zone === z); });
   [...byId("vids").children].forEach((v, i) => v.classList.toggle("cur", yt.inFeed && yt.row === "vids" && i === yt.idx));
   [...byId("subs").children].forEach((v, i) => v.classList.toggle("cur", yt.inFeed && yt.row === "subs" && i === yt.sidx));
   const cur = yt.row === "subs" ? byId("subs").children[yt.sidx] : byId("vids").children[yt.idx];

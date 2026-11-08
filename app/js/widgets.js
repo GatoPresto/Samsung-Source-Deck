@@ -2,15 +2,17 @@
 // Layout per slide: prefs.widgets[cardId] = [{id, type, x, y, w, h, o: {option: value, ...}}] (stable card ids, like every other preference).
 // To add a widget type: add an entry to TYPES below (name, default size, options, build(), update()) and its CSS in css/widgets.css; the editor (widgetedit.js) needs no change.
 import { byId, deck } from "./dom.js";
-import { state } from "./state.js";
+import { state, wf } from "./state.js";
+import { drawCursor } from "./cursor.js";
 import { prefs, savePrefs } from "./prefs.js";
 import { t, T, currentLanguage } from "./i18n.js";
 import { cachedWeather, fetchWeather, isStale, conditionOf, iconSvg } from "./weather.js";
-import { locale, esc, cap, setText, optionListOf, optionsFor, loadOnce } from "./wutil.js";
+import { locale, esc, cap, setText, optionListOf, optionsFor, loadOnce, hintBar } from "./wutil.js";
 import inputs from "./wtypes/inputs.js";
 import news from "./wtypes/news.js";
 import currency from "./wtypes/currency.js";
 import sports from "./wtypes/sports.js";
+import newscards from "./wtypes/newscards.js";
 
 export const COLS = 12, ROWS = 6;
 /** Slides that draw their own content (feeds) have no free space. */
@@ -70,7 +72,7 @@ export const TYPES = {
       if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
     },
   },
-  inputs, news, currency, sports,
+  inputs, news, currency, sports, newscards,
 };
 
 function weatherHtml(d, city, o) {
@@ -187,6 +189,43 @@ export function renderWidgets(card) {
   }
   layer.hidden = !layer.children.length;
   markSelected();
+  // the cursor stays in an interactive widget across a rebuild of the same slide, but not on another slide or when the widget is gone
+  if (wf.active && (wf.card !== (card && card.id) || !live.some(l => l.w.id === wf.id))) { wf.active = false; wf.id = null; showHint(null); }
+  drawFocus();
+}
+
+// ---- interactive widgets (type.interactive): Up from the thumbnails enters them; type.key(el, w, event) handles ←→ and OK; Up/Down move between them; Back leaves ----
+const interactiveLive = () => live.filter(l => l.type.interactive).sort((a, b) => a.w.y - b.w.y || a.w.x - b.w.x);
+function drawFocus() {
+  for (const l of live) {
+    const on = wf.active && l.w.id === wf.id;
+    l.el.classList.toggle("wfocus", on);
+    if (l.type.focus) l.type.focus(l.el, l.w, on);
+  }
+}
+/** Put the cursor on the first interactive widget of the slide. Returns false when there is none. */
+export function enterWidgets() {
+  const list = interactiveLive(), card = state.cards[state.index];
+  if (!list.length || state.active || !card) return false;
+  wf.active = true; wf.id = list[0].w.id; wf.card = card.id;
+  drawFocus();
+  drawCursor();
+  showHint(list[0].type);
+  return true;
+}
+/** The key hint of the widget that has the cursor, in a bar at the bottom of the screen. */
+function showHint(type) {
+  hintBar(wf.active && type && type.hint ? t(type.hint) : "");
+}
+function leaveWidgets() { wf.active = false; wf.id = null; drawFocus(); showHint(null); drawCursor(); }
+/** Keys while an interactive widget has the cursor (the router calls this for every key). */
+export function widgetFocusKey(event) {
+  const list = interactiveLive(), at = list.findIndex(l => l.w.id === wf.id), key = event.key;
+  if (at < 0 || event.keyCode === 10009 || key === "Escape") { leaveWidgets(); return; }
+  const cur = list[at];
+  if (cur.type.key && cur.type.key(cur.el, cur.w, event)) return;
+  if (key === "ArrowUp" && at > 0) { wf.id = list[at - 1].w.id; drawFocus(); showHint(list[at - 1].type); }
+  else if (key === "ArrowDown") { if (at < list.length - 1) { wf.id = list[at + 1].w.id; drawFocus(); showHint(list[at + 1].type); } else leaveWidgets(); }
 }
 /** Rebuild the widgets of the slide on screen (after language, option or list changes). */
 export function refreshWidgets() { layoutKey = null; renderWidgets(state.cards[state.index]); }

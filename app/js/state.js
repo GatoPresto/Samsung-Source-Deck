@@ -33,6 +33,9 @@ export const saveJson = (key, value) => {
   try { if (value == null) localStorage.removeItem(key); else localStorage.setItem(key, JSON.stringify(value)); } catch {}
 };
 
+// Widget focus: which interactive widget (e.g. News cards) has the virtual cursor. See widgets.js (enterWidgets / widgetFocusKey).
+export const wf = {active: false, id: null, card: null};
+
 // YouTube login/feed state (logic in youtube.js). Lives here so cursor.js can read it without importing youtube.js.
 export const yt = {
   tokens: loadJson("yt-tokens"), feed: loadJson("yt-feed"),

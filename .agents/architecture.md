@@ -60,7 +60,9 @@ build/                    generated .wgt packages (git-ignored)
 | `widgets.js` | widget registry `TYPES` (clock, date, weather: name, default/min size, options, `build`/`update`), per-slide layout in `prefs.widgets[cardId]`, grid helpers (12 x 6), `renderWidgets(card)` (called by `render()`), `refreshWidgets()`, a 1 s ticker |
 | `widgetedit.js` | the widget editor drawer: Add widget, per-widget Move / Resize / options / City / Remove (move and resize hide the drawer and use the arrow keys) |
 | `wutil.js` | helpers shared by `widgets.js` and the widget types: `esc`, `locale`, option resolution (`optionsFor`), `loadOnce` (one request per widget with a 1-minute pause after a failure), `cache` (localStorage `wcache-<name>`), `pagePlan` (rotating pages), `rowsFit`, `ago`, `plain` |
-| `wtypes/*.js` | widget types `inputs`, `news`, `currency`, `sports` (each a default-exported `{name, size, min, options, build, update}`; registered in `TYPES` of widgets.js) |
+| `wfeeds.js` | RSS/Atom feeds for News and News cards: `FEEDS` presets, `FEED_OPTIONS`, `parseFeed` (title, time, link, picture), `refreshFeed` (15 min cache `wcache-feeds`) |
+| `openurl.js` | `openUrl(url, {opening, failed})`: Tizen `view` app control (system choice, then `org.tizen.browser`); `window.open` in the demo |
+| `wtypes/*.js` | widget types `inputs`, `news`, `newscards` (interactive), `currency`, `sports` (each a default-exported `{name, size, min, options, build, update}`; registered in `TYPES` of widgets.js) |
 | `weather.js` | Open-Meteo city search + forecast, 20 min cache, WMO code -> condition and inline SVG icons |
 | `qr.js` | `qrSvg(text)` shared by the YouTube login and About screens |
 | `lang/*.js` | one file per language: `export default {"English text": "translation"}` |

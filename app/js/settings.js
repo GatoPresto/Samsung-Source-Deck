@@ -1,6 +1,6 @@
 // Settings (gear button): language and About the developer. A drawer like "Change background"; three views: menu, language list, about.
 import { byId } from "./dom.js";
-import { state, tv, demo } from "./state.js";
+import { state } from "./state.js";
 import { prefs } from "./prefs.js";
 import { makeRow } from "./templates.js";
 import { focusSel } from "./cursor.js";
@@ -9,6 +9,7 @@ import { populate, render } from "./render.js";
 import { t, T, LANGUAGES, languageName, systemLanguage, setLanguage } from "./i18n.js";
 import { qrSvg } from "./qr.js";
 import { refreshWidgets } from "./widgets.js";
+import { openUrl } from "./openurl.js";
 
 export const settings = {open: false};
 const ui = {view: "menu", cur: 0, rows: [], status: ""};
@@ -76,17 +77,6 @@ function close() {
 
 function show(view, cur = 0) { Object.assign(ui, {view, cur, status: ""}); draw(); }
 
-/** Open a web address with the TV's browser (or any app that handles it). Tries the system's choice first, then the Samsung browser. */
-function openUrl(url, attempt = 0) {
-  const appIds = [null, "org.tizen.browser"];
-  if (demo) { window.open(url, "_blank"); return; }
-  if (!tv?.application || attempt >= appIds.length) { ui.status = t("Could not open the browser. Scan the QR code instead."); draw(); return; }
-  try {
-    const control = new tv.ApplicationControl("http://tizen.org/appcontrol/operation/view", url, null, null, null);
-    tv.application.launchAppControl(control, appIds[attempt], () => { ui.status = t("Opening…"); draw(); }, () => openUrl(url, attempt + 1));
-  } catch (error) { openUrl(url, attempt + 1); }
-}
-
 async function activate() {
   const row = ui.rows[ui.cur];
   if (!row) return;
@@ -97,7 +87,10 @@ async function activate() {
     render();
     refreshWidgets();   // dates and weather texts in the new language
     draw();
-  } else if (row.id === "linkedin") openUrl(LINKEDIN);
+  } else if (row.id === "linkedin") openUrl(LINKEDIN, {
+    opening: () => { ui.status = t("Opening…"); draw(); },
+    failed: () => { ui.status = t("Could not open the browser. Scan the QR code instead."); draw(); },
+  });
 }
 
 export function settingsKey(event) {

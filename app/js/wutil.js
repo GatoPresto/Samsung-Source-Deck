@@ -32,6 +32,13 @@ export function loadOnce(id, needed, fetcher, done) {
   fetcher().then(() => loads.set(id, {}), () => loads.set(id, {failedAt: Date.now()})).then(done);
 }
 
+/** Show a text in the key-hint bar at the bottom of the screen (#wfHint), or hide the bar with "". */
+export function hintBar(text) {
+  const bar = document.getElementById("wfHint");
+  bar.hidden = !text;
+  bar.textContent = text || "";
+}
+
 // ---- small localStorage cache: name -> {key: {at, data}} (newest 8 keys kept) ----
 export const cache = {
   get(name, key) { return (loadJson("wcache-" + name) || {})[key] || null; },
