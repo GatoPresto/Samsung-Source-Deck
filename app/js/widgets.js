@@ -14,6 +14,7 @@ import news from "./wtypes/news.js";
 import currency from "./wtypes/currency.js";
 import sports from "./wtypes/sports.js";
 import newscards from "./wtypes/newscards.js";
+import outages from "./wtypes/outages.js";
 
 export const COLS = 12, ROWS = 6;
 /** Slides that draw their own content (feeds) have no free space. */
@@ -73,7 +74,7 @@ export const TYPES = {
       if (box.dataset.sig !== html) { box.dataset.sig = html; box.innerHTML = html; }
     },
   },
-  inputs, news, currency, sports, newscards,
+  inputs, news, currency, sports, newscards, outages,
 };
 
 function weatherHtml(d, city, o) {
@@ -98,6 +99,8 @@ export function cycleOption(widget, key, dir = 1) {
   save();
   refreshWidgets();
 }
+/** Set several options at once. */
+export function setOptions(widget, values) { widget.o = {...(widget.o || {}), ...values}; save(); refreshWidgets(); }
 export function setOption(widget, key, value) { widget.o = {...(widget.o || {}), [key]: value}; save(); refreshWidgets(); }
 export const optionLabel = (widget, opt) => {
   const value = optionsOf(widget)[opt.key];

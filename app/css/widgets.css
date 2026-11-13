@@ -73,6 +73,49 @@
 .widget.wfocus .ncard.sel{border-color:var(--dr-focus-bg,#fff);background:color-mix(in srgb,var(--dr-focus-bg,#fff) 22%,transparent)}
 .widget:not(.wfocus) .ncard.sel{border-color:transparent}
 
+/* Outages (Yasno): bars are green = power on, red = outage, amber = probable outage, hatched = no schedule yet / emergency outages. */
+.wout{width:100%;height:100%;display:flex;flex-direction:column;padding:4cqh 4cqw;min-height:0;gap:1.8cqh}
+.wout h4{display:flex;justify-content:space-between;gap:2cqw;margin:0;font-size:min(6.4cqh,3.1cqw)}
+.oupd{font-weight:500;letter-spacing:0;text-transform:none;opacity:.7}
+.ostat{display:flex;align-items:center;gap:3cqw;min-height:0}
+.ostat i{flex:none;width:min(15cqh,7cqw);height:min(15cqh,7cqw);border-radius:50%;background:#2fd27a;box-shadow:0 0 .7em #2fd27a99}
+.ostat.off i{background:#ff4d4d;box-shadow:0 0 .7em #ff4d4d99}
+.ostat.none i{background:repeating-linear-gradient(45deg,#7b8494 0 5px,#59616f 5px 10px);box-shadow:none}
+.ostat.maybe i{background:#ffb020;box-shadow:0 0 .7em #ffb02099}
+.ostat.emergency i{background:repeating-linear-gradient(45deg,#ff4d4d 0 5px,#8a1a1a 5px 10px);box-shadow:0 0 .7em #ff4d4d99}
+.ostat b{display:block;font-size:min(13cqh,6.2cqw);line-height:1.1}
+.ostat span{display:block;margin-top:.25em;font-size:min(7.5cqh,3.5cqw);opacity:.85}
+.orow{display:flex;flex-direction:column;gap:.6cqh;min-height:0}
+.orow small,.olabel{font-size:min(6cqh,3cqw);opacity:.8}
+.obar{position:relative;height:min(11cqh,5cqw);min-height:9px;border-radius:999px;overflow:hidden;background:#2fd27a}
+.obar.nodata{background:repeating-linear-gradient(45deg,#7b8494 0 6px,#59616f 6px 12px)}
+.obar.emergency{background:repeating-linear-gradient(45deg,#ff4d4d 0 6px,#8a1a1a 6px 12px)}
+.obar .seg{position:absolute;top:0;bottom:0;background:#ff4d4d}
+.obar .seg.prob{background:#ffb020}
+.obar .now{position:absolute;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 0 1px #0009;transform:translateX(-50%)}
+.oticks{display:flex;justify-content:space-between;margin-top:-.8cqh;font-size:min(5cqh,2.4cqw);opacity:.65}
+.owait{opacity:.75;font-size:min(5.4cqh,2.6cqw)}
+.osum{display:flex;flex-wrap:wrap;gap:0 4cqw;font-size:min(7cqh,3.2cqw);opacity:.9}
+.ogrid{display:flex;flex-direction:column;gap:.8cqh;min-height:0;flex:1}
+.hgrid{display:grid;grid-template-columns:repeat(var(--cols,12),minmax(0,1fr));gap:1cqh .6cqw}
+.hcell{display:flex;flex-direction:column;align-items:center;gap:.4cqh}
+.hcell .obar{width:100%;height:min(15cqh,6cqw);border-radius:min(.8cqw,6px)}
+.hcell small{font-size:min(4.8cqh,2cqw);opacity:.7}
+.olist{flex:1;min-height:0;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;justify-content:space-around;gap:1cqh}
+.olist li{display:grid;grid-template-columns:4.4em 1fr auto;align-items:baseline;gap:2cqw;font-size:min(6.4cqh,5cqw)}
+.olist li small{opacity:.7;font-size:.75em}
+.olist li b{font-variant-numeric:tabular-nums}
+.olist li span{opacity:.75;font-size:.85em}
+.olist li.act b{color:#ff6b6b}
+.olist li.maybe b{color:#ffb020}
+.wrow{display:grid;grid-template-columns:3em minmax(0,1fr);align-items:center;gap:2cqw}
+.wrow small{font-size:min(5.6cqh,2.6cqw);opacity:.75}
+.wrow.today small{opacity:1;font-weight:700}
+.wrow .obar{height:min(6cqh,2.8cqw)}
+@container (max-height:150px){.oticks,.oupd{display:none}}
+@container (max-width:560px){.oupd{display:none}}
+@container (max-height:150px){.wout{flex-direction:column;justify-content:center;gap:1cqh}.ostat b{font-size:min(20cqh,4.6cqw)}.ostat span{font-size:min(13cqh,3cqw)}.ostat i{width:min(26cqh,4.5cqw);height:min(26cqh,4.5cqw)}.obar{height:min(14cqh,3cqw)}.orow small{font-size:min(11cqh,2.6cqw)}}
+
 /* Widget editor: the drawer styles are shared with "Change background" (css/background.css). While moving/resizing only the hint bar is shown. */
 #widgetsView[data-view=grid]{background:none;pointer-events:none}
 #widgetsView[data-view=grid] #wPanel{display:none}

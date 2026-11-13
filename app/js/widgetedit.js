@@ -1,5 +1,6 @@
 // Widget editor: a drawer (like "Change background") to add, move, resize, customise and remove the widgets of the slide on screen.
-// Views: menu (Add widget + the slide's widgets) -> add (widget types) / widget (Move, Resize, options, Remove) -> move / resize (the drawer hides, arrow keys change the grid) / city (Weather: search results).
+// Views: menu (Add widget + the slide's widgets) -> add (widget types) / widget (Move, Resize, options, actions, Remove) -> move / resize (the drawer hides, arrow keys change the grid) / city (Weather: search results)
+// / pick (a list chosen by a widget action). A widget type can have `actions: [{key, label, value(w), run(w, api)}]` (e.g. Outages: find the group by address); run() uses api.ask / api.pick / api.say / api.set.
 import { byId } from "./dom.js";
 import { state } from "./state.js";
 import { makeRow } from "./templates.js";
@@ -7,11 +8,11 @@ import { focusSel } from "./cursor.js";
 import { syncRing } from "./glass.js";
 import { openPrompt } from "./textprompt.js";
 import { t, currentLanguage } from "./i18n.js";
-import { TYPES, allowsWidgets, listFor, addWidget, removeWidget, moveWidget, resizeWidget, optionList, optionLabel, cycleOption, setOption, setSelected } from "./widgets.js";
+import { TYPES, allowsWidgets, listFor, addWidget, removeWidget, moveWidget, resizeWidget, optionList, optionLabel, cycleOption, setOption, setOptions, setSelected } from "./widgets.js";
 import { searchCities } from "./weather.js";
 
 export const widgetEdit = {open: false};
-const ui = {view: "menu", cur: 0, card: null, sel: null, rows: [], status: "", cities: []};
+const ui = {view: "menu", cur: 0, card: null, sel: null, rows: [], status: "", cities: [], pickItems: [], pickTitle: "", pickResolve: null};
 
 const selected = () => listFor(ui.card).find(w => w.id === ui.sel);
 
@@ -19,10 +20,12 @@ function rowsFor(view) {
   const list = listFor(ui.card);
   if (view === "add") return Object.keys(TYPES).map(type => ({id: "type", type, label: t(TYPES[type].name)}));
   if (view === "city") return ui.cities.map(city => ({id: "pick", city, label: city.label}));
+  if (view === "pick") return ui.pickItems.map(item => ({id: "choice", value: item.value, label: (item.current ? "●  " : "○  ") + item.label}));
   if (view === "widget") {
     const w = selected(), type = TYPES[w.type];
     const rows = [{id: "move", label: t("Move")}, {id: "resize", label: t("Resize")}];
     for (const opt of optionList(w.type)) rows.push({id: "opt", key: opt.key, text: !!opt.text, opt, label: t(opt.label) + ":  " + optionLabel(w, opt)});
+    for (const action of type.actions || []) rows.push({id: "action", action, label: t(action.label) + (action.noValue ? "" : ":  " + (action.value(w) || t("not set")))});
     if (type.custom === "city") rows.push({id: "city", label: t("City") + ":  " + (w.o?.city ? w.o.city.name : t("not set"))});
     rows.push({id: "remove", label: t("Remove widget")});
     return rows;
@@ -41,7 +44,7 @@ function draw() {
     return;
   }
   const w = view === "widget" ? selected() : null;
-  byId("wTitle").textContent = view === "menu" ? t("Widgets") + " · " + ui.card.name : view === "add" ? t("Add widget") : view === "city" ? t("City") : t(TYPES[w.type].name);
+  byId("wTitle").textContent = view === "menu" ? t("Widgets") + " · " + ui.card.name : view === "add" ? t("Add widget") : view === "city" ? t("City") : view === "pick" ? ui.pickTitle : t(TYPES[w.type].name);
   byId("wHint").textContent = view === "menu" ? t("↑↓ choose · OK select · Back close") : view === "widget" ? t("↑↓ choose · OK or ←→ change · Back return") : t("↑↓ choose · OK select · Back return");
   byId("wStatus").textContent = ui.status;
   ui.rows = rowsFor(view);
@@ -104,6 +107,24 @@ function typeOption(widget, opt) {
   });
 }
 
+/** What a widget action may use: the TV keyboard, a list to choose from, and a status line. */
+const api = {
+  ask: (title, placeholder, value = "") => new Promise(resolve => openPrompt({title, placeholder, value, okLabel: t("Search"), onSubmit: text => resolve(text.trim()), onCancel: () => resolve(null)})),
+  pick: (title, items) => new Promise(resolve => {
+    Object.assign(ui, {view: "pick", cur: Math.max(0, items.findIndex(i => i.current)), pickItems: items, pickTitle: title, pickResolve: resolve, status: ""});
+    draw();
+  }),
+  say: text => { ui.status = text; draw(); },
+  set: (widget, values) => setOptions(widget, values),
+};
+
+function runAction(widget, action) {
+  const back = ui.cur;
+  Promise.resolve().then(() => action.run(widget, api))
+    .catch(error => { api.say(t("Could not load: {why}", {why: error.message})); })
+    .finally(() => { const message = ui.status; show("widget", back); ui.status = message; draw(); });
+}
+
 function activate() {
   const row = ui.rows[ui.cur];
   if (!row) return;
@@ -117,6 +138,8 @@ function activate() {
   } else if (row.id === "move" || row.id === "resize") { ui.view = row.id; setSelected(ui.sel, row.id); draw(); }
   else if (row.id === "opt") { if (row.text) typeOption(selected(), row.opt); else { cycleOption(selected(), row.key); draw(); } }
   else if (row.id === "city") searchCity(selected());
+  else if (row.id === "action") runAction(selected(), row.action);
+  else if (row.id === "choice") { const resolve = ui.pickResolve; ui.pickResolve = null; if (resolve) resolve(row.value); }
   else if (row.id === "pick") { setOption(selected(), "city", {name: row.city.name, lat: row.city.lat, lon: row.city.lon}); show("widget"); }
   else if (row.id === "remove") { removeWidget(ui.card, ui.sel); ui.sel = null; show("menu"); }
 }
@@ -142,6 +165,7 @@ export function widgetKey(event) {
     event.preventDefault();
     if (ui.view === "menu") close();
     else if (ui.view === "city") show("widget");
+    else if (ui.view === "pick") { const resolve = ui.pickResolve; ui.pickResolve = null; if (resolve) resolve(null); else show("widget"); }
     else if (ui.view === "widget") show("menu", 1 + listFor(ui.card).findIndex(w => w.id === ui.sel));
     else show("menu");
   } else if (key === "ArrowDown" || key === "ArrowUp") {

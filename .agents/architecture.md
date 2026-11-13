@@ -62,7 +62,9 @@ build/                    generated .wgt packages (git-ignored)
 | `wutil.js` | helpers shared by `widgets.js` and the widget types: `esc`, `locale`, option resolution (`optionsFor`), `loadOnce` (one request per widget with a 1-minute pause after a failure), `cache` (localStorage `wcache-<name>`), `pagePlan` (rotating pages), `rowsFit`, `ago`, `plain` |
 | `wfeeds.js` | RSS/Atom feeds for News and News cards: `FEEDS` presets, `FEED_OPTIONS`, `parseFeed` (title, time, link, picture), `refreshFeed` (15 min cache `wcache-feeds`) |
 | `openurl.js` | `openUrl(url, {opening, failed})`: Tizen `view` app control (system choice, then `org.tizen.browser`); `window.open` in the demo |
-| `wtypes/*.js` | widget types `inputs`, `news`, `newscards` (interactive), `currency`, `sports` (each a default-exported `{name, size, min, options, build, update}`; registered in `TYPES` of widgets.js) |
+| `wtypes/*.js` | widget types `inputs`, `news`, `newscards` (interactive), `currency`, `sports`, `outages` (each a default-exported `{name, size, min, options, build, update}`; registered in `TYPES` of widgets.js) |
+| `toe.js` | Ternopil (poweron.toe.com.ua) site API: city / street / house search, `fetchSchedule(addressKey)` converted to Yasno's group shape (half-hour map -> slots incl. type Maybe) |
+| `yasno.js` | Yasno outage API (planned schedule, probable week, address search -> group) and the schedule maths in Kyiv time (`planDays`, `outageRanges`, `nowState`, `dayTotals`) |
 | `weather.js` | Open-Meteo city search + forecast, 20 min cache, WMO code -> condition and inline SVG icons |
 | `scroll.js` | `revealX(row, child)` (scroll only when the item is not fully visible, smooth), `smoothScrollTo`, frame hooks (edge fades and the focus ring follow the scroll) |
 | `qr.js` | `qrSvg(text)` shared by the YouTube login and About screens |

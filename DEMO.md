@@ -37,6 +37,7 @@ Available widgets:
 | **News** | Headlines of an RSS feed: BBC, DW, Al Jazeera, NPR, The Verge, Ars Technica, Hacker News, NASA, gaming sites (PlayStation Blog, Xbox Wire, Nintendo Life, IGN and more), Ukrainian news, or any feed address you type |
 | **Currency** | Exchange rates for up to three currencies against a base currency (18 currencies, incl. UAH) |
 | **News cards** | The same feeds as cards with pictures. Press **Up** from the thumbnails to focus it, **Left/Right** to choose a card and **OK** to open the article in the TV browser |
+| **Outages** | Planned electricity outages in Ukraine (Kyiv and Dnipro, from Yasno): the state right now with a countdown, an hourly grid, day bars, the next outages and the probable week. Pick your group from a list or find it by address |
 | **Sports scores** | Today's matches for a football league, NBA, NFL, NHL or MLB, live first; optional team filter |
 
 Each widget has a **Card** style (a panel in the theme colours, none, or the accent colour) and options of its own. Text scales with the widget size, so a widget can be small or fill half the screen.
