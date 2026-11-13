@@ -119,6 +119,13 @@ function applyAccent(card, theme) {
 const SETTLE_MS = 160;
 const FEED_IDS = new Set(["app:youtube", "app:applemusic"]);
 let lastId = null, settleTimer = 0;
+/** Fade a freshly built block in with the same 0.25 s ease-out as the title area (`@keyframes in` in base.css). Skipped when Smooth motion is off. */
+function fadeIn(id) {
+  const el = byId(id);
+  if (!el || el.hidden || document.documentElement.dataset.motion === "off" || !el.animate) return;
+  el.animate([{opacity: 0}, {opacity: 1}], {duration: 250, easing: "ease-out"});
+}
+
 function settle(card) {
   clearTimeout(settleTimer);
   settleTimer = setTimeout(() => {
@@ -127,6 +134,8 @@ function settle(card) {
     renderWidgets(card);
     updateYoutubeUi(card);
     updateMusicUi(card);
+    fadeIn("widgets");
+    if (FEED_IDS.has(card?.id)) fadeIn("feed");
     drawCursor();
     noteLate("settle", performance.now() - t0);
   }, SETTLE_MS);
