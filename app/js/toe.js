@@ -11,9 +11,9 @@ import { kyivNow } from "./yasno.js";
 const BASE = "https://api-poweron.toe.com.ua/api";
 export const TOE_PROVIDER = ["toe", "Тернопіль · ТОЕ"];
 
-async function get(path, params, headers) {
+async function get(path, params, headers, slide = false) {
   const url = BASE + path + (params ? "?" + new URLSearchParams(params) : "");
-  const {status, json} = await httpJson("GET", url, {timeout: 25000, headers: {Accept: "application/ld+json", ...headers}});
+  const {status, json} = await httpJson("GET", url, {timeout: 25000, slide, headers: {Accept: "application/ld+json", ...headers}});
   if (status !== 200 || json == null) throw new Error("HTTP " + status);
   return json;
 }
@@ -56,7 +56,7 @@ export async function fetchSchedule(key) {
   const [cityId, streetId, ...rest] = key.split("/");
   const house = rest.join("/");
   const data = await get("/a_gpv_g", {after: day(-1) + "T12:00:00+00:00", before: day(1) + "T00:00:00+00:00", time: cityId + streetId + house},
-    {"X-debug-key": btoa(unescape(encodeURIComponent(key)))});
+    {"X-debug-key": btoa(unescape(encodeURIComponent(key)))}, true);
   const out = {today: null, tomorrow: null, updatedOn: ""};
   const byDate = {};
   for (const m of members(data)) {

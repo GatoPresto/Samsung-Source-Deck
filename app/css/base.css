@@ -34,3 +34,7 @@ section{animation:in .25s ease-out both}
 @keyframes spin{to{transform:rotate(360deg)}}
 #refresh.busy::before{content:"";display:inline-block;width:.9em;height:.9em;margin-right:.6em;vertical-align:-.1em;border:3px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
 main.busy #count,main.busy #detail{opacity:.4}
+
+/* Settings > Appearance > Smooth motion: off (js/motion.js): no ring glide, no title fade (the strip glide is switched off in scroll.js) */
+html[data-motion=off] #focusRing{transition:none!important}
+html[data-motion=off] section{animation:none}

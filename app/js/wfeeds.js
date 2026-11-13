@@ -95,7 +95,7 @@ export const feedFailed = loadFailed;
 /** Download the feed of a widget if the cache is older than 15 minutes (one request at a time); `done` runs afterwards. */
 export function refreshFeed(widgetId, url, done) {
   loadOnce(widgetId, isOld(feedEntry(url), TTL_MINUTES), async () => {
-    const {status, text} = await httpText(url);
+    const {status, text} = await httpText(url, {slide: true});
     if (status !== 200) throw new Error("HTTP " + status);
     cache.set("feeds", url, parseFeed(text, url));
   }, done);

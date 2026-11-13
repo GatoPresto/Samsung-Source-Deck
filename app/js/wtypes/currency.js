@@ -23,7 +23,7 @@ const type = {
     const o = optionsFor(type, w), box = el.firstElementChild;
     const entry = cache.get("fx", o.base);
     loadOnce(w.id, isOld(entry, 60), async () => {
-      const {status, json} = await httpJson("GET", "https://open.er-api.com/v6/latest/" + o.base);
+      const {status, json} = await httpJson("GET", "https://open.er-api.com/v6/latest/" + o.base, {slide: true});
       if (status !== 200 || json?.result !== "success") throw new Error("HTTP " + status);
       const rates = {};
       for (const c of CODES) if (json.rates[c]) rates[c] = json.rates[c];

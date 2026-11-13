@@ -301,5 +301,9 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "OK im Feld öffnet die Tastatur · wenn du fertig bist, drücke OK auf Suchen · Zurück bricht ab",
   "Change theme": "Design ändern",
   "Arrange": "Anordnen",
+  "Appearance": "Darstellung",
+  "Debug": "Debug",
+  "Smooth motion:": "Flüssige Bewegung:",
+  "Slide timing:": "Slide-Zeitmessung:",
   "Back to sources": "Zurück zu den Quellen"
 };

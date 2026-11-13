@@ -8,11 +8,12 @@ import { drawCursor } from "./cursor.js";
 import { updateYoutubeUi } from "./youtube.js";
 import { updateMusicUi } from "./music.js";
 import { updateGlass } from "./glass.js";
-import { applyBackground } from "./background.js";
+import { applyBackground, prefetchBackgrounds } from "./background.js";
 import { open } from "./playback.js";
 import { renderWidgets, allowsWidgets } from "./widgets.js";
 import { revealX } from "./scroll.js";
 import { t } from "./i18n.js";
+import { probe, lap, noteLate } from "./perf.js";
 
 const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
 const GROUP = card => card.source ? 0 : card.url ? 1 : card.dlna ? 2 : card.generic ? 4 : 3;
@@ -84,7 +85,7 @@ export function move(offset) {
   if (state.active || state.cards.length < 2) return;
   state.index = (state.index + offset + state.cards.length) % state.cards.length;
   message("");
-  render();
+  probe(render);
 }
 
 /** Set the theme's accent colours as CSS variables on the page (only when the choice changed; the theme's first accent means "no override"). */
@@ -99,9 +100,29 @@ function applyAccent(card, theme) {
   }
 }
 
+// Moving to another slide draws the title, theme, strip and cursor at once; what is expensive and not needed while skimming (the widgets, the YouTube / Apple Music
+// content) is built SETTLE_MS after the last move, only for the slide that stayed. Leaving a feed slide still hides its feed at once.
+const SETTLE_MS = 160;
+const FEED_IDS = new Set(["app:youtube", "app:applemusic"]);
+let lastId = null, settleTimer = 0;
+function settle(card) {
+  clearTimeout(settleTimer);
+  settleTimer = setTimeout(() => {
+    if (state.cards[state.index] !== card) return;
+    const t0 = performance.now();
+    renderWidgets(card);
+    updateYoutubeUi(card);
+    updateMusicUi(card);
+    drawCursor();
+    noteLate("settle", performance.now() - t0);
+  }, SETTLE_MS);
+}
+
 export function render() {
   const {cards, allCards, index} = state;
   const card = cards[index];
+  const moved = lastId !== card?.id;
+  lastId = card?.id;
   const name = card ? card.name : allCards.length ? t("All sources hidden") : t("No sources");
   const theme = themeOf(card);
   if (deck.dataset.theme !== theme || deck.dataset.card !== String(card?.id)) {
@@ -119,6 +140,7 @@ export function render() {
     card?.url ? t("HTTP media stream") : card?.source ?
       (card.source.type === "TV" ? t("Antenna / apps") : t("HDMI {n}", {n: card.source.number})) :
       allCards.length ? t("Open Arrange to show sources again") : t("Rescan or add a network stream");
+  lap("theme");
   byId("count").textContent = cards.length ? (index + 1) + " / " + cards.length : t("No sources");
   [...byId("strip").children].forEach((tile, i) => {
     tile.classList.toggle("sel", i === index);
@@ -126,12 +148,23 @@ export function render() {
   });
   const sel = byId("strip").children[index];
   if (sel) { revealX(byId("strip"), sel, {instant: stripFresh}); stripFresh = false; }   // scrolls only when the tile reaches the edge
+  lap("strip");
   byId("theme").hidden = !card;
   byId("bgbtn").hidden = !card;
   byId("widgetsbtn").hidden = !allowsWidgets(card);
-  renderWidgets(card);
+  lap("buttons");
+  renderWidgets(card, {defer: moved});
+  lap("widgets");
   applyBackground(card);
-  updateYoutubeUi(card);
-  updateMusicUi(card);
+  lap("bg");
+  if (moved && FEED_IDS.has(card?.id)) {
+    // the feed content comes with settle(); the other feed's panel must go now
+    if (card.id !== "app:youtube") updateYoutubeUi(card);
+    if (card.id !== "app:applemusic") updateMusicUi(card);
+  } else { updateYoutubeUi(card); updateMusicUi(card); }
+  lap("feeds");
+  if (moved) settle(card);
   drawCursor();
+  lap("cursor");
+  prefetchBackgrounds(cards, index);
 }

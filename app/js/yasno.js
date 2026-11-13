@@ -12,9 +12,9 @@ const BASE = "https://app.yasno.ua/api/blackout-service/public/shutdowns";
 export const PROVIDERS = [["25/902", "Київ · ДТЕК"], ["3/301", "Дніпро · ДнЕМ"], ["3/303", "Дніпро · ЦЕК"]];
 const ids = provider => provider.split("/").map(Number);
 
-async function get(path, params) {
+async function get(path, params, slide = false) {
   const url = BASE + path + (params ? "?" + new URLSearchParams(params) : "");
-  const {status, json} = await httpJson("GET", url, {timeout: 20000});
+  const {status, json} = await httpJson("GET", url, {timeout: 20000, slide});
   if (status !== 200 || json == null) throw new Error("HTTP " + status);
   return json;
 }
@@ -31,14 +31,14 @@ export async function listGroups(provider) {
 /** The planned schedule of one group: {today, tomorrow, updatedOn} or null when the group does not exist. */
 export async function fetchPlanned(provider, group) {
   const [region, dso] = ids(provider);
-  const data = await get("/regions/" + region + "/dsos/" + dso + "/planned-outages");
+  const data = await get("/regions/" + region + "/dsos/" + dso + "/planned-outages", undefined, true);
   return data[group] || null;
 }
 
 /** The probable weekly pattern of one group: {"0": [slots], ... "6": [slots]} (weekday 0 = Monday), or null. */
 export async function fetchProbable(provider, group) {
   const [region, dso] = ids(provider);
-  const data = await get("/probable-outages", {regionId: region, dsoId: dso});
+  const data = await get("/probable-outages", {regionId: region, dsoId: dso}, true);
   return data?.[region]?.dsos?.[dso]?.groups?.[group]?.slots || null;
 }
 

@@ -9,6 +9,7 @@ export const onScrollFrame = fn => frameHooks.push(fn);
 
 /** Scroll `el` to `to` (px) in `ms` milliseconds with an ease-out curve; a new call during a scroll continues from where it is. */
 export function smoothScrollTo(el, to, ms = 170) {
+  if (document.documentElement.dataset.motion === "off") { el.scrollLeft = to; frameHooks.forEach(fn => fn()); return; }   // Settings > Smooth motion: off
   const old = anims.get(el);
   if (old) stop(old);
   const from = el.scrollLeft, started = performance.now(), rec = {to, raf: 0, timer: 0};

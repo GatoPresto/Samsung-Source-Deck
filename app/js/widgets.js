@@ -8,6 +8,7 @@ import { syncRing } from "./glass.js";
 import { prefs, savePrefs } from "./prefs.js";
 import { t, T, currentLanguage } from "./i18n.js";
 import { cachedWeather, fetchWeather, isStale, conditionOf, iconSvg } from "./weather.js";
+import { cancelSlideRequests } from "./http.js";
 import { locale, esc, cap, setText, optionListOf, optionsFor, loadOnce, hintBar } from "./wutil.js";
 import inputs from "./wtypes/inputs.js";
 import news from "./wtypes/news.js";
@@ -163,12 +164,26 @@ let layoutKey = null, live = [], selectedId = null, selectedMode = "";
 const area = w => (w.y + 1) + " / " + (w.x + 1) + " / span " + w.h + " / span " + w.w;
 function placeEl(widget) { const x = live.find(l => l.w === widget); if (x) x.el.style.gridArea = area(widget); }
 
-export function renderWidgets(card) {
+/**
+ * Draw the widgets of the slide. With {defer: true} (a switch to another slide) a slide that has widgets only gets its layer emptied now and built later by a
+ * second call: skimming through slides then builds nothing for the slides passed on the way.
+ */
+export function renderWidgets(card, {defer = false} = {}) {
   const layer = byId("widgets");
   const on = allowsWidgets(card);
   const key = on && card ? card.id : "";
   if (key === layoutKey) return;
+  if (defer && key !== "") {
+    layoutKey = null;
+    cancelSlideRequests();
+    live = [];
+    layer.textContent = "";
+    layer.hidden = true;
+    if (wf.active) { wf.active = false; wf.id = null; showHint(null); drawFocus(); }
+    return;
+  }
   layoutKey = key;
+  cancelSlideRequests();   // data requests of the slide we just left (or of widgets about to be rebuilt) are no longer wanted
   live = [];
   layer.textContent = "";
   const list = on && card ? listFor(card) : [];

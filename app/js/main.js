@@ -13,6 +13,7 @@ import { initPrompt } from "./textprompt.js";
 import { openSettings } from "./settings.js";
 import { openWidgetEditor } from "./widgetedit.js";
 import { applyLanguage } from "./i18n.js";
+import { applyMotion } from "./motion.js";
 
 byId("refresh").onclick = refresh;
 byId("back").onclick = () => stop();
@@ -25,6 +26,7 @@ byId("ytlogin").onclick = ytLogin;
 // Selection is drawn by the virtual cursor, never by DOM focus.
 for (const id of ["ytlogin", "theme", "bgbtn", "widgetsbtn", "arrange", "refresh", "settings"]) byId(id).onfocus = () => byId(id).blur();
 
+applyMotion();
 initKeys();
 initPrompt();
 registerMediaKeys();

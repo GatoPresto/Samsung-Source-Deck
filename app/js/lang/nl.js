@@ -301,5 +301,9 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "OK op het vak opent het toetsenbord · druk als je klaar bent op OK bij Zoeken · Terug annuleert",
   "Change theme": "Thema wijzigen",
   "Arrange": "Ordenen",
+  "Appearance": "Weergave",
+  "Debug": "Debug",
+  "Smooth motion:": "Vloeiende beweging:",
+  "Slide timing:": "Wisseltijd:",
   "Back to sources": "Terug naar bronnen"
 };

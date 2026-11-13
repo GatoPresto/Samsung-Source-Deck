@@ -301,5 +301,9 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "OK på rutan öppnar tangentbordet · när du är klar, tryck OK på Sök · Tillbaka avbryter",
   "Change theme": "Byt tema",
   "Arrange": "Ordna",
+  "Appearance": "Utseende",
+  "Debug": "Felsökning",
+  "Smooth motion:": "Mjuk rörelse:",
+  "Slide timing:": "Växlingstid:",
   "Back to sources": "Tillbaka till källor"
 };

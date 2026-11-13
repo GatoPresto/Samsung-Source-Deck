@@ -29,7 +29,10 @@ export function loadOnce(id, needed, fetcher, done) {
   const s = loads.get(id);
   if (!needed || s?.busy || s?.failedAt > Date.now() - 60000) return;
   loads.set(id, {busy: true});
-  fetcher().then(() => loads.set(id, {}), () => loads.set(id, {failedAt: Date.now()})).then(done);
+  fetcher().then(() => loads.set(id, {}), error => {
+    if (error && error.cancelled) { loads.delete(id); return "cancelled"; }   // the user left the slide: not a failure, load again on return
+    loads.set(id, {failedAt: Date.now()});
+  }).then(result => { if (result !== "cancelled") done(); });
 }
 
 /** Show a text in the key-hint bar at the bottom of the screen (#wfHint), or hide the bar with "". */
@@ -40,13 +43,17 @@ export function hintBar(text) {
 }
 
 // ---- small localStorage cache: name -> {key: {at, data}} (newest 8 keys kept) ----
+// The parsed object of each name is kept in memory: widgets ask for it every second, and parsing a feed cache from localStorage that often costs main-thread time.
+const mem = new Map();
+const table = name => { let all = mem.get(name); if (!all) mem.set(name, all = loadJson("wcache-" + name) || {}); return all; };
 export const cache = {
-  get(name, key) { return (loadJson("wcache-" + name) || {})[key] || null; },
+  get(name, key) { return table(name)[key] || null; },
   set(name, key, data) {
-    const all = loadJson("wcache-" + name) || {};
+    const all = table(name);
     all[key] = {at: Date.now(), data};
-    const keep = Object.entries(all).sort((a, b) => b[1].at - a[1].at).slice(0, 8);
-    saveJson("wcache-" + name, Object.fromEntries(keep));
+    const keep = Object.fromEntries(Object.entries(all).sort((a, b) => b[1].at - a[1].at).slice(0, 8));
+    mem.set(name, keep);
+    saveJson("wcache-" + name, keep);
   },
 };
 export const isOld = (entry, minutes) => !entry || Date.now() - entry.at > minutes * 60000;

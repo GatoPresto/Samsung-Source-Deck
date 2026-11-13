@@ -30,6 +30,32 @@ async function load(key) {
   return info;
 }
 
+const warm = new Map();   // key -> Image: pictures already decoded, so showing one does not decode a 1920x1080 JPEG on the main thread during the slide switch (kept to the slides around the one on screen)
+async function decoded(key) {
+  const info = await load(key);
+  if (!info) return null;
+  let img = warm.get(key);
+  if (!img) {
+    img = new Image();
+    img.src = info.url;
+    warm.set(key, img);
+    try { await img.decode(); } catch (error) {}   // a failed decode just means it is decoded when drawn
+  }
+  return info;
+}
+
+let prefetchTimer = 0;
+/** After a switch settles, decode the pictures of the slides next to the one on screen (and free the ones further away). */
+export function prefetchBackgrounds(cards, index) {
+  if (!cards.length) return;
+  clearTimeout(prefetchTimer);
+  prefetchTimer = setTimeout(async () => {
+    const wanted = [0, 1, -1].map(d => keyFor(cards[(index + d + cards.length) % cards.length])).filter(Boolean);
+    for (const key of [...warm.keys()]) if (!wanted.includes(key)) warm.delete(key);
+    for (const key of new Set(wanted)) await decoded(key);
+  }, 350);
+}
+
 /** Called by render(): show the picture that belongs to the selected source (cheap when nothing changes). */
 export async function applyBackground(card) {
   const b = prefs.bg && bgPrefs();
@@ -41,7 +67,7 @@ export async function applyBackground(card) {
   const mine = ++token;
   const image = byId("bgImage"), credit = byId("bgCredit");
   if (!key) { image.hidden = true; image.style.backgroundImage = ""; credit.hidden = true; return; }
-  const info = await load(key);
+  const info = await decoded(key);
   if (mine !== token) return;
   if (!info) { image.hidden = true; credit.hidden = true; return; }   // the file is gone (storage cleared)
   image.style.backgroundImage = 'url("' + info.url + '")';

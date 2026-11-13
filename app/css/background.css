@@ -1,5 +1,5 @@
 /* Background picture: sits above the theme's own art and below the content; a scrim keeps text readable (the glass theme overrides the scrim colour). */
-#bgImage{position:absolute;inset:0;z-index:0;background:center/cover no-repeat;pointer-events:none}
+#bgImage{position:absolute;inset:0;z-index:0;background:center/cover no-repeat;pointer-events:none;will-change:transform}   /* own compositing layer: the picture is painted once, not again on every slide switch */
 #bgScrim{position:absolute;inset:0;background:rgba(6,9,18,var(--bg-dim,.45))}
 #bgCredit{position:absolute;right:7vw;bottom:2.4vh;z-index:3;font-size:.8rem;letter-spacing:.03em;opacity:.8;max-width:30vw;text-align:right}
 

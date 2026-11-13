@@ -37,7 +37,7 @@ const type = {
     const entry = cache.get("sports", o.league);
     const live = !!entry?.data.events.some(e => e.state === "in");
     loadOnce(w.id, isOld(entry, live ? 2 : 10), async () => {
-      const {status, json} = await httpJson("GET", "https://site.api.espn.com/apis/site/v2/sports/" + o.league + "/scoreboard");
+      const {status, json} = await httpJson("GET", "https://site.api.espn.com/apis/site/v2/sports/" + o.league + "/scoreboard", {slide: true});
       if (status !== 200 || !json) throw new Error("HTTP " + status);
       cache.set("sports", o.league, parse(json));
     }, () => { if (el.isConnected) type.update(el, w); });

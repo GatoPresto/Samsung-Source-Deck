@@ -301,5 +301,9 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "OK на полі відкриває клавіатуру · коли закінчите, натисніть OK на «Пошук» · Назад — скасувати",
   "Change theme": "Змінити тему",
   "Arrange": "Упорядкувати",
+  "Appearance": "Вигляд",
+  "Debug": "Налагодження",
+  "Smooth motion:": "Плавний рух:",
+  "Slide timing:": "Час перемикання:",
   "Back to sources": "Назад до джерел"
 };
