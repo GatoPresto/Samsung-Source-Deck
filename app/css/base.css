@@ -1,6 +1,6 @@
 /* Base layout, typography, buttons, cursor, header, status, spinners. Per-theme overrides live in css/themes/. */
 *{box-sizing:border-box}
-body{margin:0;color:white;font:18px system-ui,sans-serif;background:#080d17}
+body{margin:0;color:white;font:18px var(--app-font,system-ui,sans-serif);background:#080d17}
 main{--glow:#20466c;--base:#101a2a;--accent:#9cd5ff;--ink:#081020;--radius:12px;--btn-bg:#ffffff12;--btn-border:1px solid #ffffff60;--btn-font:inherit;--btn-case:none;--btn-track:0;--btn-shadow:none;--title-font:system-ui,sans-serif;--title-weight:700;--title-case:none;--title-track:0;
 position:relative;overflow:hidden;height:100vh;padding:6vh 7vw;display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(ellipse at 80% 40%,var(--glow) 0%,transparent 62%),linear-gradient(120deg,#080d17,var(--base))}
 main>*{position:relative;z-index:1}

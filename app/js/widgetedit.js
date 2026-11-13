@@ -8,7 +8,8 @@ import { focusSel } from "./cursor.js";
 import { syncRing } from "./glass.js";
 import { openPrompt } from "./textprompt.js";
 import { t, currentLanguage } from "./i18n.js";
-import { TYPES, allowsWidgets, listFor, addWidget, isShrunk, removeWidget, moveWidget, resizeWidget, optionList, optionLabel, cycleOption, setOption, setOptions, setSelected } from "./widgets.js";
+import { fillFontRow } from "./fonts.js";
+import { valueLabel, optionsOf, fontSampleOf, TYPES, allowsWidgets, listFor, addWidget, isShrunk, removeWidget, moveWidget, resizeWidget, optionList, optionLabel, cycleOption, setOption, setOptions, setSelected } from "./widgets.js";
 import { searchCities } from "./weather.js";
 
 export const widgetEdit = {open: false};
@@ -31,7 +32,7 @@ function rowsFor(view) {
     if (f.steps.every(s => f.values[s.key])) out.push({id: "fdone", label: "✓  " + t("Use this address") + (last.extra ? "  ·  " + last.extra : "")});
     return out;
   }
-  if (view === "pick") return ui.pickItems.map(item => ({id: "choice", value: item.value, label: (item.current ? "●  " : "○  ") + item.label}));
+  if (view === "pick") return ui.pickItems.map(item => ({id: "choice", value: item.value, label: (item.current ? "●  " : "○  ") + item.label, preview: item.preview, sample: item.sample, mark: item.current ? "●  " : "○  "}));
   if (view === "widget") {
     const w = selected(), type = TYPES[w.type];
     const rows = [{id: "move", label: t("Move")}, {id: "resize", label: t("Resize")}];
@@ -64,6 +65,7 @@ function draw() {
   list.textContent = "";
   ui.rows.forEach((row, i) => {
     const el = makeRow(row.label, (i === ui.cur ? "cur" : "") + (row.sub ? " sub" : ""));
+    if (row.preview) fillFontRow(el, row.mark, row.preview, row.sample);   // a pick row that shows its value in its own font
     el.onclick = () => { ui.cur = i; activate(); };
     list.appendChild(el);
   });
@@ -106,6 +108,15 @@ function searchCity(widget) {
       draw();
     },
     onCancel: () => draw(),
+  });
+}
+
+/** An option with many values (fonts): OK opens a list instead of cycling. */
+function pickOption(widget, opt) {
+  const back = ui.cur, current = optionsOf(widget)[opt.key];
+  api.pick(t(opt.label), opt.values.map(v => ({value: v[0], label: valueLabel(v), current: v[0] === current, preview: opt.family && opt.family(v[0]) ? v[0] : null, sample: fontSampleOf(widget.type)}))).then(value => {
+    if (value != null) setOption(widget, opt.key, value);
+    show("widget", back);
   });
 }
 
@@ -209,7 +220,7 @@ function activate() {
     show("menu", 1 + listFor(ui.card).findIndex(w => w.id === widget.id));
     if (isShrunk(widget)) { ui.status = t("Not enough room for the default size, so the widget was added smaller."); draw(); }
   } else if (row.id === "move" || row.id === "resize") { ui.view = row.id; setSelected(ui.sel, row.id); draw(); }
-  else if (row.id === "opt") { if (row.text) typeOption(selected(), row.opt); else { cycleOption(selected(), row.key); draw(); } }
+  else if (row.id === "opt") { if (row.text) typeOption(selected(), row.opt); else if (row.opt.list) pickOption(selected(), row.opt); else { cycleOption(selected(), row.key); draw(); } }
   else if (row.id === "city") searchCity(selected());
   else if (row.id === "action") runAction(selected(), row.action);
   else if (row.id === "fstep") formStep(row.i);

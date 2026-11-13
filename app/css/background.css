@@ -41,3 +41,6 @@ footer.nav button{white-space:nowrap}
 #settings svg{display:block;width:30px;height:30px}
 
 #wList button.sub{margin-left:2.2em;width:calc(100% - 2.2em);font-size:1.15rem}
+:is(#wList,#setList) button.fontrow{padding-top:10px;padding-bottom:10px}
+:is(#wList,#setList) button.fontrow span{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;line-height:1.35}   /* name + sample in the font */
+:is(#wList,#setList) button.fontrow small{display:block;margin-top:2px;color:inherit;font-size:.72em;font-weight:500;opacity:.85}   /* which scripts the font covers, on its own line so it is never cut */

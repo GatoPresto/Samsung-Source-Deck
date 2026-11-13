@@ -9,7 +9,7 @@
 #feedStatus{font-size:.95rem;margin:2px 0 8px;min-height:1.5em}
 #vids{display:flex;gap:14px;overflow:hidden;position:relative}
 .vid{flex:0 0 222px;text-align:left;padding:0;border:3px solid transparent;border-radius:10px;overflow:hidden;background:#000000a0}
-.vid,.vid *{text-transform:none;letter-spacing:0;font-family:system-ui,sans-serif;color:#fff}
+.vid,.vid *{text-transform:none;letter-spacing:0;font-family:var(--app-font,system-ui,sans-serif);color:#fff}
 .vid img{display:block;width:100%;height:125px;object-fit:cover;background:#222}
 .vid span{display:block;padding:6px 8px 0;font-size:.85rem;font-weight:700;line-height:1.25;height:2.6em;overflow:hidden}
 .vid small{display:block;padding:0 8px 6px;font-size:.72rem;opacity:.8}

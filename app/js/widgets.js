@@ -10,6 +10,7 @@ import { t, T, currentLanguage } from "./i18n.js";
 import { cachedWeather, fetchWeather, isStale, conditionOf, iconSvg } from "./weather.js";
 import { cancelSlideRequests } from "./http.js";
 import { locale, esc, cap, setText, optionListOf, optionsFor, loadOnce, hintBar } from "./wutil.js";
+import { FONT_OPTION, familyOf, effectiveKey, textEm } from "./fonts.js";
 import inputs from "./wtypes/inputs.js";
 import news from "./wtypes/news.js";
 import currency from "./wtypes/currency.js";
@@ -36,9 +37,12 @@ export const TYPES = {
       if (o.seconds === "on") format.second = "2-digit";
       if (o.format === "12") format.hour12 = true; else if (o.format === "24") format.hourCycle = "h23";
       const text = new Intl.DateTimeFormat(locale(), format).format(new Date());
-      const box = el.firstElementChild;
-      setText(box.firstElementChild, text);
-      box.style.setProperty("--n", String(text.length * 0.62));
+      const box = el.firstElementChild, face = box.firstElementChild;
+      setText(face, text);
+      // --n = how many em wide the text is; the CSS sizes the text to fit the widget. 0.62 em per character suits the theme fonts, the bundled fonts are measured
+      const key = effectiveKey(o.font);
+      const em = key ? textEm(key, text, () => { if (el.isConnected) TYPES.clock.update(el, w); }) : null;
+      box.style.setProperty("--n", String(em || text.length * 0.62));
     },
   },
   date: {
@@ -52,7 +56,9 @@ export const TYPES = {
       const second = o.format === "long" ? fmt({day: "numeric", month: "long", year: "numeric"}) : o.format === "short" ? fmt({day: "numeric", month: "short"}) : fmt({day: "2-digit", month: "2-digit", year: "numeric"});
       const box = el.firstElementChild;
       setText(box.children[0], first); setText(box.children[1], second);
-      box.style.setProperty("--n1", String(first.length * 0.6)); box.style.setProperty("--n2", String(second.length * 0.56));
+      const key = effectiveKey(o.font), again = () => { if (el.isConnected) TYPES.date.update(el, w); };
+      box.style.setProperty("--n1", String((key && textEm(key, first, again)) || first.length * 0.6));
+      box.style.setProperty("--n2", String((key && textEm(key, second, again)) || second.length * 0.56));
     },
   },
   weather: {
@@ -77,6 +83,22 @@ export const TYPES = {
   },
   inputs, news, currency, sports, newscards, outages,
 };
+// what the Font list shows next to each font name: a sample of what this widget draws (neutral digits where possible, so most need no translation)
+const SAMPLES = {
+  clock: () => "12:34",
+  date: () => new Intl.DateTimeFormat(locale(), {weekday: "short", day: "numeric", month: "short"}).format(new Date()),
+  weather: () => "21° / 14°",
+  inputs: () => t("HDMI {n}", {n: 1}),
+  news: () => t("Headline of the day"),
+  currency: () => "1 USD = 41.50",
+  sports: () => "2 : 1",
+  newscards: () => t("Top story"),
+  outages: () => "14:00 – 18:00",
+};
+for (const [name, type] of Object.entries(TYPES)) {
+  type.options.push(FONT_OPTION);
+  type.fontSample = SAMPLES[name] || SAMPLES.clock;
+}   // Font: the widget's own font, or "Theme font" = follow the app-wide font (Settings > Appearance)
 
 function weatherHtml(d, city, o) {
   const fahrenheit = o.units === "f" || (o.units === "auto" && /-(US|LR|MM)$/i.test(navigator.language || ""));
@@ -101,12 +123,16 @@ export function cycleOption(widget, key, dir = 1) {
   refreshWidgets();
 }
 /** Set several options at once. */
+/** The sample text of the Font list for a widget type. */
+export const fontSampleOf = type => TYPES[type].fontSample();
 export function setOptions(widget, values) { widget.o = {...(widget.o || {}), ...values}; save(); refreshWidgets(); }
 export function setOption(widget, key, value) { widget.o = {...(widget.o || {}), [key]: value}; save(); refreshWidgets(); }
+/** The text of an option value: its label, with the note of a third element after it (fonts: which scripts they cover). */
+export const valueLabel = v => v[2] ? v[1] + "  ·  " + t(v[2]) : t(v[1]);
 export const optionLabel = (widget, opt) => {
   const value = optionsOf(widget)[opt.key];
   if (opt.text) return value ? (value.length > 34 ? value.slice(0, 33) + "…" : value) : t("not set");
-  return t(opt.values.find(v => v[0] === value)[1]);
+  return valueLabel(opt.values.find(v => v[0] === value));
 };
 
 // ---- layout data ----
@@ -235,7 +261,9 @@ export function renderWidgets(card, {defer = false} = {}) {
     const el = document.createElement("div");
     el.className = "widget";
     el.dataset.type = widget.type;
-    el.dataset.card = optionsOf(widget).card;
+    const wo = optionsOf(widget);
+    el.dataset.card = wo.card;
+    if (familyOf(wo.font)) el.style.setProperty("--wfont", familyOf(wo.font));   // a font of its own; without it the widget follows the app-wide font (CSS: --app-font)
     el.style.gridArea = area(widget);
     type.build(el, widget);
     type.update(el, widget);

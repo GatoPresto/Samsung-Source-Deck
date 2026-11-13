@@ -12,6 +12,7 @@ import { refreshWidgets } from "./widgets.js";
 import { openUrl } from "./openurl.js";
 import { perfOn, toggleTiming } from "./perf.js";
 import { smoothMotion, toggleMotion } from "./motion.js";
+import { FONT_OPTION, FONTS, appFontKey, setAppFont, fillFontRow } from "./fonts.js";
 
 export const settings = {open: false};
 const ui = {view: "menu", cur: 0, rows: [], status: ""};
@@ -24,7 +25,7 @@ const langValue = () => !prefs.lang || prefs.lang === "system" ? t("System") + "
 
 // the main menu: a row opens the view of the same name; a view's own rows are in rowsFor
 const MENU = [{id: "language"}, {id: "appearance", label: T("Appearance")}, {id: "about", label: T("About the developer")}, {id: "debug", label: T("Debug")}];
-const VIEW_TITLE = {lang: T("Language"), about: T("About the developer"), appearance: T("Appearance"), debug: T("Debug")};
+const VIEW_TITLE = {font: T("Font"), lang: T("Language"), about: T("About the developer"), appearance: T("Appearance"), debug: T("Debug")};
 const PARENT_ROW = {lang: 0, appearance: 1, about: 2, debug: 3};   // the menu row to return to
 
 function rowsFor(view) {
@@ -34,7 +35,11 @@ function rowsFor(view) {
       .concat(LANGUAGES.map(l => ({id: l.code, label: (choice === l.code ? "●  " : "○  ") + l.name})));
   }
   if (view === "about") return [{id: "linkedin", label: t("Open LinkedIn profile")}];
-  if (view === "appearance") return [{id: "motion", label: t("Smooth motion:") + "  " + (smoothMotion() ? t("On") : t("Off"))}];
+  if (view === "font") {
+    const current = appFontKey() || "auto";
+    return FONT_OPTION.values.map(v => ({id: "setfont", value: v[0], font: v[0] !== "auto", mark: current === v[0] ? "●  " : "○  ", label: (current === v[0] ? "●  " : "○  ") + t(v[1])}));
+  }
+  if (view === "appearance") return [{id: "appfont", label: t("Font") + ":  " + (FONTS.find(f => f.key === appFontKey())?.name || t("Theme font"))}, {id: "motion", label: t("Smooth motion:") + "  " + (smoothMotion() ? t("On") : t("Off"))}];
   if (view === "debug") return [{id: "timing", label: t("Slide timing:") + "  " + (perfOn() ? t("On") : t("Off"))}];
   return MENU.map(m => ({id: m.id, label: m.id === "language" ? t("Language:") + "  " + langValue() : t(m.label)}));
 }
@@ -63,6 +68,7 @@ function draw() {
   list.textContent = "";
   ui.rows.forEach((row, i) => {
     const el = makeRow(row.label, i === ui.cur ? "cur" : "");
+    if (row.font) fillFontRow(el, row.mark, row.value, "Source Deck");   // the font list: each row in its own font
     el.onclick = () => { ui.cur = i; activate(); };
     list.appendChild(el);
   });
@@ -89,7 +95,9 @@ function show(view, cur = 0) { Object.assign(ui, {view, cur, status: ""}); draw(
 async function activate() {
   const row = ui.rows[ui.cur];
   if (!row) return;
-  if (ui.view === "appearance" && row.id === "motion") { toggleMotion(); draw(); }
+  if (ui.view === "appearance" && row.id === "appfont") show("font", Math.max(0, FONT_OPTION.values.findIndex(v => v[0] === (appFontKey() || "auto"))));
+  else if (ui.view === "font") { setAppFont(row.value); refreshWidgets(); show("appearance", 0); }   // widgets set to the theme font follow; the clock and date re-measure their text
+  else if (ui.view === "appearance" && row.id === "motion") { toggleMotion(); draw(); }
   else if (ui.view === "debug" && row.id === "timing") { toggleTiming(); draw(); }
   else if (ui.view === "menu") show(row.id === "language" ? "lang" : row.id, row.id === "language" ? Math.max(0, LANGUAGES.findIndex(l => l.code === prefs.lang) + 1) : 0);
   else if (ui.view === "lang") {
@@ -108,7 +116,7 @@ export function settingsKey(event) {
   const key = event.key;
   if (event.keyCode === 10009 || key === "Escape" || (key === "ArrowLeft" && ui.view !== "menu")) {
     event.preventDefault();
-    if (ui.view === "menu") close(); else show("menu", PARENT_ROW[ui.view] ?? 0);
+    if (ui.view === "menu") close(); else if (ui.view === "font") show("appearance", 0); else show("menu", PARENT_ROW[ui.view] ?? 0);
   } else if (key === "ArrowDown" || key === "ArrowUp") {
     event.preventDefault();
     ui.cur = (ui.cur + (key === "ArrowDown" ? 1 : -1) + ui.rows.length) % ui.rows.length;

@@ -5,7 +5,7 @@
 .tile span{font-weight:700;font-size:1.05rem;overflow-wrap:anywhere;line-height:1.15}
 .tile small{display:block;font-weight:400;font-size:.7rem;opacity:.85;color:inherit;letter-spacing:0;text-transform:none}
 /* Tiles must not pick up the per-theme button/heading styling of <main>. */
-.tile,.tile *{font-family:system-ui,sans-serif;text-transform:none;letter-spacing:0;color:#fff;box-shadow:none}
+.tile,.tile *{font-family:var(--app-font,system-ui,sans-serif);text-transform:none;letter-spacing:0;color:#fff;box-shadow:none}
 .tile b{letter-spacing:.05em}
 .tile.sel{opacity:1;border-color:#ffffffa0}
 .tile.cur{border-color:#fff}
