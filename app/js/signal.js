@@ -27,11 +27,11 @@ export function noteConnections() {
   return homeTarget()?.id !== before;
 }
 
-/** The input the Home slide opens: the connected, not hidden HDMI input with the newest signal time; null when none has a signal. */
+/** The input the Home slide opens: the connected HDMI input with the newest signal time (also one hidden from the deck: a device plugged into an unused port is what the user wants); null when none has a signal. */
 export function homeTarget() {
   let best = null;
   for (const card of state.natural) {
-    if (card.source?.type !== "HDMI" || !card.connected || prefs.hidden[card.id]) continue;
+    if (card.source?.type !== "HDMI" || !card.connected) continue;
     if (!best || (prefs.signalAt?.[card.id] || 0) > (prefs.signalAt?.[best.id] || 0)) best = card;
   }
   return best;
