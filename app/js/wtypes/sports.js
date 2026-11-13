@@ -2,7 +2,7 @@
 // Live matches first, then the next ones, then the finished ones. Refreshed every 2 minutes while a match is live, else every 10.
 import { httpJson } from "../http.js";
 import { t, T } from "../i18n.js";
-import { esc, locale, optionsFor, loadOnce, loadFailed, cache, isOld, pagePlan, rowsFit } from "../wutil.js";
+import { formatDate, esc, locale, optionsFor, loadOnce, loadFailed, cache, isOld, pagePlan, rowsFit } from "../wutil.js";
 
 /** [path, name]: league names are proper names and are not translated. */
 const LEAGUES = [
@@ -23,7 +23,7 @@ function parse(json) {
 }
 
 const timeFmt = date => new Intl.DateTimeFormat(locale(), {hour: "numeric", minute: "2-digit"}).format(date);
-const dayFmt = date => new Intl.DateTimeFormat(locale(), {weekday: "short", day: "numeric", month: "short"}).format(date);
+const dayFmt = date => formatDate(date, {weekday: "short", day: "numeric", month: "short"});
 
 const type = {
   name: T("Sports scores"), size: {w: 4, h: 2}, min: {w: 3, h: 1},

@@ -2,7 +2,7 @@
 // an hourly grid, day bars, the next outages and the probable week. Setup in the widget options: provider, then the group (pick it, or find it by address).
 // Providers: Yasno (Kyiv, Dnipro; js/yasno.js) and Ternopil (poweron.toe.com.ua; js/toe.js), which can only be read for an address.
 import { t, T } from "../i18n.js";
-import { esc, locale, optionsFor, loadOnce, loadFailed, cache, isOld, rowsFit } from "../wutil.js";
+import { formatDate, esc, locale, optionsFor, loadOnce, loadFailed, cache, isOld, rowsFit } from "../wutil.js";
 import * as toe from "../toe.js";
 import { PROVIDERS as YASNO_PROVIDERS, listGroups, fetchPlanned, fetchProbable, searchStreets, searchHouses, groupByAddress, kyivNow, kyivTime, planDays, dayAt, nowState, outageRanges, maybeRanges, dayTotals } from "../yasno.js";
 
@@ -88,12 +88,11 @@ const VIEWS = {
 };
 
 function weekView(w, slotsByDay, now) {
-  const names = new Intl.DateTimeFormat(locale(), {weekday: "short"});
   const anyProbable = Object.values(slotsByDay).some(list => list.some(s => s.type === "Definite"));
   let rows = "";
   for (let d = 0; d < 7; d++) {
     const slots = (slotsByDay[String(d)] || []).map(s => ({s: s.start, e: s.end, off: s.type === "Definite"}));
-    const label = names.format(new Date(Date.UTC(2024, 0, 1 + d)));   // 1 Jan 2024 was a Monday
+    const label = formatDate(new Date(Date.UTC(2024, 0, 1 + d)), {weekday: "short"});   // 1 Jan 2024 was a Monday
     rows += '<div class="wrow' + (d === now.weekday ? " today" : "") + '"><small>' + esc(label) + "</small>" + bar({status: "ScheduleApplies", slots}, 0, 1440, d === now.weekday ? now.minutes : null, {probable: true}) + "</div>";
   }
   return (anyProbable ? "" : '<small class="owait">' + esc(t("No probable outages")) + "</small>") + rows + ticks();

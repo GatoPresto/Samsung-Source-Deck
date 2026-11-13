@@ -4,6 +4,17 @@ import { t, T, currentLanguage } from "./i18n.js";
 
 export const locale = () => ({zh: "zh-CN"})[currentLanguage()] || currentLanguage();
 export const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
+// Weekday names in Ukrainian. The TV's date data gives the accusative ("неділю", "пʼятницю", as in "on Sunday") where a name of a day is wanted ("неділя", "пʼятниця"), so Ukrainian uses these.
+const UK_DAYS = {
+  long: ["неділя", "понеділок", "вівторок", "середа", "четвер", "пʼятниця", "субота"],
+  short: ["нд", "пн", "вт", "ср", "чт", "пт", "сб"],
+};
+/** Format a date in the app language like Intl.DateTimeFormat(locale(), opts).format(date), with the weekday (long or short) in the nominative for Ukrainian. */
+export function formatDate(date, opts) {
+  const format = new Intl.DateTimeFormat(locale(), opts);
+  if (locale() !== "uk" || !UK_DAYS[opts.weekday]) return format.format(date);
+  return format.formatToParts(date).map(part => part.type === "weekday" ? UK_DAYS[opts.weekday][date.getDay()] : part.value).join("");
+}
 export const cap = s => s ? s.charAt(0).toLocaleUpperCase(locale()) + s.slice(1) : s;
 export const setText = (node, text) => { if (node && node.textContent !== text) node.textContent = text; };
 

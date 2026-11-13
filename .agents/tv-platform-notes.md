@@ -42,3 +42,6 @@ Settings > About the developer uses `tizen.application.launchAppControl(new Appl
 
 ## ES modules work
 `<script type="module" src="js/main.js">` with static `import`s (including import cycles) and `import.meta` load fine from the installed widget on this TV (Tizen 9 / Chromium 120). Verified on the TV, not just assumed.
+
+## Ukrainian weekday names
+The TV's ICU/CLDR data returns the Ukrainian weekday in the accusative from `Intl.DateTimeFormat(..., {weekday: "long"})` ("неділю", "пʼятницю"), where a desktop Chrome 156 gives the nominative ("неділя", "пʼятниця"). `formatDate()` in wutil.js replaces the weekday part of the formatted date with a built-in nominative table for Ukrainian (long and short); use it for every weekday the app shows (Date, Sports, Outages week view). Other languages use Intl as it is; if another language shows a wrong case on the TV, add its table next to `UK_DAYS`.

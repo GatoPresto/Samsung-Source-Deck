@@ -9,7 +9,7 @@ import { prefs, savePrefs } from "./prefs.js";
 import { t, T, currentLanguage } from "./i18n.js";
 import { cachedWeather, fetchWeather, isStale, conditionOf, iconSvg } from "./weather.js";
 import { cancelSlideRequests } from "./http.js";
-import { locale, esc, cap, setText, optionListOf, optionsFor, loadOnce, hintBar } from "./wutil.js";
+import { formatDate, locale, esc, cap, setText, optionListOf, optionsFor, loadOnce, hintBar } from "./wutil.js";
 import { FONT_OPTION, familyOf, effectiveKey, textEm } from "./fonts.js";
 import inputs from "./wtypes/inputs.js";
 import news from "./wtypes/news.js";
@@ -50,8 +50,8 @@ export const TYPES = {
     options: [{key: "format", label: T("Date format"), values: [["long", T("Long")], ["short", T("Short")], ["numeric", T("Numeric")]]}],
     build(el) { el.innerHTML = '<div class="wdate"><b></b><span></span></div>'; },
     update(el, w) {
-      const o = optionsOf(w), now = new Date(), l = locale();
-      const fmt = opts => new Intl.DateTimeFormat(l, opts).format(now);
+      const o = optionsOf(w), now = new Date();
+      const fmt = opts => formatDate(now, opts);
       const first = cap(fmt({weekday: o.format === "long" ? "long" : "short"}));
       const second = o.format === "long" ? fmt({day: "numeric", month: "long", year: "numeric"}) : o.format === "short" ? fmt({day: "numeric", month: "short"}) : fmt({day: "2-digit", month: "2-digit", year: "numeric"});
       const box = el.firstElementChild;
@@ -86,7 +86,7 @@ export const TYPES = {
 // what the Font list shows next to each font name: a sample of what this widget draws (neutral digits where possible, so most need no translation)
 const SAMPLES = {
   clock: () => "12:34",
-  date: () => new Intl.DateTimeFormat(locale(), {weekday: "short", day: "numeric", month: "short"}).format(new Date()),
+  date: () => formatDate(new Date(), {weekday: "short", day: "numeric", month: "short"}),
   weather: () => "21° / 14°",
   inputs: () => t("HDMI {n}", {n: 1}),
   news: () => t("Headline of the day"),
