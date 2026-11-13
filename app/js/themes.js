@@ -1,6 +1,7 @@
 // Theme list and detection. Each theme also needs css/themes/<file>.css (main[data-theme=KEY] + .tile[data-theme=KEY]).
 import { prefs } from "./prefs.js";
 import { t, T } from "./i18n.js";
+import { homeTarget } from "./signal.js";
 
 /**
  * Accent colours of a theme: {key, label, glow (saturated, tints the background), accent (light, text and focus), ink (text on accent)}.
@@ -64,6 +65,6 @@ export function themeOf(card) {
 }
 
 export function kindOf(card) {
-  return card.home ? t("Widgets") : card.app ? t("App") : card.dlna ? t("Media server") : card.url ? t("Stream") :
+  return card.home ? (homeTarget() ? t("Open {name}", {name: homeTarget().name}) : t("Widgets")) : card.app ? t("App") : card.dlna ? t("Media server") : card.url ? t("Stream") :
     card.source?.type === "TV" ? t("Live TV") : t("HDMI {n}", {n: card.source.number});
 }

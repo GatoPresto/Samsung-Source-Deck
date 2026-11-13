@@ -301,6 +301,8 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "OK no campo abre o teclado · ao terminar, pressione OK em Pesquisar · Voltar cancela",
   "Change theme": "Mudar tema",
   "Arrange": "Organizar",
+  "Open {name}": "Abrir {name}",
+  "OK opens {name}": "OK abre {name}",
   "Appearance": "Aparência",
   "Debug": "Depuração",
   "Smooth motion:": "Movimento suave:",

@@ -301,6 +301,8 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "入力欄で OK を押すとキーボードが開きます · 入力後、検索で OK を押します · 戻るでキャンセル",
   "Change theme": "テーマ変更",
   "Arrange": "並べ替え",
+  "Open {name}": "{name}を開く",
+  "OK opens {name}": "OKで{name}を開きます",
   "Appearance": "外観",
   "Debug": "デバッグ",
   "Smooth motion:": "スムーズな動き：",

@@ -5,6 +5,7 @@ import { focusSel } from "./cursor.js";
 import { browser, openBrowser, showBrowser } from "./dlna.js";
 import { t } from "./i18n.js";
 import { openWidgetEditor } from "./widgetedit.js";
+import { homeTarget } from "./signal.js";
 
 let hideTimer;
 
@@ -39,7 +40,11 @@ export function stop(reason = "") {
 export function open(target) {
   const card = target || state.cards[state.index];
   if (!card || state.active) return;
-  if (card.home) { openWidgetEditor(card); return; }
+  if (card.home) {   // the input that got a signal last; the widget editor when no input has a signal
+    const input = homeTarget();
+    if (input) open(input); else openWidgetEditor(card);
+    return;
+  }
   if (card.dlna) { openBrowser(card); return; }
   if (card.app) {
     if (demo) { message(t("Would launch {name} on the TV.", {name: card.name})); return; }

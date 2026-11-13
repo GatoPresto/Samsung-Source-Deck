@@ -301,6 +301,8 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "OK na políčku otevře klávesnici · až budete hotovi, stiskněte OK na Hledat · Zpět zruší",
   "Change theme": "Změnit motiv",
   "Arrange": "Uspořádat",
+  "Open {name}": "Otevřít {name}",
+  "OK opens {name}": "OK otevře {name}",
   "Appearance": "Vzhled",
   "Debug": "Ladění",
   "Smooth motion:": "Plynulý pohyb:",

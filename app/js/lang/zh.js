@@ -301,6 +301,8 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "在输入框上按 OK 打开键盘 · 输入完成后，在“搜索”上按 OK · 按返回键取消",
   "Change theme": "更换主题",
   "Arrange": "排序",
+  "Open {name}": "打开{name}",
+  "OK opens {name}": "按 OK 打开{name}",
   "Appearance": "外观",
   "Debug": "调试",
   "Smooth motion:": "平滑动画：",

@@ -301,6 +301,8 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "입력란에서 OK를 누르면 키보드가 열립니다 · 입력이 끝나면 검색에서 OK를 누르세요 · 뒤로 취소",
   "Change theme": "테마 변경",
   "Arrange": "정렬",
+  "Open {name}": "{name} 열기",
+  "OK opens {name}": "OK를 누르면 {name}이(가) 열립니다",
   "Appearance": "화면 설정",
   "Debug": "디버그",
   "Smooth motion:": "부드러운 이동:",

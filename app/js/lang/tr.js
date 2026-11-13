@@ -301,6 +301,8 @@ export default {
   "OK on the box opens the keyboard · when you are done, press OK on Search · Back cancels": "Kutuda OK klavyeyi açar · işiniz bitince Ara üzerinde OK'e basın · Geri iptal eder",
   "Change theme": "Temayı değiştir",
   "Arrange": "Düzenle",
+  "Open {name}": "{name} aç",
+  "OK opens {name}": "OK, {name} girişini açar",
   "Appearance": "Görünüm",
   "Debug": "Hata ayıklama",
   "Smooth motion:": "Akıcı hareket:",

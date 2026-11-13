@@ -9,7 +9,7 @@
 |---|---|---|---|
 | TV inputs, installed apps | Tizen APIs on the TV | not stored (rebuilt each start) | no |
 | Media servers and their file names | UPnP on the local network | not stored | no (local network only) |
-| Settings: themes, hidden/added/ordered sources, language | the user | `localStorage["deck-prefs"]` | no |
+| Settings: themes, hidden/added/ordered sources, language, when each HDMI input last got a signal (`signalAt`) | the user | `localStorage["deck-prefs"]` | no |
 | YouTube login tokens (access + refresh) | Google OAuth device flow, scope `youtube.readonly` | `localStorage["yt-tokens"]` | only sent back to Google's APIs |
 | YouTube subscriptions + latest uploads (cache, 10 min) | YouTube Data API v3 | `localStorage["yt-feed"]` | no |
 | Apple Music play history (60 songs) | what the user plays | `localStorage["music-history"]` | no; only artist ids go to Apple's public lookup to find more songs |

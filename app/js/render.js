@@ -2,7 +2,7 @@
 import { byId, deck, message } from "./dom.js";
 import { state, demo, streams, dlnaFound } from "./state.js";
 import { prefs, savePrefs } from "./prefs.js";
-import { themeOf, accentOf, THEMES } from "./themes.js";
+import { themeOf, accentOf, kindOf, THEMES } from "./themes.js";
 import { makeTile } from "./templates.js";
 import { drawCursor } from "./cursor.js";
 import { updateYoutubeUi } from "./youtube.js";
@@ -14,6 +14,7 @@ import { renderWidgets, allowsWidgets } from "./widgets.js";
 import { revealX } from "./scroll.js";
 import { t } from "./i18n.js";
 import { probe, lap, noteLate } from "./perf.js";
+import { homeTarget, noteConnections, onSignalChange } from "./signal.js";
 
 const defaultAdded = card => !card.generic;   // what the deck showed before the Source list existed: everything except auto-detected generic apps
 const GROUP = card => card.source ? 0 : card.url ? 1 : card.dlna ? 2 : card.generic ? 4 : 3;
@@ -64,6 +65,7 @@ export function populate(sources) {
       name: source.type === "TV" ? t("Live TV") : source.editName || t("HDMI {n}", {n: source.number}),
     })).concat(streams, apps, dlnaFound);
   state.natural.unshift({id: "home", home: true, name: t("Home")});   // the Home slide (widgets) comes first
+  noteConnections();   // stamps the inputs that have a signal (Home opens the newest)
   applyPrefs();
   buildStrip();
   render();
@@ -80,6 +82,18 @@ export function buildStrip() {
     strip.appendChild(tile);
   });
 }
+
+const homeDetail = () => homeTarget() ? t("OK opens {name}", {name: homeTarget().name}) : t("OK opens the widget editor");
+
+/** The Home tile's subtitle and the detail line follow the input that got a signal last (called when the TV reports a change). */
+function updateHome() {
+  const at = state.cards.findIndex(c => c.home);
+  if (at < 0) return;
+  const small = byId("strip").children[at]?.querySelector("small"), text = kindOf(state.cards[at]);
+  if (small && small.textContent !== text) small.textContent = text;
+  if (state.cards[state.index]?.home) byId("detail").textContent = homeDetail();
+}
+onSignalChange(updateHome);
 
 export function move(offset) {
   if (state.active || state.cards.length < 2) return;
@@ -136,7 +150,7 @@ export function render() {
   deck.dataset.home = card?.home ? "1" : "";
   byId("title").textContent = name;
   byId("meta").textContent = card?.home ? t("Home") : demo ? t("Browser demo") : card?.app ? t("Apps") : card?.url || card?.dlna ? t("Network media") : t("TV inputs");
-  byId("detail").textContent = card?.home ? t("OK opens the widget editor") : card?.id === "app:applemusic" ? t("OK opens Apple Music · Up for charts, search and previews") : card?.app ? t("Opens the app with your own recommendations") : card?.dlna ? t("UPnP / DLNA media server") :
+  byId("detail").textContent = card?.home ? homeDetail() : card?.id === "app:applemusic" ? t("OK opens Apple Music · Up for charts, search and previews") : card?.app ? t("Opens the app with your own recommendations") : card?.dlna ? t("UPnP / DLNA media server") :
     card?.url ? t("HTTP media stream") : card?.source ?
       (card.source.type === "TV" ? t("Antenna / apps") : t("HDMI {n}", {n: card.source.number})) :
       allCards.length ? t("Open Arrange to show sources again") : t("Rescan or add a network stream");
