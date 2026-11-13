@@ -303,6 +303,7 @@ export default {
   "Arrange": "정렬",
   "Open {name}": "{name} 열기",
   "OK opens {name}": "OK를 누르면 {name}이(가) 열립니다",
+  "Not enough room for the default size, so the widget was added smaller.": "기본 크기를 놓을 공간이 부족하여 위젯을 더 작게 추가했습니다.",
   "Appearance": "화면 설정",
   "Debug": "디버그",
   "Smooth motion:": "부드러운 이동:",

@@ -303,6 +303,7 @@ export default {
   "Arrange": "Organizar",
   "Open {name}": "Abrir {name}",
   "OK opens {name}": "OK abre {name}",
+  "Not enough room for the default size, so the widget was added smaller.": "Não havia espaço para o tamanho padrão, por isso o widget foi adicionado menor.",
   "Appearance": "Aparência",
   "Debug": "Depuração",
   "Smooth motion:": "Movimento suave:",

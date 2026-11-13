@@ -303,6 +303,7 @@ export default {
   "Arrange": "Uspořádat",
   "Open {name}": "Otevřít {name}",
   "OK opens {name}": "OK otevře {name}",
+  "Not enough room for the default size, so the widget was added smaller.": "Pro výchozí velikost není dost místa, widget byl přidán menší.",
   "Appearance": "Vzhled",
   "Debug": "Ladění",
   "Smooth motion:": "Plynulý pohyb:",

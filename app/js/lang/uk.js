@@ -303,6 +303,7 @@ export default {
   "Arrange": "Упорядкувати",
   "Open {name}": "Відкрити {name}",
   "OK opens {name}": "OK відкриє {name}",
+  "Not enough room for the default size, so the widget was added smaller.": "Для типового розміру не вистачило місця, тому віджет додано меншим.",
   "Appearance": "Вигляд",
   "Debug": "Налагодження",
   "Smooth motion:": "Плавний рух:",

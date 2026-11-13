@@ -131,19 +131,32 @@ const overlaps = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h
 const inGrid = r => r.x >= 0 && r.y >= 0 && r.w >= 1 && r.h >= 1 && r.x + r.w <= COLS && r.y + r.h <= ROWS;
 const rectFree = (list, rect, ignore) => inGrid(rect) && !list.some(o => o !== ignore && overlaps(o, rect));
 
-/** Add a widget of a type at the first free spot (right side first). Returns the widget, or null when there is no room. */
+/** The sizes a new widget of a type may get: its default first, then smaller ones down to its minimum, the largest area first. */
+function sizesFor(type) {
+  const {size, min} = TYPES[type], out = [];
+  for (let w = size.w; w >= min.w; w--) for (let h = size.h; h >= min.h; h--) out.push({w, h});
+  return out.sort((a, b) => (b.w * b.h) - (a.w * a.h) || b.w - a.w);   // the default has the largest area, so it comes first
+}
+
+/**
+ * Add a widget of a type at the first free spot (right side first), at its default size when that fits somewhere and otherwise at the largest
+ * smaller size that does (never below the type's minimum). Returns the widget, or null when there is no room even for the minimum.
+ */
 export function addWidget(card, type) {
   const list = (listFor(card), prefs.widgets[card.id] ||= []);
-  const {w, h} = TYPES[type].size;
-  for (let y = 0; y + h <= ROWS; y++) for (let x = COLS - w; x >= 0; x--) {
-    if (rectFree(list, {x, y, w, h})) {
-      const widget = {id: newId(), type, x, y, w, h, o: {}};
-      list.push(widget); save(); refreshWidgets();
-      return widget;
+  for (const {w, h} of sizesFor(type)) {
+    for (let y = 0; y + h <= ROWS; y++) for (let x = COLS - w; x >= 0; x--) {
+      if (rectFree(list, {x, y, w, h})) {
+        const widget = {id: newId(), type, x, y, w, h, o: {}};
+        list.push(widget); save(); refreshWidgets();
+        return widget;
+      }
     }
   }
   return null;
 }
+/** True when a widget is smaller than its type's default size (it was added or resized to fit). */
+export const isShrunk = widget => widget.w < TYPES[widget.type].size.w || widget.h < TYPES[widget.type].size.h;
 export function removeWidget(card, id) {
   prefs.widgets[card.id] = listFor(card).filter(w => w.id !== id);
   save(); refreshWidgets();
@@ -156,7 +169,36 @@ function tryRect(card, widget, rect) {
   placeEl(widget);
   return true;
 }
-export const moveWidget = (card, widget, dx, dy) => tryRect(card, widget, {x: widget.x + dx, y: widget.y + dy, w: widget.w, h: widget.h});
+const overlapArea = (a, b) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+
+/** Where two widgets end up when `a` is pushed one cell (dx, dy) into `b`: they exchange places along the direction of travel, each keeping its size. */
+function swapPlan(a, b, dx, dy) {
+  return {
+    a: {x: dx > 0 ? b.x + b.w - a.w : dx < 0 ? b.x : a.x, y: dy > 0 ? b.y + b.h - a.h : dy < 0 ? b.y : a.y, w: a.w, h: a.h},
+    b: {x: dx > 0 ? a.x : dx < 0 ? a.x + a.w - b.w : b.x, y: dy > 0 ? a.y : dy < 0 ? a.y + a.h - b.h : b.y, w: b.w, h: b.h},
+  };
+}
+
+/**
+ * Move a widget one cell. Into free space it just moves; into another widget the two swap places when both still fit in the grid without
+ * touching a third widget (otherwise nothing happens). False when nothing moved.
+ */
+export function moveWidget(card, widget, dx, dy) {
+  const rect = {x: widget.x + dx, y: widget.y + dy, w: widget.w, h: widget.h};
+  if (tryRect(card, widget, rect)) return true;
+  if (!inGrid(rect)) return false;   // the edge of the grid
+  const list = listFor(card);
+  const hit = list.filter(o => o !== widget && overlaps(o, rect)).sort((p, q) => overlapArea(q, rect) - overlapArea(p, rect));
+  for (const other of hit) {
+    const plan = swapPlan(widget, other, dx, dy);
+    if (!inGrid(plan.a) || !inGrid(plan.b) || overlaps(plan.a, plan.b)) continue;
+    if (list.some(o => o !== widget && o !== other && (overlaps(o, plan.a) || overlaps(o, plan.b)))) continue;
+    Object.assign(widget, plan.a); Object.assign(other, plan.b);
+    save(); placeEl(widget); placeEl(other);
+    return true;
+  }
+  return false;
+}
 export const resizeWidget = (card, widget, dw, dh) => tryRect(card, widget, {x: widget.x, y: widget.y, w: widget.w + dw, h: widget.h + dh});
 
 // ---- drawing ----

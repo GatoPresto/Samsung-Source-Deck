@@ -8,7 +8,7 @@ import { focusSel } from "./cursor.js";
 import { syncRing } from "./glass.js";
 import { openPrompt } from "./textprompt.js";
 import { t, currentLanguage } from "./i18n.js";
-import { TYPES, allowsWidgets, listFor, addWidget, removeWidget, moveWidget, resizeWidget, optionList, optionLabel, cycleOption, setOption, setOptions, setSelected } from "./widgets.js";
+import { TYPES, allowsWidgets, listFor, addWidget, isShrunk, removeWidget, moveWidget, resizeWidget, optionList, optionLabel, cycleOption, setOption, setOptions, setSelected } from "./widgets.js";
 import { searchCities } from "./weather.js";
 
 export const widgetEdit = {open: false};
@@ -207,6 +207,7 @@ function activate() {
     if (!widget) { ui.status = t("No room for another widget on this slide."); draw(); return; }
     ui.sel = widget.id;
     show("menu", 1 + listFor(ui.card).findIndex(w => w.id === widget.id));
+    if (isShrunk(widget)) { ui.status = t("Not enough room for the default size, so the widget was added smaller."); draw(); }
   } else if (row.id === "move" || row.id === "resize") { ui.view = row.id; setSelected(ui.sel, row.id); draw(); }
   else if (row.id === "opt") { if (row.text) typeOption(selected(), row.opt); else { cycleOption(selected(), row.key); draw(); } }
   else if (row.id === "city") searchCity(selected());

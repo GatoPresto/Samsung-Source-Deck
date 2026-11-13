@@ -303,6 +303,7 @@ export default {
   "Arrange": "排序",
   "Open {name}": "打开{name}",
   "OK opens {name}": "按 OK 打开{name}",
+  "Not enough room for the default size, so the widget was added smaller.": "没有足够空间放置默认大小，因此小组件以较小尺寸添加。",
   "Appearance": "外观",
   "Debug": "调试",
   "Smooth motion:": "平滑动画：",

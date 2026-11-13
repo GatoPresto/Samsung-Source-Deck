@@ -303,6 +303,7 @@ export default {
   "Arrange": "Düzenle",
   "Open {name}": "{name} aç",
   "OK opens {name}": "OK, {name} girişini açar",
+  "Not enough room for the default size, so the widget was added smaller.": "Varsayılan boyut için yeterli yer yoktu, bu yüzden widget daha küçük eklendi.",
   "Appearance": "Görünüm",
   "Debug": "Hata ayıklama",
   "Smooth motion:": "Akıcı hareket:",

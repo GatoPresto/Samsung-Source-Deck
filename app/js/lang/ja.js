@@ -303,6 +303,7 @@ export default {
   "Arrange": "並べ替え",
   "Open {name}": "{name}を開く",
   "OK opens {name}": "OKで{name}を開きます",
+  "Not enough room for the default size, so the widget was added smaller.": "標準サイズの空きがないため、小さいサイズで追加しました。",
   "Appearance": "外観",
   "Debug": "デバッグ",
   "Smooth motion:": "スムーズな動き：",
