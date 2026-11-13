@@ -16,6 +16,7 @@
 #searchView h2{margin:0 0 24px;font-size:2.4rem;color:var(--accent)}
 #searchInput{width:100%;max-width:30em;padding:18px 22px;font:inherit;font-size:2rem;color:#fff;background:#ffffff1c;border:2px solid var(--accent);border-radius:12px;outline:none}
 #searchInput.cur{outline:none}
+#searchInput:focus{outline:4px solid var(--cur,#fff);outline-offset:4px}   /* keyboard open: the floating ring is hidden (the TV pans the page for the keyboard), the box shows its own focus */
 #searchBtns{display:flex;gap:14px;margin-top:28px}
 #shint{color:var(--accent);letter-spacing:.1em;font-size:.9rem;margin-top:18px}
 #loginView{position:absolute;inset:0;z-index:6;padding:12vh 8vw;background:linear-gradient(120deg,#080d17,var(--base))}

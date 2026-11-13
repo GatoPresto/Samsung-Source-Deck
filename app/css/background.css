@@ -27,7 +27,7 @@
 .bgtile.folder.cur span{color:var(--fink);font-weight:800}
 #bgStatus,#setStatus,#wStatus{min-height:1.5em;margin:10px 0 0;font-size:1.1rem;color:var(--ink)}
 #bgHint,#setHint,#wHint{margin:12px 0 0;color:var(--accent);letter-spacing:.08em;font-size:.9rem}
-#setList{max-height:calc(100vh - 330px);overflow:hidden}
+#setList,#bgList,#wList{max-height:calc(100vh - 330px);overflow:hidden}   /* long lists scroll inside the drawer (scrollListTo), the panel itself never moves */
 #setAbout{margin:0 0 16px}
 #setAbout h3{margin:0 0 10px;font-size:1.8rem;font-family:var(--title-font);text-transform:var(--title-case);letter-spacing:var(--title-track);color:var(--ink)}
 #setBio p{margin:0 0 6px;font-size:1.2rem;color:var(--ink)}
@@ -39,3 +39,5 @@
 footer.nav button{white-space:nowrap}
 #settings{margin-left:auto;padding-left:18px;padding-right:18px}
 #settings svg{display:block;width:30px;height:30px}
+
+#wList button.sub{margin-left:2.2em;width:calc(100% - 2.2em);font-size:1.15rem}

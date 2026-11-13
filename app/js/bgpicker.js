@@ -1,6 +1,6 @@
 // "Change background" screen: a menu (search Unsplash / Wallhaven, router pictures, USB drive, Starred, scope, dimming, star, remove) and a picture grid.
 // In a grid, OK on a picture opens a small sheet: use it as the background, or add it to / remove it from Starred (kept pictures).
-import { byId } from "./dom.js";
+import { byId, scrollListTo } from "./dom.js";
 import { state } from "./state.js";
 import { prefs, savePrefs } from "./prefs.js";
 import { makeRow, makeBgTile } from "./templates.js";
@@ -55,7 +55,7 @@ function draw() {
       el.onclick = () => { ui.cur = i; activate(); };
       list.appendChild(el);
     });
-    list.children[ui.cur]?.scrollIntoView({block: "nearest"});
+    scrollListTo(list, list.children[ui.cur]);
   } else {
     byId("bgList").textContent = "";   // a hidden list must not keep a .cur (the glass ring would find it first)
     const grid = byId("bgGrid");

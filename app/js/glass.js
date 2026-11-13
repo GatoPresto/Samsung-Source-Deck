@@ -193,7 +193,8 @@ export function refreshGlass() {
   live.forEach(node => { if (!wanted.has(node)) clearGlass(node); });
 }
 
-const OVERLAYS = ["widgetsView", "settingsView", "bgView", "themeView", "browser", "arrangeView", "searchView"];
+// searchView (the text prompt) first: it opens on top of the other screens, and the ring must mark ITS buttons, not a row of the screen under it
+const OVERLAYS = ["searchView", "widgetsView", "settingsView", "bgView", "themeView", "browser", "arrangeView"];
 const isGlassTheme = () => document.getElementById("deck").dataset.theme === "applemusicglass";
 
 /** Where the highlight is: inside an open overlay (theme picker, media browser, Arrange, search, drawers) or on the main screen. */
@@ -224,7 +225,7 @@ function placeRing() {
   const ring = document.getElementById("focusRing"), deckEl = document.getElementById("deck");
   const {node: target, ctx} = deckEl.hidden ? {node: null, ctx: ""} : ringTarget();
   const set = (prop, value) => { if (ring.style[prop] !== value) ring.style[prop] = value; };
-  if (!target) { set("display", "none"); return; }
+  if (!target || document.activeElement === document.getElementById("searchInput")) { set("display", "none"); return; }
   const look = isGlassTheme() && !target.matches(".widget, .bgtile") ? "glass" : "plain";
   // appearing, or jumping between the main screen and an overlay: place it without gliding across the screen; while scrolling it sticks to the item
   const jump = ring.style.display !== "block" || ring.dataset.ctx !== ctx || ring.dataset.look !== look;

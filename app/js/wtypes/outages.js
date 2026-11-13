@@ -103,63 +103,56 @@ const providerName = key => (PROVIDERS.find(p => p[0] === key) || [key, key])[1]
 
 async function pickGroup(widget, api) {
   const o = optionsFor(type, widget);
-  if (isToe(o.provider)) return findToe(widget, api);   // Ternopil: the group comes with the address
+  if (isToe(o.provider)) return findByAddress(widget, api);   // Ternopil: the group comes with the address
   api.say(t("Loading…"));
   const groups = await listGroups(o.provider);
   const chosen = await api.pick(t("Group"), groups.map(g => ({label: g, value: g, current: g === widget.o?.group})));
   if (chosen) { api.set(widget, {group: chosen}); api.say(t("Group {g}", {g: chosen})); }
 }
 
-async function findByAddress(widget, api) {
+/** The address form of a provider: Yasno needs street and house, Ternopil city, street and house (see api.form in widgetedit.js). */
+function findByAddress(widget, api) {
   const o = optionsFor(type, widget);
-  if (isToe(o.provider)) return findToe(widget, api);
-  const street = await api.ask(t("Street"), t("Type a street name"));
-  if (!street) return;
-  api.say(t("Loading…"));
-  const streets = await searchStreets(o.provider, street);
-  if (!streets.length) { api.say(t("No street found.")); return; }
-  const streetId = await api.pick(t("Street"), streets.slice(0, 30).map(x => ({label: x.value, value: x})));
-  if (!streetId) return;
-  const house = await api.ask(t("House"), t("Type a house number"));
-  if (!house) return;
-  api.say(t("Loading…"));
-  const houses = await searchHouses(o.provider, streetId.id, house);
-  if (!houses.length) { api.say(t("No house found.")); return; }
-  const chosen = await api.pick(t("House"), houses.slice(0, 40).map(x => ({label: x.value, value: x})));
-  if (!chosen) return;
-  const group = await groupByAddress(o.provider, streetId.id, chosen.id);
-  api.set(widget, {group});   // only the group is kept, not the address
-  api.say(t("Group {g}", {g: group}));
+  if (isToe(o.provider)) return addressForm(widget, api, toeSteps(), values => {
+    const house = values.house;   // {name, group}
+    if (!toe.isGroup(house.group)) return {error: t("This address is not in the outage schedules")};
+    api.set(widget, {toeKey: toe.addressKey(values.city.id, values.street.id, house.name), group: house.group});   // the ids are kept: Ternopil can only be read per address
+    return {message: t("Group {g}", {g: house.group})};
+  });
+  return addressForm(widget, api, yasnoSteps(o.provider), async values => {
+    const group = await groupByAddress(o.provider, values.street.id, values.house.id);
+    api.set(widget, {group});   // only the group is kept, not the address
+    return {message: t("Group {g}", {g: group})};
+  });
 }
 
-/** Ternopil: city, street, house. The schedule can only be read for an address, so its key (ids, no names) is kept in the widget settings on the TV. */
-async function findToe(widget, api) {
-  const city = await api.ask(t("City"), t("Type a city name"));
-  if (!city) return;
-  api.say(t("Loading…"));
-  const cities = await toe.searchCities(city);
-  if (!cities.length) { api.say(t("No city found.")); return; }
-  const chosenCity = await api.pick(t("City"), cities.slice(0, 40).map(x => ({label: x.label, value: x})));
-  if (!chosenCity) return;
-  const street = await api.ask(t("Street"), t("Type a street name"));
-  if (!street) return;
-  api.say(t("Loading…"));
-  const streets = await toe.searchStreets(chosenCity.id, street);
-  if (!streets.length) { api.say(t("No street found.")); return; }
-  const chosenStreet = await api.pick(t("Street"), streets.slice(0, 40).map(x => ({label: x.label, value: x})));
-  if (!chosenStreet) return;
-  const house = await api.ask(t("House"), t("Type a house number"));
-  if (!house) return;
-  api.say(t("Loading…"));
-  const needle = house.toLowerCase();
-  const houses = (await toe.listBuildings(chosenCity.id, chosenStreet.id)).filter(b => b.name.toLowerCase().includes(needle));
-  if (!houses.length) { api.say(t("No house found.")); return; }
-  const chosen = await api.pick(t("House"), houses.slice(0, 40).map(b => ({label: b.name + (toe.isGroup(b.group) ? "  ·  " + b.group : ""), value: b})));
-  if (!chosen) return;
-  if (!toe.isGroup(chosen.group)) { api.say(t("This address is not in the outage schedules")); return; }
-  api.set(widget, {toeKey: toe.addressKey(chosenCity.id, chosenStreet.id, chosen.name), group: chosen.group});
-  api.say(t("Group {g}", {g: chosen.group}));
-}
+const addressForm = (widget, api, steps, finish) => api.form({title: t("Find your address"), steps, finish});
+const asItems = (list, label) => list.map(x => ({label: label(x), value: x}));
+
+const yasnoSteps = provider => [
+  {key: "street", label: T("Street"), prompt: {title: t("Street"), placeholder: t("Type a street name")},
+    search: async query => asItems(await searchStreets(provider, query), x => x.value)},
+  {key: "house", label: T("House"), prompt: {title: t("House"), placeholder: t("Type a house number")},
+    search: async (query, v) => asItems(await searchHouses(provider, v.street.id, query), x => x.value)},
+];
+
+const toeSteps = () => {
+  const buildings = new Map();   // "cityId/streetId" -> the street's houses, so typing a number again does not download them again
+  return [
+    {key: "city", label: T("City"), prompt: {title: t("City"), placeholder: t("Type a city name")},
+      search: async query => asItems(await toe.searchCities(query), x => x.label)},
+    {key: "street", label: T("Street"), prompt: {title: t("Street"), placeholder: t("Type a street name")},
+      search: async (query, v) => asItems(await toe.searchStreets(v.city.id, query), x => x.label)},
+    {key: "house", label: T("House"), allowEmpty: true, prompt: {title: t("House"), placeholder: t("Type a house number")},   // empty = list the street's houses
+      search: async (query, v) => {
+        const k = v.city.id + "/" + v.street.id;
+        if (!buildings.has(k)) buildings.set(k, await toe.listBuildings(v.city.id, v.street.id));
+        const needle = query.toLowerCase();
+        return buildings.get(k).filter(b => b.name.toLowerCase().includes(needle))
+          .map(b => ({label: b.name + (toe.isGroup(b.group) ? "  ·  " + b.group : ""), value: b, extra: toe.isGroup(b.group) ? t("Group {g}", {g: b.group}) : ""}));
+      }},
+  ];
+};
 
 const type = {
   name: T("Outages"), size: {w: 4, h: 3}, min: {w: 3, h: 1},

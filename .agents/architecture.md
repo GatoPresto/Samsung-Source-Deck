@@ -69,6 +69,7 @@ build/                    generated .wgt packages (git-ignored)
 | `scroll.js` | `revealX(row, child)` (scroll only when the item is not fully visible, smooth), `smoothScrollTo`, frame hooks (edge fades and the focus ring follow the scroll) |
 | `qr.js` | `qrSvg(text)` shared by the YouTube login and About screens |
 | `lang/*.js` | one file per language: `export default {"English text": "translation"}` |
+| `widgetedit.js` form view | `api.form({title, steps: [{key, label, placeholder, allowEmpty, search(query, values) -> items, ...}], finish(values) -> {error}|{message}|void})` shows one screen with a row per step and keeps the values and search results in `ui.form`; used by the Outages address search (`addressForm` in `wtypes/outages.js`) |
 | `textprompt.js` | shared on-screen text entry (`openPrompt({title, placeholder, value, okLabel, allowEmpty, onSubmit, onCancel})`) on the `#searchView` overlay; used by Apple Music search and the background searches |
 | `background.js` | background pictures: `bgPrefs`, `keyFor`, `applyBackground` (called by `render()`), `assignBackground`, `removeBackground`, `gc` (deletes stored pictures nobody uses), `DIM_LEVELS` |
 | `bgpicker.js` | "Change background" overlay (`#bgView`): menu rows, picture grid, folder navigation, `choose()` (download -> `toBackgroundJpeg` -> IndexedDB -> assign) |

@@ -1,5 +1,5 @@
 // Settings (gear button): language and About the developer. A drawer like "Change background"; three views: menu, language list, about.
-import { byId } from "./dom.js";
+import { byId, scrollListTo } from "./dom.js";
 import { state } from "./state.js";
 import { prefs } from "./prefs.js";
 import { makeRow } from "./templates.js";
@@ -57,7 +57,7 @@ function draw() {
     el.onclick = () => { ui.cur = i; activate(); };
     list.appendChild(el);
   });
-  list.children[ui.cur]?.scrollIntoView({block: "nearest"});
+  scrollListTo(list, list.children[ui.cur]);
   syncRing();
 }
 
